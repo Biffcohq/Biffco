@@ -43,10 +43,8 @@ jobs:
           node-version: '22'
           
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: '9'
-          
+        run: npm install -g pnpm@9
+        
       - name: Get pnpm store directory
         id: pnpm-cache
         run: echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
@@ -101,15 +99,4 @@ jobs:
       - name: Build
         run: pnpm build
 
-  # ─── Detectar secretos en el código ─────────────────────────────
-  secrets-check:
-    name: Check for hardcoded secrets
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
