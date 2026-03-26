@@ -1,0 +1,32 @@
+type Brand<T, B extends string> = T & {
+    readonly _brand: B;
+};
+export declare const brand: <T extends string>(value: string) => Brand<string, T>;
+export type WorkspaceId = Brand<string, "WorkspaceId">;
+export type WorkspaceMemberId = Brand<string, "WorkspaceMemberId">;
+export type TeamId = Brand<string, "TeamId">;
+export type EmployeeId = Brand<string, "EmployeeId">;
+export type AssetId = Brand<string, "AssetId">;
+export type AssetGroupId = Brand<string, "AssetGroupId">;
+export type EventId = Brand<string, "EventId">;
+export type FacilityId = Brand<string, "FacilityId">;
+export type ZoneId = Brand<string, "ZoneId">;
+export type PenId = Brand<string, "PenId">;
+export type TransferOfferId = Brand<string, "TransferOfferId">;
+export type AnchorId = Brand<string, "AnchorId">;
+export type CertificationId = Brand<string, "CertificationId">;
+export declare const WorkspaceId: (v: string) => Brand<string, "WorkspaceId">;
+export declare const WorkspaceMemberId: (v: string) => Brand<string, "WorkspaceMemberId">;
+export declare const TeamId: (v: string) => Brand<string, "TeamId">;
+export declare const EmployeeId: (v: string) => Brand<string, "EmployeeId">;
+export declare const AssetId: (v: string) => Brand<string, "AssetId">;
+export declare const AssetGroupId: (v: string) => Brand<string, "AssetGroupId">;
+export declare const EventId: (v: string) => Brand<string, "EventId">;
+export declare const FacilityId: (v: string) => Brand<string, "FacilityId">;
+export declare const ZoneId: (v: string) => Brand<string, "ZoneId">;
+export declare const PenId: (v: string) => Brand<string, "PenId">;
+export declare const TransferOfferId: (v: string) => Brand<string, "TransferOfferId">;
+export declare const AnchorId: (v: string) => Brand<string, "AnchorId">;
+export declare const CertificationId: (v: string) => Brand<string, "CertificationId">;
+export {};
+//# sourceMappingURL=branded.d.ts.map
