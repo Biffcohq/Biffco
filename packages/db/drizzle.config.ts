@@ -8,6 +8,7 @@ export default defineConfig({
   dbCredentials: {
     url: env.DATABASE_URL_UNPOOLED
   },
+  tablesFilter: ["!spatial_ref_sys"],
   verbose: true,
   strict: true
 })

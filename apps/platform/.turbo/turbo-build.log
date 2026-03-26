@@ -1,0 +1,23 @@
+
+> @biffco/platform@1.0.0 build C:\Users\weare\Documents\Projects\Biffco\apps\platform
+> next build
+
+
+> Build error occurred
+Error: EPERM: operation not permitted, rename 'C:\Users\weare\AppData\Roaming\nextjs-nodejs\Config\config.json.1494316920' -> 'C:\Users\weare\AppData\Roaming\nextjs-nodejs\Config\config.json'
+    at Object.renameSync (node:fs:1012:11)
+    at writeFile.writeFileSync [as sync] (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\conf\index.js:15:24526)
+    at set store (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\conf\index.js:1:109642)
+    at Conf.set (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\compiled\conf\index.js:1:107635)
+    at Telemetry.notify (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\telemetry\storage.js:101:23)
+    at new Telemetry (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\telemetry\storage.js:255:14)
+    at C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\build\index.js:399:31
+    at async Span.traceAsyncFn (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\trace\trace.js:154:20)
+    at async build (C:\Users\weare\Documents\Projects\Biffco\node_modules\.pnpm\next@14.2.3_react-dom@18.3.1_react@18.3.1__react@18.3.1\node_modules\next\dist\build\index.js:366:9) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'rename',
+  path: 'C:\\Users\\weare\\AppData\\Roaming\\nextjs-nodejs\\Config\\config.json.1494316920',
+  dest: 'C:\\Users\\weare\\AppData\\Roaming\\nextjs-nodejs\\Config\\config.json'
+}
+ ELIFECYCLE  Command failed with exit code 1.

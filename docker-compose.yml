@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  postgres:
+    # Usamos PostGIS purificado para que las parcelas de Drizzle cuenten con funciones espaciales
+    image: postgis/postgis:15-3.3-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: biffco
+      POSTGRES_USER: biffco
+      POSTGRES_PASSWORD: biffco_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Montamos el script SQL solicitado por el usuario para garantizar que las extensiones existan pre-migración
+      - ./.docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U biffco -d biffco"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
