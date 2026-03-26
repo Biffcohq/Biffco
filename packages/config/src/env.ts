@@ -1,3 +1,5 @@
+/* eslint-env node */
+/* eslint-disable no-console */
 import { z } from 'zod'
 
 // ─── Schema de variables requeridas (siempre) ────────────────────────

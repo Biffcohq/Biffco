@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-redeclare */
 // ─── Tipo genérico para crear branded types ──────────────────────
 type Brand<T, B extends string> = T & { readonly _brand: B }
 
