@@ -31,5 +31,9 @@ _Note: This file does **not** contain secrets or credentials. It serves as an ar
 - **Production URL**: https://vercel.com
 - **Architecture**: Serverless hosting for Next.js, Edge functions and CDN routing.
 - **Environment Strategy**: Leverages Vercel Doppler Integration to inject build-time variables.
+- **Active Frontends**:
+  - `biffco-web`: Public landing site (`biffco.co`)
+  - `biffco-platform`: Main SaaS dashboard (`app.biffco.co`)
+  - `biffco-verify`: External client portal (`verify.biffco.co`)
 
 _Once configured globally, the CI workflow will inject via a readonly Service Token (`DOPPLER_TOKEN`), making `.env` files completely obsolete on any developer machine._
