@@ -1,0 +1,31 @@
+{
+  "name": "biffco",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "db:generate": "pnpm --filter @biffco/db db:generate",
+    "db:migrate": "pnpm --filter @biffco/db db:migrate",
+    "db:studio": "pnpm --filter @biffco/db db:studio"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "@types/node": "^22.19.15",
+    "@typescript-eslint/eslint-plugin": "^8.57.2",
+    "@typescript-eslint/parser": "^8.57.2",
+    "eslint": "^9",
+    "eslint-plugin-import": "^2.32.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "turbo": "^2.8.20",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.57.2"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
