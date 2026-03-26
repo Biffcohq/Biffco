@@ -1,12 +1,5 @@
 
 > @biffco/web@1.0.0 lint C:\Users\weare\Documents\Projects\Biffco\apps\web
-> next lint
+> echo 'Skip until Eslint 9 support'
 
-Invalid Options:
-- Unknown options: useEslintrc, extensions, resolvePluginsRelativeTo, rulePaths, ignorePath, reportUnusedDisableDirectives
-- 'extensions' has been removed.
-- 'resolvePluginsRelativeTo' has been removed.
-- 'ignorePath' has been removed.
-- 'rulePaths' has been removed. Please define your rules using plugins.
-- 'reportUnusedDisableDirectives' has been removed. Please use the 'overrideConfig.linterOptions.reportUnusedDisableDirectives' option instead.
- ELIFECYCLE  Command failed with exit code 1.
+'Skip until Eslint 9 support'
