@@ -2,28 +2,3 @@
 > @biffco/shared@0.1.0 lint C:\Users\weare\Documents\Projects\Biffco\packages\shared
 > eslint src/
 
-
-C:\Users\weare\Documents\Projects\Biffco\packages\shared\src\types\branded.ts
-   1:1   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-redeclare')
-  27:14  error    'WorkspaceId' is already defined                                                                    no-redeclare
-  28:14  error    'WorkspaceMemberId' is already defined                                                              no-redeclare
-  29:14  error    'TeamId' is already defined                                                                         no-redeclare
-  30:14  error    'EmployeeId' is already defined                                                                     no-redeclare
-  31:14  error    'AssetId' is already defined                                                                        no-redeclare
-  32:14  error    'AssetGroupId' is already defined                                                                   no-redeclare
-  33:14  error    'EventId' is already defined                                                                        no-redeclare
-  34:14  error    'FacilityId' is already defined                                                                     no-redeclare
-  35:14  error    'ZoneId' is already defined                                                                         no-redeclare
-  36:14  error    'PenId' is already defined                                                                          no-redeclare
-  37:14  error    'TransferOfferId' is already defined                                                                no-redeclare
-  38:14  error    'AnchorId' is already defined                                                                       no-redeclare
-  39:14  error    'CertificationId' is already defined                                                                no-redeclare
-
-C:\Users\weare\Documents\Projects\Biffco\packages\shared\src\types\result.ts
-  17:8  error  'value' is defined but never used  no-unused-vars
-
-✖ 15 problems (14 errors, 1 warning)
-  0 errors and 1 warning potentially fixable with the `--fix` option.
-
- ELIFECYCLE  Command failed with exit code 1.
- WARN   Local package.json exists, but node_modules missing, did you mean to install?
