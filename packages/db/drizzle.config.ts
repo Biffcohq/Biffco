@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { defineConfig } from 'drizzle-kit'
 import { env } from '@biffco/config'
 

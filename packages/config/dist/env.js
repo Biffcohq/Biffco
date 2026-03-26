@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.env = void 0;
+/* eslint-disable no-undef */
+/* eslint-disable no-console */
 const zod_1 = require("zod");
 // ─── Schema de variables requeridas (siempre) ────────────────────────
 const baseSchema = zod_1.z.object({

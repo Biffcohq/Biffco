@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 export type Ok<T> = { readonly ok: true; readonly value: T }
 export type Err<E> = { readonly ok: false; readonly error: E }
 
