@@ -2,10 +2,3 @@
 > @biffco/config@0.1.0 lint C:\Users\weare\Documents\Projects\Biffco\packages\config
 > eslint src/
 
-
-C:\Users\weare\Documents\Projects\Biffco\packages\config\src\env.ts
-  2:1  warning  Unused eslint-disable directive (no problems were reported from 'no-console')
-
-✖ 1 problem (0 errors, 1 warning)
-  0 errors and 1 warning potentially fixable with the `--fix` option.
-

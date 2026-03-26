@@ -1,11 +1,12 @@
 
 > @biffco/platform@1.0.0 lint C:\Users\weare\Documents\Projects\Biffco\apps\platform
-> eslint .
+> next lint
 
-
-C:\Users\weare\Documents\Projects\Biffco\apps\platform\app\layout.tsx
-  1:62  error  'React' is not defined  no-undef
-
-✖ 1 problem (1 error, 0 warnings)
-
+Invalid Options:
+- Unknown options: useEslintrc, extensions, resolvePluginsRelativeTo, rulePaths, ignorePath, reportUnusedDisableDirectives
+- 'extensions' has been removed.
+- 'resolvePluginsRelativeTo' has been removed.
+- 'ignorePath' has been removed.
+- 'rulePaths' has been removed. Please define your rules using plugins.
+- 'reportUnusedDisableDirectives' has been removed. Please use the 'overrideConfig.linterOptions.reportUnusedDisableDirectives' option instead.
  ELIFECYCLE  Command failed with exit code 1.

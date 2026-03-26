@@ -1,14 +1,12 @@
 
 > @biffco/verify@1.0.0 lint C:\Users\weare\Documents\Projects\Biffco\apps\verify
-> eslint .
+> next lint
 
-
-C:\Users\weare\Documents\Projects\Biffco\apps\verify\.next\prerender-manifest.js
-  1:1  error  'self' is not defined  no-undef
-
-C:\Users\weare\Documents\Projects\Biffco\apps\verify\app\layout.tsx
-  1:62  error  'React' is not defined  no-undef
-
-✖ 2 problems (2 errors, 0 warnings)
-
+Invalid Options:
+- Unknown options: useEslintrc, extensions, resolvePluginsRelativeTo, rulePaths, ignorePath, reportUnusedDisableDirectives
+- 'extensions' has been removed.
+- 'resolvePluginsRelativeTo' has been removed.
+- 'ignorePath' has been removed.
+- 'rulePaths' has been removed. Please define your rules using plugins.
+- 'reportUnusedDisableDirectives' has been removed. Please use the 'overrideConfig.linterOptions.reportUnusedDisableDirectives' option instead.
  ELIFECYCLE  Command failed with exit code 1.
