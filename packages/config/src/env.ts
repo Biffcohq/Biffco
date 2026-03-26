@@ -1,4 +1,4 @@
-/* eslint-env node */
+/* eslint-disable no-undef */
 /* eslint-disable no-console */
 import { z } from 'zod'
 
