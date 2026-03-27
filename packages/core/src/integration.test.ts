@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-unused-vars */
 import { describe, it, expect } from 'vitest'
 import { deriveKeyFromMnemonic } from './crypto/slip0010'
 import { signEvent, verifyEvent } from './crypto/ed25519'
@@ -45,7 +46,6 @@ describe("D09: Core Trust Layer Integration Flow", () => {
     
     const kp = _sodium.crypto_sign_seed_keypair(keypair.privateKey)
     const publicKeyHex = _sodium.to_hex(kp.publicKey)
-    console.log("HD_KEY PUBKEY:", publicKeyHex)
 
     // 2. Generación del Evento (Dominio)
     // El actor decide registrar el nacimiento de un ternero.
@@ -94,7 +94,6 @@ describe("D09: Core Trust Layer Integration Flow", () => {
     // El servidor recibe el domainEvent y lo intenta append. 
     // Internalmente llamará a verifyEvent.
     const appendResult = await store.append(domainEvent)
-    if (!appendResult.ok) console.log("APPEND ERROR:", appendResult)
     expect(appendResult.ok).toBe(true)
 
     // 5. Verificamos explícitamente que la función crypto funcionó

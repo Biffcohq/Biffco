@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-unused-vars */
 import { describe, it, expect } from 'vitest'
 import { PostgresEventStore, type EventStoreDb } from './postgres-event-store'
 import { signEvent } from '../crypto/ed25519'

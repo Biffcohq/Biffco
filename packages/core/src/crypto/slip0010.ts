@@ -1,5 +1,6 @@
-import { derivePath } from 'ed25519-hd-key'
+import { derivePath, getPublicKey } from 'ed25519-hd-key'
 import { mnemonicToSeedSync } from 'bip39'
+import type { Buffer } from 'buffer'
 
 export function buildDerivationPath(wsIdx: number, memberIdx: number): string {
   return `m/0'/${wsIdx}'/${memberIdx}'`
@@ -17,7 +18,6 @@ export function deriveKeyFromMnemonic(
   const { key: privateKeyBuffer } = derivePath(path, seed.toString("hex"))
   
   // Extraer la respectiva public key
-  const { getPublicKey } = require('ed25519-hd-key')
   const publicKeyBuffer = getPublicKey(privateKeyBuffer)
   
   return {
@@ -34,7 +34,6 @@ export function deriveKeyFromSeed(
   const path = buildDerivationPath(wsIdx, memberIdx)
   const { key: privateKeyBuffer } = derivePath(path, seed.toString("hex"))
   
-  const { getPublicKey } = require('ed25519-hd-key')
   const publicKeyBuffer = getPublicKey(privateKeyBuffer)
   
   return {

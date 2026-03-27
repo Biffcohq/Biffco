@@ -30,7 +30,6 @@ export async function signEvent(
   if (privateKey.length === 32) {
     const kp = _sodium.crypto_sign_seed_keypair(privateKey)
     activeKey = kp.privateKey
-    console.log("LIBSODIUM PUBKEY:", _sodium.to_hex(kp.publicKey))
   }
   
   const signature = _sodium.crypto_sign_detached(message, activeKey)

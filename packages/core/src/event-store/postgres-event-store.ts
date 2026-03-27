@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 import type { AssetId, WorkspaceId } from '@biffco/shared'
 import type { DomainEvent, SignableEventPayload } from '../domain/event'
 import { verifyEvent } from '../crypto/ed25519'

@@ -1,4 +1,5 @@
 import { generateMnemonic as _generateMnemonic, validateMnemonic, mnemonicToSeedSync } from 'bip39'
+import type { Buffer } from 'buffer'
 
 /**
  * Genera un mnemonic BIP-39 de 24 palabras.

@@ -1,3 +1,4 @@
+/* eslint-disable no-redeclare */
 export const Permission = {
   ASSETS_CREATE:     "assets.create",
   ASSETS_READ:       "assets.read",

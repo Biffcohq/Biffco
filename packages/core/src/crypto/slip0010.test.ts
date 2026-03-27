@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { deriveKeyFromMnemonic, buildDerivationPath } from './slip0010'
+import { Buffer } from 'buffer'
 
 const TEST_MNEMONIC = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
 

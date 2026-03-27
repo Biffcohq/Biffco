@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import type { DomainEvent } from '../domain/event'
 
 export interface VerticalRules {

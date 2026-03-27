@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { hashDocument } from './hash'
+import { Buffer } from 'buffer'
 
 describe("Hash SHA-256", () => {
   it("hashea el buffer consistentemente", () => {
