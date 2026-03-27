@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, jsonb, boolean, bigserial } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, jsonb, boolean, bigserial, index } from 'drizzle-orm/pg-core'
 import { workspaces } from './workspaces'
 import { assets } from './assets'
 import { createId } from '@paralleldrive/cuid2'
@@ -16,7 +16,10 @@ export const domainEvents = pgTable("domain_events", {
   signature:    text('signature'),                  // Client-side Ed25519 signature
   signerId:     text('signer_id'),                  // Quien firmó
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_domain_events_workspace_id').on(table.workspaceId),
+  index('idx_domain_events_stream').on(table.streamId, table.globalId)
+])
 
 export const anchorsLog = pgTable("anchors_log", {
   id:             text('id').primaryKey().$defaultFn(() => createId()),
@@ -26,7 +29,9 @@ export const anchorsLog = pgTable("anchors_log", {
   ipfsCid:        text('ipfs_cid'),
   eventsCount:    text('events_count').notNull(),
   createdAt:      timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_anchors_log_workspace_id').on(table.workspaceId)
+])
 
 export const holds = pgTable("holds", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),
@@ -37,7 +42,10 @@ export const holds = pgTable("holds", {
   issuerId:     text('issuer_id').notNull(),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   releasedAt:   timestamp('released_at', { withTimezone: true })
-})
+}, (table) => [
+  index('idx_holds_asset_id').on(table.assetId),
+  index('idx_holds_workspace_id').on(table.workspaceId)
+])
 
 export const assetCertifications = pgTable("asset_certifications", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),
@@ -45,4 +53,7 @@ export const assetCertifications = pgTable("asset_certifications", {
   certifierId:  text('certifier_id').notNull().references(() => workspaces.id),
   metadata:     jsonb('metadata').notNull().default({}),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_asset_certifications_asset_id').on(table.assetId),
+  index('idx_asset_certifications_certifier').on(table.certifierId)
+])

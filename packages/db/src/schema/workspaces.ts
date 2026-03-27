@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, jsonb, boolean, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, jsonb, boolean, pgEnum, index } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
 
 export const workspacePlanEnum = pgEnum('workspace_plan', ['free', 'starter', 'pro', 'enterprise'])
@@ -27,7 +27,9 @@ export const workspaceMembers = pgTable("workspace_members", {
   acceptedAt:   timestamp('accepted_at', { withTimezone: true }),
   revokedAt:    timestamp('revoked_at', { withTimezone: true }),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-})
+}, (table) => [
+  index('idx_workspace_members_workspace_id').on(table.workspaceId)
+])
 
 // ─── Teams ───────────────────────────────────────────────────────
 export const teams = pgTable("teams", {
@@ -36,7 +38,9 @@ export const teams = pgTable("teams", {
   name:         text('name').notNull(),
   description:  text('description'),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-})
+}, (table) => [
+  index('idx_teams_workspace_id').on(table.workspaceId)
+])
 
 // ─── Employees ───────────────────────────────────────────────────
 export const employees = pgTable("employees", {
@@ -49,4 +53,6 @@ export const employees = pgTable("employees", {
   memberId:     text('member_id').references(() => workspaceMembers.id),  // si tiene cuenta
   isActive:     boolean('is_active').notNull().default(true),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-})
+}, (table) => [
+  index('idx_employees_workspace_id').on(table.workspaceId)
+])

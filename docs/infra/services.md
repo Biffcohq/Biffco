@@ -1,39 +1,19 @@
-# Infra Services Registry
+# BIFFCO Infrastructure Services
 
-_Note: This file does **not** contain secrets or credentials. It serves as an architectural index to link the team to the correct Dashboard management interfaces._
+Este directorio referencia los principales servicios SaaS y Cloud configurados en las Fases fundacionales y de producto de Biffco.
 
-## Doppler (Secrets Vault)
-- **Production URL**: https://dashboard.doppler.com/workplace
-- **Project Name**: `biffco`
-- **Environments Managed**: `dev`, `staging`, `prod`
-- **Scope**: Serves as the single source of truth for all `process.env`. The file `.doppler.yaml` points local workspaces directly to the `dev` environment.
+| Servicio | Propósito | Plan de Aprovisionamiento | Autenticación |
+|---|---|---|---|
+| **GitHub** | Código fuente y CI/CD. Gitleaks instalado en Pipelines Actions para protección de secretos. | Team | Repo Privado `biffco-co/biffco` |
+| **Doppler** | Secret Vault Manager. Todas las variables de entorno inyectadas on-the-fly. No guardamos tokens localmente. | Team | `$ doppler login` / `DOPPLER_TOKEN` |
+| **Neon.tech** | Serveless Postgres y Datastore Principal. Drizzle usa su adapter unpooled/pooled. | Free/Pro | Connection string |
+| **Upstash** | Redis Caché y Cola rápida de Job Anchoring. Base de ratelimits. | Serverless | REST Tokens (`UPSTASH_REDIS_TOKEN`) |
+| **Vercel** | Alojamiento para `web` y Edge compute para `verify`. | Hobby / Team | Vercel Token / SSH GitHub |
+| **Railway** | Alojamiento general de monorepo services nativos (`apps/api`), Dockers de backend. | Pro (tarjeta de crédito) | Railway config en repo (`railway.json`) |
+| **Resend** | Envíos integrados de React-email (TBD Fase B). | Free | `RESEND_API_KEY` |
+| **AWS S3** | Evidencias Inmutables firmadas. ClamAV antes de subir. | Estándar AWS | AWS Access Tokens |
+| **Polygon (Amoy/Mainnet)** | Anchor Layer 2. Agrupación y sellado de eventos en Merkle Trees. | Libre | `POLYGON_PRIVATE_KEY` / Alchemy RPC |
 
-## Neon (Database)
-- **Production URL**: https://console.neon.tech
-- **Project Name**: `biffco`
-- **Architecture**: Serverless PostgreSQL 16 + PostGIS extension.
-- **Connection Strings Strategy**:
-  - `DATABASE_URL`: Hosted connection via PgBouncer Pooler (for the API app).
-  - `DATABASE_URL_UNPOOLED`: Direct raw connection bypass (Mandatory for `pnpm db:migrate` via Drizzle).
+### Worktrees / Local
 
-## Upstash (Redis)
-- **Production URL**: https://console.upstash.com
-- **Architecture**: Serverless Redis caching nodes.
-- **Regions**: Aligned with Neon region for minimal latency.
-- **Environments**: Separate isolated databases for `dev` and `staging`.
-
-## Railway (Backend API & Background Workers)
-- **Production URL**: https://railway.app
-- **Architecture**: Docker-based PaaS orchestrating the Fastify APIs and background queues.
-- **Environment Strategy**: Empty native environments. Only `DOPPLER_TOKEN` is injected to dynamically fetch the vault at runtime.
-
-## Vercel (Front-end Web & Web-Verifier)
-- **Production URL**: https://vercel.com
-- **Architecture**: Serverless hosting for Next.js, Edge functions and CDN routing.
-- **Environment Strategy**: Leverages Vercel Doppler Integration to inject build-time variables.
-- **Active Frontends**:
-  - `biffco-web`: Public landing site (`biffco.co`)
-  - `biffco-platform`: Main SaaS dashboard (`app.biffco.co`)
-  - `biffco-verify`: External client portal (`verify.biffco.co`)
-
-_Once configured globally, the CI workflow will inject via a readonly Service Token (`DOPPLER_TOKEN`), making `.env` files completely obsolete on any developer machine._
+Para réplica local, un developer utiliza el comando `pnpm db:generate`. Las instancias locales (Postgres / Postgis / Redis) son provistas por `infra/docker-compose.yml`.

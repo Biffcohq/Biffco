@@ -3,6 +3,18 @@
   "globalDependencies": [
     ".env"
   ],
+  "globalEnv": [
+    "NODE_ENV",
+    "DATABASE_URL",
+    "DATABASE_URL_UNPOOLED",
+    "APP_URL",
+    "WEB_URL",
+    "PLATFORM_URL",
+    "VERIFY_URL",
+    "DOPPLER_CONFIG",
+    "DOPPLER_ENVIRONMENT",
+    "DOPPLER_PROJECT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": [

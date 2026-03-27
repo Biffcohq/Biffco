@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════
+   BIFFCO Design System — variables CSS
+   La fuente única de verdad de todos los tokens visuales.
+   Ningún componente tiene valores hardcodeados.
+═══════════════════════════════════════════════════════════ */
+:root {
+  /* ─── Colores de marca ─────────────────────────────── */
+  --color-navy:            #0B132B;
+  --color-primary:         #3A86FF;
+  --color-primary-hover:   #2563EB;
+  --color-primary-subtle:  #D6EAFF;
+  --color-orange:          #FF6B35;
+  --color-teal:            #0D9488;
+  --color-teal-subtle:     #CCFBF1;
+  --color-purple:          #5A189A;
+  --color-purple-subtle:   #F3E8FF;
+
+  /* ─── Semánticos ───────────────────────────────────── */
+  --color-success:         #059669;
+  --color-success-subtle:  #DEFFD6;
+  --color-warning:         #D97706;
+  --color-warning-subtle:  #FFFBEB;
+  --color-error:           #DC2626;
+  --color-error-subtle:    #FFF5F5;
+
+  /* ─── Texto ────────────────────────────────────────── */
+  --color-text-primary:    #0F1623;
+  --color-text-secondary:  #6B7280;
+  --color-text-muted:      #9CA3AF;
+  --color-text-inverse:    #FFFFFF;
+
+  /* ─── Superficies ──────────────────────────────────── */
+  --color-bg:              #F9FAFB;
+  --color-surface:         #FFFFFF;
+  --color-surface-raised:  #F9FAFB;
+  --color-surface-overlay: #F3F4F6;
+  --color-border:          #E5E7EB;
+  --color-border-strong:   #D1D5DB;
+
+  /* ─── Border Radius ────────────────────────────────── */
+  --radius-xs:   2px;
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-pill: 9999px;
+  --radius:      var(--radius-md); /* shadcn/ui default */
+
+  /* ─── Sombras ──────────────────────────────────────── */
+  --shadow-xs:    0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:    0 4px 6px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:    0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+  --shadow-xl:    0 20px 25px rgba(0,0,0,0.08), 0 8px 10px rgba(0,0,0,0.04);
+  --shadow-focus: 0 0 0 3px rgba(58,134,255,0.3);
+
+  /* ─── Duraciones ───────────────────────────────────── */
+  --duration-fast:   100ms;
+  --duration-normal: 150ms;
+  --duration-slow:   250ms;
+  --duration-slower: 400ms;
+
+  /* ─── Layout ───────────────────────────────────────── */
+  --sidebar-width:     240px;
+  --sidebar-collapsed: 64px;
+  --topbar-height:     56px;
+  --content-max-width: 1280px;
+}
+
+/* ─── Dark Mode ─────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-bg:              #0B132B;
+  --color-surface:         #0F1623;
+  --color-surface-raised:  #1A2336;
+  --color-surface-overlay: #212D45;
+  --color-border:          #2A3854;
+  --color-border-strong:   #3D507A;
+  --color-text-primary:    #F1F5F9;
+  --color-text-secondary:  #94A3B8;
+  --color-text-muted:      #64748B;
+  --color-error:           #F87171;
+  --color-warning:         #FBBF24;
+  --color-primary-subtle:  #1E3A5F;
+  --color-success-subtle:  #064E3B;
+  --color-error-subtle:    #450A0A;
+  --color-warning-subtle:  #451A03;
+  --shadow-focus: 0 0 0 3px rgba(58,134,255,0.4);
+}
+
+/* ─── Base styles ───────────────────────────────────── */
+* { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code, kbd, pre, samp {
+  font-family: var(--font-mono), monospace;
+}
+
+/* Scrollbar sutil */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+
+/* Focus visible uniforme */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary-subtle);
+  color: var(--color-navy);
+}
