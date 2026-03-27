@@ -3,3 +3,8 @@ node_modules
 
 *storybook.log
 storybook-static
+
+# Environment variables
+.env
+.env.*
+!.env.example
