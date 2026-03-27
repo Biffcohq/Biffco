@@ -1,3 +1,4 @@
+// Bumping file to trigger Vercel deployment cache bust
 export default function LandingPage() {
   return (
     <main className="flex-1 flex flex-col items-center">
