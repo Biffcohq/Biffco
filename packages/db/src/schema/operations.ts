@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, jsonb, index } from 'drizzle-orm/pg-core'
 import { workspaces } from './workspaces'
 import { assets } from './assets'
 import { createId } from '@paralleldrive/cuid2'
@@ -12,4 +12,9 @@ export const transferOffers = pgTable("transfer_offers", {
   conditions:       jsonb('conditions').notNull().default({}),
   createdAt:        timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   resolvedAt:       timestamp('resolved_at', { withTimezone: true })
-})
+}, (table) => [
+  index('idx_transfer_offers_from_workspace').on(table.fromWorkspaceId),
+  index('idx_transfer_offers_to_workspace').on(table.toWorkspaceId),
+  index('idx_transfer_offers_asset_id').on(table.assetId),
+  index('idx_transfer_offers_status').on(table.status)
+])

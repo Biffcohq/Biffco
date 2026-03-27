@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, jsonb, boolean, integer } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, jsonb, boolean, integer, index } from 'drizzle-orm/pg-core'
 import { workspaces } from './workspaces'
 import { createId } from '@paralleldrive/cuid2'
 
@@ -12,7 +12,10 @@ export const assetGroups = pgTable("asset_groups", {
   metadata:     jsonb('metadata').notNull().default({}),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_asset_groups_workspace_id').on(table.workspaceId),
+  index('idx_asset_groups_vertical_id').on(table.verticalId)
+])
 
 export const assets = pgTable("assets", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),
@@ -25,4 +28,10 @@ export const assets = pgTable("assets", {
   metadata:     jsonb('metadata').notNull().default({}),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_assets_workspace_id').on(table.workspaceId),
+  index('idx_assets_group_id').on(table.groupId),
+  index('idx_assets_vertical_id').on(table.verticalId),
+  index('idx_assets_status').on(table.status),
+  index('idx_assets_location_id').on(table.locationId)
+])

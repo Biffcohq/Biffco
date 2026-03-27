@@ -1,6 +1,19 @@
-import { pgTable, text, timestamp, jsonb, boolean } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, jsonb, boolean, index } from 'drizzle-orm/pg-core'
 import { workspaces } from './workspaces'
 import { createId } from '@paralleldrive/cuid2'
+
+export const facilities = pgTable("facilities", {
+  id:           text('id').primaryKey().$defaultFn(() => createId()),
+  workspaceId:  text('workspace_id').notNull().references(() => workspaces.id),
+  name:         text('name').notNull(),
+  type:         text('type').notNull(), // ej: 'slaughterhouse', 'mine'
+  location:     jsonb('location').notNull(), // geojson point
+  isActive:     boolean('is_active').notNull().default(true),
+  createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt:    timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
+}, (table) => [
+  index('idx_facilities_workspace_id').on(table.workspaceId)
+]);
 
 export const parcels = pgTable("parcels", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),
@@ -11,4 +24,6 @@ export const parcels = pgTable("parcels", {
   isActive:     boolean('is_active').notNull().default(true),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => [
+  index('idx_parcels_workspace_id').on(table.workspaceId)
+])
