@@ -1,0 +1,30 @@
+
+> @biffco/core@0.1.0 test C:\Users\weare\Documents\Projects\Biffco\packages\core
+> vitest run
+
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mC:/Users/weare/Documents/Projects/Biffco/packages/core[39m
+
+ [33mÔØ»[39m src/crypto/ed25519.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+ [33mÔØ»[39m src/crypto/slip0010.test.ts [2m ([22m[2m0 test[22m[2m)[22m
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ» Failed Suites 2 ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»
+
+ FAIL  src/crypto/ed25519.test.ts [ src/crypto/ed25519.test.ts ]
+Error: Failed to load url libsodium-wrappers (resolved id: libsodium-wrappers) in C:/Users/weare/Documents/Projects/Biffco/packages/core/src/crypto/ed25519.test.ts. Does the file exist?
+ ÔØ» loadAndTransform ../../node_modules/.pnpm/vite@5.4.21_@types+node@22.19.15/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51969:17
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[1/2]ÔÄ»
+
+ FAIL  src/crypto/slip0010.test.ts [ src/crypto/slip0010.test.ts ]
+Error: Failed to load url ed25519-hd-key (resolved id: ed25519-hd-key) in C:/Users/weare/Documents/Projects/Biffco/packages/core/src/crypto/slip0010.ts. Does the file exist?
+ ÔØ» loadAndTransform ../../node_modules/.pnpm/vite@5.4.21_@types+node@22.19.15/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51969:17
+
+ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»ÔÄ»[2/2]ÔÄ»
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 14:32:38
+[2m   Duration [22m 511ms[2m (transform 112ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 327ms)[22m
+
+ÔÇëELIFECYCLEÔÇë Test failed. See above for more details.

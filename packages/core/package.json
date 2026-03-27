@@ -1,0 +1,23 @@
+{
+  "name": "@biffco/core",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@biffco/shared": "workspace:*",
+    "bip39": "^3.1.0",
+    "ed25519-hd-key": "^1.3.0",
+    "libsodium-wrappers": "^0.8.2"
+  },
+  "devDependencies": {
+    "@types/libsodium-wrappers": "^0.8.2",
+    "typescript": "^5.0.0",
+    "vitest": "^1.6.0"
+  }
+}
