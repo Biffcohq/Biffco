@@ -26,5 +26,12 @@
   - Señalar que el **Event Sourcing** (`domain_events`) y los **Workspaces** están salvaguardados con índices nativos `(streamId, workspaceId)` para evitar *Full Table Scans* fatales en las búsquedas en producción.
   - Abrir y ostentar el `ADR-001.md` probando la trazabilidad de decisiones técnicas del equipo de ingenieros.
 
+## Slide 5: Madurez en Infraestructura de CI/CD (Zero-Defect)
+- **Mensaje:** "Lidiamos cara a cara con la bestia del Caché y salimos victoriosos. Producción es estable".
+- **Demo en Vivo (Vercel & Terminal):**
+  - Mostrar que el `turbo.json` está inyectando correctamente el array `globalEnv` mitigando las catástrofes de secretos capados.
+  - Explicar cómo re-sincronizamos el puntero del dominio `biffco.co` hacia la rama oficial `main` en el tablero de Vercel.
+  - Enseñar el `package.json` raíz evidenciando que resolvimos a la fuerza la vulnerabilidad heredada `DEF-001` con `pnpm.overrides`, obteniendo un `pnpm audit` verde.
+
 ## Conclusión
 Se oficializa el "Kickoff de la Fase A" de ahora en adelante para concentrarnos puramente en lógica de negocio, sabiendo que el suelo no se va a derretir ni explotar.
