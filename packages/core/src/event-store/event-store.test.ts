@@ -35,7 +35,7 @@ class MockDb implements EventStoreDb {
     return this.events.filter(e => e.workspaceId === workspaceId)
   }
   
-  async getAssetById(assetId: any, workspaceId: any): Promise<{ parentIds: any[] } | null> {
+  async getAssetById(_assetId: any, _workspaceId: any): Promise<{ parentIds: any[] } | null> {
     return { parentIds: [] }
   }
 }

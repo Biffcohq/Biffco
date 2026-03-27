@@ -24,7 +24,16 @@ export async function signEvent(
 ): Promise<string> {
   await ensureReady()
   const message = new TextEncoder().encode(canonicalJson(payload))
-  const signature = _sodium.crypto_sign_detached(message, privateKey)
+  
+  let activeKey = privateKey
+  // HD derivation outputs 32-byte seeds. Libsodium expects 64-byte secret keys.
+  if (privateKey.length === 32) {
+    const kp = _sodium.crypto_sign_seed_keypair(privateKey)
+    activeKey = kp.privateKey
+    console.log("LIBSODIUM PUBKEY:", _sodium.to_hex(kp.publicKey))
+  }
+  
+  const signature = _sodium.crypto_sign_detached(message, activeKey)
   return _sodium.to_hex(signature)
 }
 

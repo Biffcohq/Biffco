@@ -1,4 +1,4 @@
-import type { AssetId, EventId, WorkspaceId } from '@biffco/shared'
+import type { AssetId, WorkspaceId } from '@biffco/shared'
 import type { DomainEvent, SignableEventPayload } from '../domain/event'
 import { verifyEvent } from '../crypto/ed25519'
 import type { Result } from '@biffco/shared'
@@ -106,7 +106,7 @@ export class PostgresEventStore {
    * Todos los assets que tienen este asset en sus parentIds.
    * Usa el índice GIN en la columna parentIds[] para < 200ms con 10k assets.
    */
-  async getDescendants(assetId: AssetId, workspaceId: WorkspaceId): Promise<string[]> {
+  async getDescendants(_assetId: AssetId, _workspaceId: WorkspaceId): Promise<string[]> {
     // Esta query se implementa en packages/db con el índice GIN
     // El Core define la interface; la implementación vive en la capa de DB
     throw new Error("Implementar con índice GIN en packages/db")
