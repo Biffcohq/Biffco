@@ -42,6 +42,12 @@ importers:
         specifier: ^8.57.2
         version: 8.57.2(eslint@9.39.4)(typescript@5.9.3)
 
+  apps/api:
+    devDependencies:
+      typescript:
+        specifier: ^5.x
+        version: 5.9.3
+
   apps/platform:
     dependencies:
       next:
