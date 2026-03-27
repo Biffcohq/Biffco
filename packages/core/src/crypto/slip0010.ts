@@ -1,4 +1,4 @@
-import { derivePath, getMasterKeyFromSeed } from 'ed25519-hd-key'
+import { derivePath } from 'ed25519-hd-key'
 import { mnemonicToSeedSync } from 'bip39'
 
 export function buildDerivationPath(wsIdx: number, memberIdx: number): string {
@@ -21,8 +21,8 @@ export function deriveKeyFromMnemonic(
   const publicKeyBuffer = getPublicKey(privateKeyBuffer)
   
   return {
-    privateKey: new Uint8Array(Buffer.from(privateKeyBuffer, "hex")),
-    publicKey: new Uint8Array(Buffer.from(publicKeyBuffer, "hex")),
+    privateKey: new Uint8Array(privateKeyBuffer),
+    publicKey: new Uint8Array(publicKeyBuffer),
   }
 }
 
@@ -38,8 +38,8 @@ export function deriveKeyFromSeed(
   const publicKeyBuffer = getPublicKey(privateKeyBuffer)
   
   return {
-    privateKey: new Uint8Array(Buffer.from(privateKeyBuffer, "hex")),
-    publicKey: new Uint8Array(Buffer.from(publicKeyBuffer, "hex")),
-    publicKeyHex: publicKeyBuffer,
+    privateKey: new Uint8Array(privateKeyBuffer),
+    publicKey: new Uint8Array(publicKeyBuffer),
+    publicKeyHex: publicKeyBuffer.toString("hex"),
   }
 }

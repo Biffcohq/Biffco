@@ -1,5 +1,4 @@
 import type { DomainEvent } from '../domain/event'
-import type { Permission } from '../rbac/permissions'
 
 export interface VerticalRules {
   /**
@@ -20,7 +19,7 @@ export interface VerticalPack {
   name: string
   
   /** Permisos adicionales específicos aportados por la vertical */
-  customPermissions: readonly Permission[]
+  customPermissions: readonly string[]
   
   /** Motor de reglas inyectables al Event Store (Hooks) */
   rules: VerticalRules
