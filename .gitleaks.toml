@@ -1,0 +1,9 @@
+title = "BIFFCO gitleaks config"
+
+[allowlist]
+description = "Ignorar contraseñas publicas utilizadas exclusivamentes como mocks en el CI y Docker local."
+regexes = [
+    '''biffco_dev_password''',
+    '''biffco_redis_dev''',
+    '''biffco_ci'''
+]

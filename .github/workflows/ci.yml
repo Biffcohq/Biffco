@@ -99,4 +99,15 @@ jobs:
       - name: Build
         run: pnpm build
 
-
+  # ─── Detectar secretos en el código ─────────────────────────────
+  secrets-check:
+    name: Check for hardcoded secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
