@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { IconLoader2, IconAlertCircle, IconEye, IconEyeOff } from '@tabler/icons-react'
 import { trpc } from '../../lib/trpc'
 import { useAuthStore } from '../stores/useAuthStore'
+import { useSignupStore } from '../stores/useSignupStore'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { AuthLayout } from '../components/auth/AuthLayout'
@@ -51,6 +52,11 @@ export default function LoginPage() {
       router.push('/')
     }
   }, [isAuthenticated, router])
+
+  // Limpiar store de registro si el usuario abandona el proceso
+  useEffect(() => {
+    useSignupStore.getState().reset()
+  }, [])
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

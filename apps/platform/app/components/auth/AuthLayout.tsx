@@ -15,9 +15,9 @@ export function AuthLayout({
   quote,
 }: AuthLayoutProps) {
   return (
-    <main className="min-h-screen bg-bg flex flex-col lg:grid lg:grid-cols-12 font-sans">
+    <main className="h-[100dvh] bg-bg flex flex-col lg:grid lg:grid-cols-12 font-sans overflow-hidden">
       {/* ─── LEFT PANEL (Branding) ─── */}
-      <aside className="hidden lg:flex flex-col justify-between col-span-5 bg-primary text-white p-12 lg:p-16 relative overflow-hidden">
+      <aside className="hidden lg:flex flex-col justify-between col-span-5 bg-primary text-white p-12 lg:p-16 relative overflow-hidden h-full">
         {/* Decorative subtle pattern or gradient could go here */}
         <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
 
@@ -47,15 +47,17 @@ export function AuthLayout({
       </aside>
 
       {/* ─── RIGHT PANEL (Form Area) ─── */}
-      <section className="flex-1 lg:col-span-7 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-20 relative bg-surface">
-        {/* Mobile Header (only visible on small screens) */}
-        <div className="flex lg:hidden items-center gap-2 mb-10 text-navy">
-          <IconShieldCheck size={32} stroke={2} className="text-primary" />
-          <span className="font-bold text-2xl tracking-tight">BIFFCO</span>
-        </div>
+      <section className="flex-1 lg:col-span-7 relative bg-surface overflow-y-auto h-full w-full">
+        <div className="min-h-full w-full flex flex-col justify-center items-center p-6 sm:p-12 lg:p-20">
+          {/* Mobile Header (only visible on small screens) */}
+          <div className="flex lg:hidden items-center gap-2 mb-10 text-navy w-full max-w-md">
+            <IconShieldCheck size={32} stroke={2} className="text-primary" />
+            <span className="font-bold text-2xl tracking-tight">BIFFCO</span>
+          </div>
 
-        <div className="w-full max-w-md">
-          {children}
+          <div className="w-full max-w-md">
+            {children}
+          </div>
         </div>
       </section>
     </main>

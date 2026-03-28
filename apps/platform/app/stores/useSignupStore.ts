@@ -25,9 +25,10 @@ export interface SignupState {
   setWorkspace: (data: { workspaceName: string, workspaceSlug: string, country: string }) => void
   setVertical: (id: string) => void
   setRoles: (roles: string[]) => void
+  reset: () => void
 }
 
-export const useSignupStore = create<SignupState>((set) => ({
+const initialState = {
   step: 1,
   
   adminName: '',
@@ -42,6 +43,10 @@ export const useSignupStore = create<SignupState>((set) => ({
   
   verticalId: '',
   initialRoles: [],
+}
+
+export const useSignupStore = create<SignupState>((set) => ({
+  ...initialState,
 
   setStep: (step) => set(() => ({ step })),
   nextStep: () => set((state) => ({ step: Math.min(state.step + 1, 6) })),
@@ -51,4 +56,5 @@ export const useSignupStore = create<SignupState>((set) => ({
   setWorkspace: (data) => set(() => data),
   setVertical: (verticalId) => set(() => ({ verticalId })),
   setRoles: (initialRoles) => set(() => ({ initialRoles })),
+  reset: () => set(() => initialState),
 }))
