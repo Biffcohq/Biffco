@@ -1,14 +1,13 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-// motion handled by external component
-import { IconShieldCheck, IconLoader2, IconMail, IconLock, IconAlertCircle } from '@tabler/icons-react'
+import { IconLoader2, IconAlertCircle, IconEye, IconEyeOff } from '@tabler/icons-react'
 import { trpc } from '../../lib/trpc'
 import { useAuthStore } from '../stores/useAuthStore'
-// import _sodium from 'libsodium-wrappers'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-
+import { AuthLayout } from '../components/auth/AuthLayout'
+import { SocialAuthPrompt } from '../components/auth/SocialAuthPrompt'
 import { MotionDiv } from '../components/ui/MotionDiv'
 
 export default function LoginPage() {
@@ -18,6 +17,7 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isHashing, setIsHashing] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -55,7 +55,7 @@ export default function LoginPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
-      setErrorMsg('Por favor completa ambos campos.')
+      setErrorMsg('Please enter both email and password.')
       return
     }
 
@@ -63,7 +63,6 @@ export default function LoginPage() {
     setIsHashing(true)
 
     try {
-      // Dynamic import to prevent SSR crashes during Next.js build
       const sodiumModule = await import('libsodium-wrappers')
       await sodiumModule.default.ready
       const sodium = sodiumModule.default
@@ -77,7 +76,7 @@ export default function LoginPage() {
         passwordHash,
       })
     } catch (err: any) {
-      setErrorMsg('Error al procesar la criptografía local.')
+      setErrorMsg('Error processing cryptographic proof.')
       setIsHashing(false)
     }
   }
@@ -85,92 +84,104 @@ export default function LoginPage() {
   const isLoading = isHashing || loginMutation.isPending
 
   return (
-    <main className="min-h-screen bg-bg flex flex-col items-center justify-center p-6 font-sans">
-      <div className="w-full max-w-[420px] z-10 relative">
-        <header className="mb-8 flex flex-col items-center gap-3">
-          <div className="flex items-center gap-2 text-navy mb-1">
-            <IconShieldCheck size={36} stroke={2} className="text-primary" />
-            <span className="font-bold text-3xl tracking-tight">BIFFCO</span>
-          </div>
-          <p className="text-text-secondary text-sm font-medium">
-            Accede a tu cuenta institucional
+    <AuthLayout
+      heading="Welcome back to BIFFCO."
+      subheading="Sign in to your account to monitor your supply chain, verify documents, and guarantee absolute trust."
+      quote={
+        <div className="bg-white/10 p-6 rounded-xl border border-white/10 backdrop-blur-sm">
+          <p className="font-medium text-lg italic tracking-tight opacity-90 leading-snug">
+            "BIFFCO's cryptographic proofs saved our enterprise from compliance risks in less time than our previous software took to boot up."
           </p>
-        </header>
-
-        <MotionDiv 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-surface border border-border rounded-xl p-8 shadow-lg relative overflow-hidden"
-        >
-          <form onSubmit={onSubmit} className="flex flex-col gap-5">
-            {errorMsg && (
-              <div className="p-3 bg-error-subtle text-error rounded-md text-sm flex gap-2 items-center border border-error/20">
-                <IconAlertCircle size={18} className="shrink-0" />
-                <span className="font-medium">{errorMsg}</span>
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-navy block">Correo Institucional</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <IconMail className="text-text-muted" size={18} />
-                </div>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="ejemplo@empresa.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-raised border border-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-sm"
-                  required
-                />
-              </div>
+          <div className="mt-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold">AJ</div>
+            <div>
+              <p className="font-bold text-sm">Alejandro J.</p>
+              <p className="text-xs opacity-70">Supply Chain Director</p>
             </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-bold text-navy block">Contraseña Maestra</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <IconLock className="text-text-muted" size={18} />
-                </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-4 py-2.5 bg-surface-raised border border-border rounded-lg text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-all text-sm font-mono"
-                  required
-                />
-              </div>
-            </div>
-
-            <button 
-              type="submit"
-              disabled={isLoading}
-              className={`mt-2 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 relative overflow-hidden ${
-                isLoading
-                  ? 'bg-surface-raised text-text-muted border border-border cursor-not-allowed shadow-none'
-                  : 'bg-primary text-white hover:bg-primary-hover shadow-md hover:shadow-lg active:scale-[0.98]'
-              }`}
-            >
-              {isLoading ? (
-                <><IconLoader2 size={18} stroke={2} className="animate-spin" /> Conectando...</>
-              ) : (
-                <>Iniciar Sesión</>
-              )}
-            </button>
-          </form>
-
-          <div className="mt-8 text-center border-t border-border pt-6">
-            <p className="text-sm text-text-secondary">
-              ¿No tienes un Workspace aún?{' '}
-              <Link href="/signup" className="text-primary font-bold hover:underline underline-offset-4">
-                Regístrate ahora
-              </Link>
-            </p>
           </div>
-        </MotionDiv>
-      </div>
-    </main>
+        </div>
+      }
+    >
+      <MotionDiv
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold tracking-tight text-navy mb-2">Sign in to Biffco</h2>
+          <p className="text-text-secondary">
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-primary font-semibold hover:text-primary-hover hover:underline decoration-primary/30 underline-offset-4 transition-colors">
+              Create a free workspace
+            </Link>
+          </p>
+        </div>
+
+        <form onSubmit={onSubmit} className="flex flex-col gap-5">
+          {errorMsg && (
+            <div className="p-3 bg-error-subtle text-error rounded-md text-sm flex gap-2 items-center border border-error/20">
+              <IconAlertCircle size={18} className="shrink-0" />
+              <span className="font-medium">{errorMsg}</span>
+            </div>
+          )}
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-text-primary block">Email Address</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="name@company.com"
+              className="w-full px-4 py-2.5 bg-surface-raised border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm"
+              required
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-semibold text-text-primary block">Master Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full pl-4 pr-10 py-2.5 bg-surface-raised border border-border rounded-md text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all text-sm font-mono"
+                required
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary transition-colors"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+              >
+                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+              </button>
+            </div>
+            <div className="flex justify-end mt-1">
+              <button type="button" className="text-xs text-primary font-medium hover:underline p-0 m-0">
+                Forgot password?
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`mt-2 flex items-center justify-center gap-2 w-full h-11 rounded-full font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 relative overflow-hidden ${
+              isLoading
+                ? 'bg-surface-raised text-text-muted border border-border cursor-not-allowed shadow-none'
+                : 'bg-primary text-white hover:bg-primary-hover active:scale-95'
+            }`}
+          >
+            {isLoading ? (
+              <><IconLoader2 size={18} stroke={2} className="animate-spin" /> Authenticating...</>
+            ) : (
+              <>Sign In</>
+            )}
+          </button>
+        </form>
+
+        <SocialAuthPrompt />
+      </MotionDiv>
+    </AuthLayout>
   )
 }

@@ -8,6 +8,22 @@ import { redis } from '../redis'
 import { Permission } from '@biffco/core/rbac'
 
 export const authRouter = router({
+  checkEmail: publicProcedure
+    .input(z.object({ email: z.string().email().toLowerCase() }))
+    .query(async ({ input, ctx }) => {
+      const { db } = ctx
+      const existing = await db.select().from(persons).where(eq(persons.email, input.email)).limit(1)
+      return { available: existing.length === 0 }
+    }),
+
+  checkSlug: publicProcedure
+    .input(z.object({ slug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/) }))
+    .query(async ({ input, ctx }) => {
+      const { db } = ctx
+      const existing = await db.select().from(workspaces).where(eq(workspaces.slug, input.slug)).limit(1)
+      return { available: existing.length === 0 }
+    }),
+
   register: publicProcedure
     .input(z.object({
       workspaceName: z.string().min(2).max(100),

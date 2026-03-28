@@ -6,9 +6,9 @@ export declare const env: {
     WEB_URL: string;
     PLATFORM_URL: string;
     VERIFY_URL: string;
+    REDIS_URL: string;
     JWT_SECRET?: string | undefined;
     JWT_REFRESH_SECRET?: string | undefined;
-    REDIS_URL?: string | undefined;
     UPSTASH_REDIS_URL?: string | undefined;
     UPSTASH_REDIS_TOKEN?: string | undefined;
     POLYGON_RPC_URL?: string | undefined;
