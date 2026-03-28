@@ -9,13 +9,13 @@ import { createContext } from './trpc'
 import { appRouter } from './routers/index'
 import { env } from '@biffco/config'
 import { db } from '@biffco/db'
-import { VerticalRegistry } from '@biffco/core/vertical-engine'
+import { verticalRegistry } from '@biffco/core/vertical-engine'
 import { livestockVertical } from '@biffco/livestock'
 
 export type { AppRouter } from './routers/index'
 
 // --- MOCK VERTICAL PACK ---
-VerticalRegistry.register(livestockVertical)
+verticalRegistry.register(livestockVertical)
 
 const app = Fastify({ logger: { level: "info" } })
 

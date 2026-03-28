@@ -53,4 +53,28 @@ export class VerticalRegistry {
   getAllRules(): VerticalRules[] {
     return Array.from(this.packs.values()).map(p => p.rules)
   }
+
+  /**
+   * Alias de registerPack para compatibilidad web
+   */
+  register(pack: VerticalPack) {
+    this.registerPack(pack)
+  }
+
+  /**
+   * Alias de getPack para api
+   */
+  get(id: string) {
+    return this.getPack(id)
+  }
+
+  /**
+   * Listar verticales instaladas
+   */
+  listPacks(): VerticalPack[] {
+    return Array.from(this.packs.values())
+  }
 }
+
+// Global default instance used by API
+export const verticalRegistry = new VerticalRegistry()

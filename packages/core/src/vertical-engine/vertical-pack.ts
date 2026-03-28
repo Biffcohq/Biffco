@@ -32,16 +32,3 @@ export interface VerticalPack {
   initialize?(): Promise<void>
 }
 
-// ─── Registro Global de Verticales ────────────────────────────────
-export const VerticalRegistry = {
-  plugins: new Map<string, VerticalPack>(),
-  register(pack: VerticalPack) {
-    this.plugins.set(pack.id, pack)
-  },
-  get(id: string) {
-    return this.plugins.get(id)
-  },
-  listPacks() {
-    return Array.from(this.plugins.values())
-  }
-}

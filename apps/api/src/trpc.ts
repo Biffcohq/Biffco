@@ -1,7 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server'
 import type { FastifyRequest } from 'fastify'
 import { db } from '@biffco/db'
-import { VerticalRegistry } from '@biffco/core/vertical-engine'
+import { verticalRegistry } from '@biffco/core/vertical-engine'
 import type { WorkspaceId, WorkspaceMemberId } from '@biffco/shared'
 import { redis } from './redis'
 
@@ -11,7 +11,7 @@ export interface TRPCContext {
   readonly memberPermissions: readonly string[]
   readonly jti: string | null
   readonly db: typeof db
-  readonly verticalRegistry: typeof VerticalRegistry
+  readonly verticalRegistry: typeof verticalRegistry
   readonly request: FastifyRequest
 }
 
@@ -20,7 +20,7 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
   const authHeader = req.headers.authorization
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry: VerticalRegistry, request: req }
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req }
   }
 
   const token = authHeader.slice(7)
@@ -51,11 +51,11 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
       memberPermissions: payload.permissions,
       jti: payload.jti || null,
       db,
-      verticalRegistry: VerticalRegistry,
+      verticalRegistry,
       request: req
     }
   } catch {
-    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry: VerticalRegistry, request: req }
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req }
   }
 }
 
