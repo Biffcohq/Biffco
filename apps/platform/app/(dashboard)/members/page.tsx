@@ -77,7 +77,7 @@ export default function MembersPage() {
                   </td>
                 </tr>
               ) : (
-                members?.map((member) => (
+                members?.map((member: any) => (
                   <tr key={member.id} className="hover:bg-surface-raised/30 transition-colors cursor-default">
                     <td className="px-6 py-4 font-medium text-text-primary">
                       {member.personId}

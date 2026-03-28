@@ -1,6 +1,6 @@
 "use client"
 
-import { IconPackage, IconPlus, IconMapPin, IconBuildingStore } from '@tabler/icons-react'
+import { IconPlus, IconMapPin, IconBuildingStore } from '@tabler/icons-react'
 import { useState } from 'react'
 
 export default function FacilitiesPage() {
