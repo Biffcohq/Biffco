@@ -15,6 +15,7 @@ const baseSchema = z.object({
   WEB_URL: z.string().url(),
   PLATFORM_URL: z.string().url(),
   VERIFY_URL: z.string().url(),
+  REDIS_URL: z.string().url(),
 })
 
 // ─── Schema de variables opcionales (se agregan por fase) ───────────
@@ -24,7 +25,6 @@ const optionalSchema = z.object({
   JWT_REFRESH_SECRET: z.string().min(64).optional(),
   
   // Fase A.3 — Redis (Upstash en staging/prod, Docker local en dev)
-  REDIS_URL: z.string().optional(),
   UPSTASH_REDIS_URL: z.string().url().optional(),
   UPSTASH_REDIS_TOKEN: z.string().optional(),
   

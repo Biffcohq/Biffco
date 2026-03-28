@@ -3,11 +3,13 @@ import type { FastifyRequest } from 'fastify'
 import { db } from '@biffco/db'
 import { VerticalRegistry } from '@biffco/core/vertical-engine'
 import type { WorkspaceId, WorkspaceMemberId } from '@biffco/shared'
+import { redis } from './redis'
 
 export interface TRPCContext {
   readonly workspaceId: WorkspaceId | null
   readonly memberId: WorkspaceMemberId | null
   readonly memberPermissions: readonly string[]
+  readonly jti: string | null
   readonly db: typeof db
   readonly verticalRegistry: typeof VerticalRegistry
   readonly request: FastifyRequest
@@ -18,7 +20,7 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
   const authHeader = req.headers.authorization
 
   if (!authHeader?.startsWith("Bearer ")) {
-    return { workspaceId: null, memberId: null, memberPermissions: [], db, verticalRegistry: VerticalRegistry, request: req }
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry: VerticalRegistry, request: req }
   }
 
   const token = authHeader.slice(7)
@@ -28,7 +30,15 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
       workspaceId: string
       memberId: string
       permissions: string[]
+      jti?: string
     }>(token)
+
+    if (payload.jti) {
+      const isRevoked = await redis.get(`revoked:${payload.jti}`)
+      if (isRevoked) {
+        throw new Error("Token revoked")
+      }
+    }
 
     // Activar RLS para este request
     // Usamos execute() para inyectar este local session parameter.
@@ -39,12 +49,13 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
       workspaceId: payload.workspaceId as WorkspaceId,
       memberId: payload.memberId as WorkspaceMemberId,
       memberPermissions: payload.permissions,
+      jti: payload.jti || null,
       db,
       verticalRegistry: VerticalRegistry,
       request: req
     }
   } catch {
-    return { workspaceId: null, memberId: null, memberPermissions: [], db, verticalRegistry: VerticalRegistry, request: req }
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry: VerticalRegistry, request: req }
   }
 }
 

@@ -4,6 +4,8 @@ import { createId } from '@paralleldrive/cuid2'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { workspaces, workspaceMembers, persons, credentials } from '@biffco/db/schema'
 import { eq } from 'drizzle-orm'
+import { redis } from '../redis'
+import { Permission } from '@biffco/core/rbac'
 
 export const authRouter = router({
   register: publicProcedure
@@ -91,17 +93,31 @@ export const authRouter = router({
         })
       }
 
-      // 6. Generar el JWT
+      // 6. Generar el JWT con permisos
+      const pack = ctx.verticalRegistry.get(input.verticalId)
+      // Base permissions any member has
+      const finalPerms = new Set<string>(["events.read", "assets.read"])
+      
+      // If admin, grant all standard perms
+      if (input.initialRoles.includes("admin")) {
+        Object.values(Permission).forEach(p => finalPerms.add(p))
+        if (pack) {
+          pack.customPermissions.forEach(p => finalPerms.add(p))
+        }
+      }
+
       const accessToken = await ctx.request.server.jwt.sign({
         workspaceId,
         memberId,
-        permissions: ["assets.read", "events.append"], // Mocks por ahora
+        permissions: Array.from(finalPerms),
         wsIdx: input.wsIdx,
+        jti: createId(),
       }, { expiresIn: "15m" })
 
       const refreshToken = await ctx.request.server.jwt.sign({
         memberId,
         type: "refresh",
+        jti: createId(),
       }, { expiresIn: "30d" })
 
       return { accessToken, refreshToken, workspaceId, memberId }
@@ -142,23 +158,41 @@ export const authRouter = router({
       const workspaceId = member.workspaceId
       const memberId = member.id
       
+      // Construir permisos reales
+      const finalPerms = new Set<string>(["events.read", "assets.read"])
+      if (member.roles.includes("admin")) {
+        Object.values(Permission).forEach(p => finalPerms.add(p))
+        // Asumiendo que obtenemos el pack del workspace
+        const wsArr = await db.select().from(workspaces).where(eq(workspaces.id, member.workspaceId)).limit(1)
+        if (wsArr[0]) {
+           const pack = ctx.verticalRegistry.get(wsArr[0].verticalId)
+           if (pack) pack.customPermissions.forEach(p => finalPerms.add(p))
+        }
+      }
+
       const accessToken = await ctx.request.server.jwt.sign({
         workspaceId,
         memberId,
-        permissions: member.roles, // Asumiendo que roles dicta sus permisos por ahora
+        permissions: Array.from(finalPerms),
         wsIdx: 0,
+        jti: createId(),
       }, { expiresIn: "15m" })
 
       const refreshToken = await ctx.request.server.jwt.sign({
         memberId,
         type: "refresh",
+        jti: createId(),
       }, { expiresIn: "30d" })
 
       return { accessToken, refreshToken, workspaceId, memberId, personName: person.name }
     }),
 
   logout: protectedProcedure
-    .mutation(async () => {
+    .mutation(async ({ ctx }) => {
+      // Guardar el jti en redis (15 min expire)
+      if (ctx.jti) {
+        await redis.set(`revoked:${ctx.jti}`, "1", "EX", 900)
+      }
       return { ok: true }
     }),
 

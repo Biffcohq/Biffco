@@ -1,13 +1,22 @@
 "use client"
 
 import { IconPackage, IconFileCheck, IconActivity, IconAlertCircle } from '@tabler/icons-react'
+import { trpc } from '@/lib/trpc'
+import { Skeleton } from '@/app/components/ui/Skeleton'
+
 export default function PlatformRoot() {
+  const { data: workspace, isLoading } = trpc.workspaces.getProfile.useQuery()
+
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       
       {/* Header section */}
       <div className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold text-text-primary tracking-tight">Bienvenido a Biffco Corporation</h1>
+        {isLoading ? (
+          <Skeleton className="h-9 w-64 rounded-md" />
+        ) : (
+          <h1 className="text-3xl font-bold text-text-primary tracking-tight">Bienvenido a {workspace?.name}</h1>
+        )}
         <p className="text-text-secondary text-base">Aquí tienes un resumen de la actividad reciente en tu espacio.</p>
       </div>
 

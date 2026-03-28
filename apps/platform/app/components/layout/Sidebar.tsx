@@ -30,14 +30,14 @@ const navGroups: NavGroup[] = [
     label: "Gestión",
     items: [
       { label: "Mi Workspace", href: "/", icon: IconBuilding },
-      { label: "Equipo", href: "/equipo", icon: IconUsers },
+      { label: "Equipo", href: "/members", icon: IconUsers },
     ]
   },
   {
     label: "Operaciones",
     items: [
-      { label: "Assets", href: "/assets", icon: IconPackage },
-      { label: "Eventos", href: "/eventos", icon: IconFileCheck },
+      { label: "Facilities", href: "/facilities", icon: IconPackage },
+      { label: "Eventos", href: "/events", icon: IconFileCheck },
     ]
   },
   {
