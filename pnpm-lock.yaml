@@ -56,6 +56,9 @@ importers:
       '@biffco/db':
         specifier: workspace:^
         version: link:../../packages/db
+      '@biffco/livestock':
+        specifier: workspace:^
+        version: link:../../packages/verticals/livestock
       '@biffco/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -437,6 +440,22 @@ importers:
       vitest:
         specifier: ^4.1.2
         version: 4.1.2(@types/node@25.5.0)(@vitest/browser-playwright@4.1.2)(vite@5.4.21(@types/node@25.5.0))
+
+  packages/verticals/livestock:
+    dependencies:
+      '@biffco/core':
+        specifier: workspace:*
+        version: link:../../core
+      '@biffco/shared':
+        specifier: workspace:*
+        version: link:../../shared
+    devDependencies:
+      '@biffco/config':
+        specifier: workspace:*
+        version: link:../../config
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
 packages:
 
