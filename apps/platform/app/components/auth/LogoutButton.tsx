@@ -3,7 +3,6 @@
 import { IconLogout } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
-import { useUIStore } from '@/app/stores/useUIStore'
 
 export function LogoutButton() {
   const router = useRouter()
