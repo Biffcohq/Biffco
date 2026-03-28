@@ -16,7 +16,7 @@ export function LogoutButton() {
       // Redireccionar al login
       router.push('/login')
     },
-    onError: (err) => {
+    onError: (err: any) => {
       console.error("Logout error", err)
       // Incluso si falla, forzamos salida localmente
       router.push('/login')
