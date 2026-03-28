@@ -5,9 +5,14 @@ import { IconArrowLeft, IconKey, IconShieldLock, IconCopy, IconCheck, IconLoader
 import * as bip39 from 'bip39'
 import { derivePath } from 'ed25519-hd-key'
 import _sodium from 'libsodium-wrappers'
+import { useAuthStore } from '../../stores/useAuthStore'
+import { useRouter } from 'next/navigation'
 
 export function Step5Mnemonic() {
   const store = useSignupStore()
+  const setSession = useAuthStore(s => s.setSession)
+  const router = useRouter()
+  
   const [mnemonic, setMnemonic] = useState('')
   const [copied, setCopied] = useState(false)
   const [hasBackedUp, setHasBackedUp] = useState(false)
@@ -16,10 +21,16 @@ export function Step5Mnemonic() {
   
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: (data: any) => {
-      // En producción: guardar keys criptográficos en un vault seguro o IndexedDB cifrado con el password
-      // Por Fase A: Redirigimos al Dashboard
+      // Guardar sesión tras el registro
+      setSession({
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        workspaceId: data.workspaceId,
+        memberId: data.memberId,
+        personName: store.adminName,
+      })
       alert(`¡Workspace Creado! Bienvenido.\nTu Member ID es: ${data.memberId}`)
-      window.location.href = '/' // Temporary redirect to landing until /app is ready
+      router.push('/')
     },
     onError: (error: any) => {
       alert("Error en el registro: " + error.message)

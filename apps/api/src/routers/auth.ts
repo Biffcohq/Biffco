@@ -107,16 +107,54 @@ export const authRouter = router({
       return { accessToken, refreshToken, workspaceId, memberId }
     }),
 
-  // ─── LOGIN & LOGOUT MOCKS FASE A.2 ────────────────────────────
+  // ─── LOGIN & LOGOUT ───────────────────────────────────────────
   login: publicProcedure
     .input(z.object({
       email: z.string().email(),
       passwordHash: z.string().min(64),
-      workspaceSlug: z.string(),
     }))
-    .mutation(async () => {
-      // Mock login until fully baked in B.1
-      return { accessToken: "mock_jwt", refreshToken: "mock_refresh" }
+    .mutation(async ({ input, ctx }) => {
+      const { db } = ctx
+
+      // 1. Encontrar la persona
+      const personArr = await db.select().from(persons).where(eq(persons.email, input.email)).limit(1)
+      const person = personArr[0]
+      if (!person) {
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" })
+      }
+
+      // 2. Verificar el hash del password
+      const credArr = await db.select().from(credentials).where(eq(credentials.personId, person.id)).limit(1)
+      const cred = credArr[0]
+      if (!cred || cred.passwordHash !== input.passwordHash) {
+        // Zero-Knowledge Proof: Comprobamos el hash enviado cliente vs hash guardado servidor
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" })
+      }
+
+      // 3. Obtener el workspace primario del usuario
+      const memberArr = await db.select().from(workspaceMembers).where(eq(workspaceMembers.personId, person.id)).limit(1)
+      const member = memberArr[0]
+      if (!member) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Usuario sin espacios de trabajo activos" })
+      }
+
+      // 4. Generar Tokens
+      const workspaceId = member.workspaceId
+      const memberId = member.id
+      
+      const accessToken = await ctx.request.server.jwt.sign({
+        workspaceId,
+        memberId,
+        permissions: member.roles, // Asumiendo que roles dicta sus permisos por ahora
+        wsIdx: 0,
+      }, { expiresIn: "15m" })
+
+      const refreshToken = await ctx.request.server.jwt.sign({
+        memberId,
+        type: "refresh",
+      }, { expiresIn: "30d" })
+
+      return { accessToken, refreshToken, workspaceId, memberId, personName: person.name }
     }),
 
   logout: protectedProcedure
