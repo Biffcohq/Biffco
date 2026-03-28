@@ -2,19 +2,15 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createId } from '@paralleldrive/cuid2'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
-import { workspaces, workspaceMembers } from '@biffco/db/schema'
+import { workspaces, workspaceMembers, persons, credentials } from '@biffco/db/schema'
 import { eq } from 'drizzle-orm'
 
-
 export const authRouter = router({
-  // ─── REGISTER ─────────────────────────────────────────────────
-  // El signup se completa en 8 pasos en el frontend.
-  // Este endpoint procesa el último paso cuando el usuario confirma el mnemonic.
-  // La clave PÚBLICA se envía aquí — la privada NUNCA llega al servidor.
   register: publicProcedure
     .input(z.object({
       workspaceName: z.string().min(2).max(100),
       workspaceSlug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/),
+      country: z.string().length(2),
       verticalId: z.string().min(1),  
       initialRoles: z.array(z.string()).min(1),
       personName: z.string().min(2).max(100),
@@ -26,9 +22,6 @@ export const authRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { db } = ctx
       
-      // NOTA MOCK FASE A.1: Aún no cargamos verticals reales,
-      // Usaremos validaciones de MOCK.
-
       // 3. Verificar que el slug no está tomado
       const existing = await db.select()
         .from(workspaces)
@@ -39,29 +32,64 @@ export const authRouter = router({
         throw new TRPCError({ code: "CONFLICT", message: "El slug ya está en uso" })
       }
 
-      // 4. Crear el Workspace
-      const workspaceId = createId()
-      await db.insert(workspaces).values({
-        id: workspaceId,
-        name: input.workspaceName,
-        slug: input.workspaceSlug,
-        verticalId: input.verticalId,
-        plan: "free",
-        settings: {},
-      })
+      // Check if person email already exists
+      const existingPerson = await db.select()
+        .from(persons)
+        .where(eq(persons.email, input.email))
+        .limit(1)
+        
+      if (existingPerson.length > 0) {
+        throw new TRPCError({ code: "CONFLICT", message: "El correo electrónico ya está registrado" })
+      }
 
-      // 5. Crear el WorkspaceMember con la clave PÚBLICA (Aquí muere el conocimiento de PrivateKeys)
+      const workspaceId = createId()
+      const personId = createId()
       const memberId = createId()
-      const personId = createId() // Mock for person reference
-      await db.insert(workspaceMembers).values({
-        id: memberId,
-        workspaceId,
-        personId,
-        publicKey: input.publicKey, 
-        roles: input.initialRoles,
-        status: "active",
-        acceptedAt: new Date(),
-      })
+      const credentialId = createId()
+
+      try {
+        await db.transaction(async (tx) => {
+          // 4. Create Person
+          await tx.insert(persons).values({
+            id: personId,
+            name: input.personName,
+            email: input.email,
+          })
+          
+          // 5. Create Credentials
+          await tx.insert(credentials).values({
+            id: credentialId,
+            personId,
+            passwordHash: input.passwordHash,
+          })
+
+          // 6. Create Workspace
+          await tx.insert(workspaces).values({
+            id: workspaceId,
+            name: input.workspaceName,
+            slug: input.workspaceSlug,
+            verticalId: input.verticalId,
+            plan: "free",
+            settings: { country: input.country },
+          })
+
+          // 7. Create WorkspaceMember
+          await tx.insert(workspaceMembers).values({
+            id: memberId,
+            workspaceId,
+            personId,
+            publicKey: input.publicKey, 
+            roles: input.initialRoles,
+            status: "active",
+            acceptedAt: new Date(),
+          })
+        })
+      } catch (err: any) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `DB_ERR: ${err?.message || 'unknown'} | Code: ${err?.code || err?.routine} | Detail: ${err?.detail}`
+        })
+      }
 
       // 6. Generar el JWT
       const accessToken = await ctx.request.server.jwt.sign({

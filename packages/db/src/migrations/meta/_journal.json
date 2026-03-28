@@ -15,6 +15,13 @@
       "when": 1774626727313,
       "tag": "0001_naive_starjammers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774660823095,
+      "tag": "0002_huge_jamie_braddock",
+      "breakpoints": true
     }
   ]
 }

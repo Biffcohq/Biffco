@@ -17,7 +17,6 @@ export function Step4Admin() {
   const { adminName, adminEmail, setAdmin } = store
   
   const [isHashing, setIsHashing] = useState(false)
-  const [success, setSuccess] = useState(false)
 
   const form = useForm<z.infer<typeof step4Schema>>({
     resolver: zodResolver(step4Schema),
@@ -31,61 +30,19 @@ export function Step4Admin() {
       await _sodium.ready
       const sodium = _sodium
       
-      // Argon2id hash - Client Side Zero Knowledge 
-      // biffco API doesn't know the plain password
-      const passwordHashResult = sodium.crypto_pwhash_str(
-        data.password, 
-        sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE, 
-        sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE
-      )
-      
-      const pwd = typeof passwordHashResult === 'string' 
-                  ? passwordHashResult 
-                  : new TextDecoder().decode(passwordHashResult)
+      // BLAKE2b hash - Client Side Zero Knowledge (Fallback from Argon2 for non-sumo builds)
+      const passwordBytes = new TextEncoder().encode(data.password)
+      const hashBytes = sodium.crypto_generichash(64, passwordBytes, null)
+      const pwd = sodium.to_hex(hashBytes)
 
-      setAdmin({ adminName: data.adminName, adminEmail: data.adminEmail })
-      console.log('--- WIZARD COMPLETED ---')
-      console.log('Payload Ready for API (Task-028):', {
-        workspaceName: store.workspaceName,
-        slug: store.workspaceSlug,
-        country: store.country,
-        verticalId: store.verticalId,
-        roles: store.initialRoles,
-        adminName: data.adminName,
-        adminEmail: data.adminEmail,
-        passwordHash: pwd
-      })
-      setSuccess(true)
-      
-      // Simulate API call for now since we are in Sprint A.2 Task-027
-      setTimeout(() => alert("El password hash generado es:\n" + pwd.substring(0, 30) + "..."), 500)
+      setAdmin({ adminName: data.adminName, adminEmail: data.adminEmail, passwordHash: pwd })
+      store.nextStep()
     } catch (e) {
       console.error(e)
-      alert("Error en criptografía cliente")
+      alert("Error estableciendo credenciales")
     } finally {
       setIsHashing(false)
     }
-  }
-
-  if (success) {
-    return (
-      <div className="flex flex-col h-full items-center justify-center animate-in fade-in zoom-in duration-300 text-center">
-        <div className="w-16 h-16 bg-success-subtle text-success rounded-full flex items-center justify-center mb-6">
-          <IconFingerprint size={32} stroke={1.5} />
-        </div>
-        <h2 className="text-2xl font-bold text-navy mb-2">¡Identidad Criptográfica Generada!</h2>
-        <p className="text-text-secondary text-sm mb-6 max-w-sm">
-          Tu Workspace ha concluido la fase de recolección de datos local.
-          Se ha impreso en la consola el Payload con el Hash Argon2id.
-        </p>
-        <button 
-          onClick={() => window.location.href = '/'}
-          className="inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-95 h-10 px-4 text-sm bg-primary hover:bg-primary-hover text-white"
-        >
-          Volver a Landing
-        </button>
-      </div>
-    )
   }
 
   return (
@@ -158,12 +115,12 @@ export function Step4Admin() {
           <button 
             type="submit" 
             disabled={isHashing}
-            className="inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-95 h-10 px-4 text-sm bg-success hover:bg-success/90 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 rounded-full font-medium transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-95 h-10 px-6 text-sm bg-primary hover:bg-primary-hover text-white disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-primary/30"
           >
             {isHashing ? (
               <><IconLoader2 size={16} stroke={2} className="animate-spin" /> Hasheando...</>
             ) : (
-              <><IconFingerprint size={16} stroke={2} /> Finalizar Registro</>
+              <><IconFingerprint size={16} stroke={2} /> Siguiente Paso</>
             )}
           </button>
         </div>

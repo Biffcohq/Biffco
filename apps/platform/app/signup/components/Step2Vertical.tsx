@@ -1,6 +1,6 @@
 import { useSignupStore } from '../../stores/useSignupStore'
 import { trpc } from '../../../lib/trpc'
-import { ArrowLeft, ArrowRight, Layers, BoxSelect, CheckCircle2 } from 'lucide-react'
+import { IconArrowLeft, IconArrowRight, IconLayersLinked, IconBoxMargin, IconCircleCheckFilled } from '@tabler/icons-react'
 
 export function Step2Vertical() {
   const { verticalId, setVertical, nextStep, prevStep } = useSignupStore()
@@ -10,7 +10,7 @@ export function Step2Vertical() {
     <div className="flex flex-col h-full animate-in fade-in duration-500">
       <div className="mb-8">
         <h2 className="text-3xl font-extrabold flex items-center gap-3 text-navy mb-2 tracking-tight">
-          <Layers className="text-primary opacity-90 h-7 w-7" /> 
+          <IconLayersLinked className="text-primary opacity-90 h-7 w-7" stroke={1.5} />
           Elige la Industria Base
         </h2>
         <p className="text-text-secondary text-sm font-medium leading-relaxed max-w-sm">
@@ -46,7 +46,7 @@ export function Step2Vertical() {
             }`}
           >
             <div className={`p-3 rounded-xl shrink-0 transition-colors ${isSelected ? 'bg-primary text-white shadow-md shadow-primary/30' : 'bg-surface-raised border border-border/50 text-text-muted'}`}>
-              <BoxSelect className="w-6 h-6" />
+              <IconBoxMargin className="w-6 h-6" stroke={1.5} />
             </div>
             <div className="flex-1 mt-0.5">
               <h3 className={`font-bold text-lg mb-1 leading-none ${isSelected ? 'text-primary' : 'text-navy'}`}>{vertical.name}</h3>
@@ -56,7 +56,7 @@ export function Step2Vertical() {
               </p>
             </div>
             {isSelected && (
-              <CheckCircle2 className="absolute top-5 right-5 text-primary w-6 h-6 animate-in zoom-in duration-200" />
+              <IconCircleCheckFilled className="absolute top-5 right-5 text-primary w-6 h-6 animate-in zoom-in duration-200" />
             )}
           </button>
         )})}
@@ -67,7 +67,7 @@ export function Step2Vertical() {
           onClick={prevStep}
           className="h-12 px-6 text-sm font-bold text-text-muted hover:text-navy hover:bg-surface-raised rounded-full transition-all"
         >
-          <ArrowLeft className="w-4 h-4 inline-block mr-2" /> Atrás
+          <IconArrowLeft className="w-4 h-4 inline-block mr-2" stroke={2} /> Atrás
         </button>
 
         <button 
@@ -80,7 +80,7 @@ export function Step2Vertical() {
           }`}
         >
           Continuar
-          <ArrowRight className="w-5 h-5" />
+          <IconArrowRight className="w-5 h-5" stroke={2} />
         </button>
       </div>
     </div>

@@ -9,6 +9,7 @@ const Step1Organization = dynamic(() => import('./components/Step1Organization')
 const Step2Vertical = dynamic(() => import('./components/Step2Vertical').then(m => m.Step2Vertical), { ssr: false })
 const Step3Roles = dynamic(() => import('./components/Step3Roles').then(m => m.Step3Roles), { ssr: false })
 const Step4Admin = dynamic(() => import('./components/Step4Admin').then(m => m.Step4Admin), { ssr: false })
+const Step5Mnemonic = dynamic(() => import('./components/Step5Mnemonic').then(m => m.Step5Mnemonic), { ssr: false })
 
 // Bypass TS strict prop check on framer-motion v12 with NextJS
 const MotionDiv = motion.div as any;
@@ -26,7 +27,7 @@ export default function SignupPage() {
           </div>
           
           <div className="flex items-center gap-1.5 w-full max-w-sm mx-auto px-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+            {[1, 2, 3, 4, 5].map(s => (
               <div 
                 key={s} 
                 className={`h-1 flex-1 rounded-full transition-all duration-300 ${
@@ -37,7 +38,7 @@ export default function SignupPage() {
           </div>
           <div className="flex justify-center w-full max-w-sm pt-1">
             <p className="text-xs text-text-secondary font-medium uppercase tracking-widest font-mono">
-              Paso {step} de 8
+              Paso {step} de 5
             </p>
           </div>
         </header>
@@ -49,12 +50,13 @@ export default function SignupPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0, transition: { duration: 0.3 } }}
               exit={{ opacity: 0, x: -20, transition: { duration: 0.2 } }}
-              className="w-full"
+              className="h-full"
             >
               {step === 1 && <Step1Organization />}
               {step === 2 && <Step2Vertical />}
               {step === 3 && <Step3Roles />}
               {step === 4 && <Step4Admin />}
+              {step === 5 && <Step5Mnemonic />}
             </MotionDiv>
           </AnimatePresence>
         </div>

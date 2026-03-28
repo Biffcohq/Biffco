@@ -1,5 +1,6 @@
 import { pgTable, text, timestamp, jsonb, boolean, pgEnum, index } from 'drizzle-orm/pg-core'
 import { createId } from '@paralleldrive/cuid2'
+import { persons } from './persons'
 
 export const workspacePlanEnum = pgEnum('workspace_plan', ['free', 'starter', 'pro', 'enterprise'])
 
@@ -19,7 +20,7 @@ export const workspaces = pgTable("workspaces", {
 export const workspaceMembers = pgTable("workspace_members", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),
   workspaceId:  text('workspace_id').notNull().references(() => workspaces.id),
-  personId:     text('person_id').notNull(),  // FK a persons (se agrega en Fase A)
+  personId:     text('person_id').notNull().references(() => persons.id),
   publicKey:    text('public_key').notNull(),  // Ed25519 public key hex
   roles:        text('roles').array().notNull().default(['{}']),
   status:       text('status').notNull().default('active'),  // active|suspended|revoked
