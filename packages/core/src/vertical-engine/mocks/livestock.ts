@@ -12,6 +12,11 @@ export const livestockMockPack: VerticalPack = {
     "members.manage",
     "facilities.manage"
   ],
+  actorTypes: [
+    { id: "admin", name: "Administrador / Root" },
+    { id: "productor", name: "Productor / Criador" },
+    { id: "frigorifico", name: "Planta Frigorífica" }
+  ],
   rules: {
     validateEvent: async (event) => {
       // Mock basic verification

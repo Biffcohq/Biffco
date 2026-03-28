@@ -22,6 +22,9 @@ export interface VerticalPack {
   /** Permisos adicionales específicos aportados por la vertical */
   customPermissions: readonly string[]
   
+  /** Lista de capacidades o roles que pueden seleccionar los workspaces (Opcional por ahora) */
+  actorTypes?: { id: string, name: string }[]
+  
   /** Motor de reglas inyectables al Event Store (Hooks) */
   rules: VerticalRules
   

@@ -16,7 +16,7 @@ export const authRouter = router({
       verticalId: z.string().min(1),  
       initialRoles: z.array(z.string()).min(1),
       personName: z.string().min(2).max(100),
-      email: z.string().email(),
+      email: z.string().email().toLowerCase(),
       passwordHash: z.string().min(64), // Hash Argon2id del password
       publicKey: z.string().min(64).max(130), // Ed25519 public key hex
       wsIdx: z.number().int().min(0),          
@@ -126,7 +126,7 @@ export const authRouter = router({
   // ─── LOGIN & LOGOUT ───────────────────────────────────────────
   login: publicProcedure
     .input(z.object({
-      email: z.string().email(),
+      email: z.string().email().toLowerCase(),
       passwordHash: z.string().min(64),
     }))
     .mutation(async ({ input, ctx }) => {
