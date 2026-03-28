@@ -51,7 +51,11 @@ const buildServer = async () => {
   const allowedOrigins = [env.PLATFORM_URL, env.VERIFY_URL, env.WEB_URL].filter(Boolean) as string[]
   await app.register(cors, { origin: allowedOrigins.length > 0 ? allowedOrigins : "*" })
 
-  await app.register(helmet, { contentSecurityPolicy: false })
+  await app.register(helmet, { 
+    contentSecurityPolicy: false,
+    crossOriginResourcePolicy: false,
+    crossOriginOpenerPolicy: false
+  })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
 
   // JWT Setup.
