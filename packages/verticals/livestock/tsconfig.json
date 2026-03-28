@@ -1,0 +1,5 @@
+{
+  "extends": "@biffco/config/tsconfig.json",
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

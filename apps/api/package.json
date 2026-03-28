@@ -15,6 +15,7 @@
     "@biffco/config": "workspace:^",
     "@biffco/core": "workspace:^",
     "@biffco/db": "workspace:^",
+    "@biffco/livestock": "workspace:^",
     "@biffco/shared": "workspace:^",
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",

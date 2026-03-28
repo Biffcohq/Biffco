@@ -1,6 +1,6 @@
-import type { VerticalPack } from '../vertical-pack'
+import type { VerticalPack } from '@biffco/core/vertical-engine'
 
-export const livestockMockPack: VerticalPack = {
+export const livestockVertical: VerticalPack = {
   id: "bif-bovine-mock",
   version: "1.0.0",
   name: "Biffco Bovine (Mock)",

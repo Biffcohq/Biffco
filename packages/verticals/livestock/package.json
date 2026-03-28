@@ -1,0 +1,21 @@
+{
+  "name": "@biffco/livestock",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "dev": "tsc -w",
+    "lint": "eslint \"src/**/*.ts*\"",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@biffco/core": "workspace:*",
+    "@biffco/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@biffco/config": "workspace:*",
+    "typescript": "^5.0.0"
+  }
+}
