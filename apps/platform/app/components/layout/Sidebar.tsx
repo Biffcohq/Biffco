@@ -14,6 +14,8 @@ import {
   IconShieldCheck
 } from '@tabler/icons-react'
 import Link from 'next/link'
+import { LogoutButton } from '../auth/LogoutButton'
+import { trpc } from '@/lib/trpc'
 import { usePathname } from 'next/navigation'
 
 interface NavGroup {
@@ -53,6 +55,7 @@ export function Sidebar() {
   const isCollapsed = useUIStore(s => s.isSidebarCollapsed)
   const toggle = useUIStore(s => s.toggleSidebar)
   const pathname = usePathname()
+  const { data: profile } = trpc.workspaces.getProfile.useQuery()
 
   return (
     <aside 
@@ -129,19 +132,17 @@ export function Sidebar() {
       {/* Footer User Profile */}
       <div className="p-3 border-t border-white/10 shrink-0 mx-2 mb-2 rounded-lg bg-surface-overlay/30 mt-auto">
         <div className="flex items-center gap-3 overflow-hidden">
-          <div className="shrink-0 rounded-full bg-orange size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm">
-            AL
+          <div className="shrink-0 rounded-full bg-orange size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
+            {profile?.name ? profile.name.substring(0,2) : "WK"}
           </div>
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-sm font-medium text-white truncate">Alice Adm</span>
-              <span className="text-xs text-white/50 truncate">alice@biffco.co</span>
+              <span className="text-sm font-medium text-white truncate">{profile?.name || "Cargando..."}</span>
+              <span className="text-xs text-white/50 truncate">Workspace</span>
             </div>
           )}
           {!isCollapsed && (
-            <button className="ml-auto text-white/50 hover:text-white shrink-0 cursor-pointer p-1">
-              <IconLogout size={16} stroke={1.5} />
-            </button>
+            <LogoutButton />
           )}
         </div>
       </div>
