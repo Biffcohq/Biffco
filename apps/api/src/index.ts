@@ -56,6 +56,10 @@ const buildServer = async () => {
     }
   })
 
+  app.get('/', async () => {
+    return { status: "ok", service: "Biffco API" }
+  })
+
   return app
 }
 

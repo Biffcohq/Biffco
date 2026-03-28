@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSignupStore } from '../../stores/useSignupStore'
 import { IconArrowRight, IconEye, IconEyeOff, IconAlertCircle, IconLoader2, IconCheck } from '@tabler/icons-react'
 import { trpc } from '../../../lib/trpc'
-import { SocialAuthPrompt } from '../auth/SocialAuthPrompt'
+import { SocialAuthPrompt } from '../../components/auth/SocialAuthPrompt'
 
 export function Step1Credentials() {
   const store = useSignupStore()
