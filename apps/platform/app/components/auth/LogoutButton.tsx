@@ -3,7 +3,7 @@
 import { IconLogout } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
-
+import { useAuthStore } from '@/app/stores/useAuthStore'
 export function LogoutButton() {
   const router = useRouter()
   const utils = trpc.useUtils()
@@ -11,14 +11,13 @@ export function LogoutButton() {
   
   const logout = trpc.auth.logout.useMutation({
     onSuccess: () => {
-      // Limpiar el cache de trpc
       utils.client.clear()
-      // Redireccionar al login
+      useAuthStore.getState().clearSession() // Important: clears Zustand state
       router.push('/login')
     },
     onError: (err: any) => {
       console.error("Logout error", err)
-      // Incluso si falla, forzamos salida localmente
+      useAuthStore.getState().clearSession() 
       router.push('/login')
     }
   })

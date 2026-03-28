@@ -16,6 +16,18 @@ export function Providers({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/trpc',
           async headers() {
+            if (typeof window !== 'undefined') {
+              const storageStr = localStorage.getItem('biffco-auth-storage')
+              if (storageStr) {
+                 try {
+                   const parsed = JSON.parse(storageStr)
+                   const token = parsed?.state?.accessToken
+                   if (token) {
+                     return { Authorization: `Bearer ${token}` }
+                   }
+                 } catch (e) {}
+              }
+            }
             return {}
           },
         }),
