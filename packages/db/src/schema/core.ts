@@ -28,9 +28,21 @@ export const anchorsLog = pgTable("anchors_log", {
   merkleRoot:     text('merkle_root').notNull(),
   ipfsCid:        text('ipfs_cid'),
   eventsCount:    text('events_count').notNull(),
+  network:        text('network').notNull().default('polygon-amoy'),
+  status:         text('status').notNull().default('confirmed'),
   createdAt:      timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
 }, (table) => [
   index('idx_anchors_log_workspace_id').on(table.workspaceId)
+])
+
+// Tabla intermedia para vincular qué eventos corresponden a qué anclaje
+// Evitamos agregar `anchorId` a `domain_events` para respetar el Trigger Append-Only Inmutable.
+export const anchoredEvents = pgTable("anchored_events", {
+  eventId:  text('event_id').notNull().references(() => domainEvents.id),
+  anchorId: text('anchor_id').notNull().references(() => anchorsLog.id),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow()
+}, (table) => [
+  index('idx_anchored_events_anchor').on(table.anchorId)
 ])
 
 export const holds = pgTable("holds", {

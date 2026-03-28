@@ -31,6 +31,7 @@ const optionalSchema = z.object({
   // Fase A.3 — Blockchain
   POLYGON_RPC_URL: z.string().url().optional(),
   POLYGON_PRIVATE_KEY: z.string().optional(),
+  SIMPLE_ANCHOR_ADDRESS: z.string().optional(),
   
   // Fase B.1 — Email
   RESEND_API_KEY: z.string().optional(),
@@ -43,6 +44,7 @@ const optionalSchema = z.object({
   
   // Fase A.3 — Observabilidad
   SENTRY_DSN: z.string().url().optional(),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
 })
 
 const envSchema = baseSchema.merge(optionalSchema)

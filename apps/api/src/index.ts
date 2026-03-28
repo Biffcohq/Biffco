@@ -1,4 +1,8 @@
 import 'dotenv/config'
+import './instrument'
+import './telemetry'
+import './workers/anchor'
+
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
@@ -49,7 +53,7 @@ const buildServer = async () => {
     try {
       // Verificar DB Connection.
       await db.execute(`SELECT 1`)
-      return { status: "ok", db: "connected", api_version: "v0.1.0-A.2" }
+      return { status: "ok", db: "connected", api_version: "v0.1.0-A.3" }
     } catch (error) {
       app.log.error(error, "Error conectando a db en /health:")
       return { status: "degraded", db: "error" }

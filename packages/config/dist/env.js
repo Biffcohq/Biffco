@@ -28,6 +28,7 @@ const optionalSchema = zod_1.z.object({
     // Fase A.3 — Blockchain
     POLYGON_RPC_URL: zod_1.z.string().url().optional(),
     POLYGON_PRIVATE_KEY: zod_1.z.string().optional(),
+    SIMPLE_ANCHOR_ADDRESS: zod_1.z.string().optional(),
     // Fase B.1 — Email
     RESEND_API_KEY: zod_1.z.string().optional(),
     // Fase B.3 — Storage
@@ -37,6 +38,7 @@ const optionalSchema = zod_1.z.object({
     AWS_REGION: zod_1.z.string().optional(),
     // Fase A.3 — Observabilidad
     SENTRY_DSN: zod_1.z.string().url().optional(),
+    OTEL_EXPORTER_OTLP_ENDPOINT: zod_1.z.string().url().optional(),
 });
 const envSchema = baseSchema.merge(optionalSchema);
 // ─── Parsear y exportar ──────────────────────────────────────────────

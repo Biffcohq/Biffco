@@ -13,12 +13,14 @@ export declare const env: {
     UPSTASH_REDIS_TOKEN?: string | undefined;
     POLYGON_RPC_URL?: string | undefined;
     POLYGON_PRIVATE_KEY?: string | undefined;
+    SIMPLE_ANCHOR_ADDRESS?: string | undefined;
     RESEND_API_KEY?: string | undefined;
     AWS_S3_BUCKET?: string | undefined;
     AWS_ACCESS_KEY_ID?: string | undefined;
     AWS_SECRET_ACCESS_KEY?: string | undefined;
     AWS_REGION?: string | undefined;
     SENTRY_DSN?: string | undefined;
+    OTEL_EXPORTER_OTLP_ENDPOINT?: string | undefined;
 };
 export type Env = typeof env;
 //# sourceMappingURL=env.d.ts.map

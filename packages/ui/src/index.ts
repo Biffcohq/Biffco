@@ -12,7 +12,7 @@ export * from './components/Toaster'
 export * from './domain/SignatureBadge'
 export * from './domain/EventTimeline'
 export * from './domain/SyncStatusBadge'
-export * from './domain/DAGVisualizer'
 export * from './domain/ChainOfCustodyView'
+export * from './components/BlockchainAnchorBadge'
 
 export * from './lib/utils'

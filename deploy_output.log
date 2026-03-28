@@ -1,0 +1,7 @@
+
+> @biffco/contracts@0.1.0 deploy:amoy C:\Users\weare\Documents\Projects\Biffco\packages\contracts
+> hardhat run scripts/deploy.ts --network amoy
+
+Desplegando contratos con la cuenta: 0xdBBBF5E1cCc8F5A4793591D07B4A0f21297E4cb9
+SimpleAnchor desplegado en: 0x59Dd537fB35ad359b3B69B99e9FC91ECC4820b9E
+Recuerda agregar esta direcci├│n a la variables de entorno como: SIMPLE_ANCHOR_ADDRESS
