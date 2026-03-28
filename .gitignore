@@ -8,3 +8,6 @@ storybook-static
 .env
 .env.*
 !.env.example
+
+.next
+.next/

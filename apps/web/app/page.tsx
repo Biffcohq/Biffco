@@ -1,7 +1,23 @@
-// Bumping file to trigger Vercel deployment cache bust
 export default function LandingPage() {
+  const platformUrl = process.env.NEXT_PUBLIC_PLATFORM_URL || 'http://localhost:3000'
+
   return (
     <main className="flex-1 flex flex-col items-center">
+      {/* Header */}
+      <header className="w-full max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="font-bold text-2xl tracking-tighter text-[var(--color-navy)]">
+          BIFFCO
+        </div>
+        <div className="flex items-center gap-4">
+          <a href={`${platformUrl}/login`} className="text-sm font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors">
+            Log in
+          </a>
+          <a href={`${platformUrl}/signup`} className="h-9 px-4 text-sm rounded-full font-medium inline-flex items-center justify-center transition-all duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]/30 active:scale-95 bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-sm">
+            Sign up
+          </a>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="w-full max-w-7xl mx-auto px-6 py-20 flex flex-col items-center text-center gap-8">
         <div className="inline-flex items-center gap-2 rounded-full py-2 px-4 bg-[var(--color-primary-subtle)] text-[var(--color-primary)] font-medium text-sm border border-[var(--color-primary)]/20 shadow-sm animate-in fade-in duration-500">

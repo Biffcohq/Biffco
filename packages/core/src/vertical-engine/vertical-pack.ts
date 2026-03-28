@@ -37,5 +37,8 @@ export const VerticalRegistry = {
   },
   get(id: string) {
     return this.plugins.get(id)
+  },
+  listPacks() {
+    return Array.from(this.plugins.values())
   }
 }

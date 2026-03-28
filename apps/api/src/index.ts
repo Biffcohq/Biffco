@@ -9,6 +9,39 @@ import { createContext } from './trpc'
 import { appRouter } from './routers/index'
 import { env } from '@biffco/config'
 import { db } from '@biffco/db'
+import { VerticalRegistry } from '@biffco/core/vertical-engine'
+
+export type { AppRouter } from './routers/index'
+
+// --- MOCK VERTICAL PACK ---
+VerticalRegistry.register({
+  id: "bif-bovine",
+  name: "Ganadería Bovina",
+  version: "1.0.0",
+  customPermissions: [],
+  rules: { validateEvent: async () => ({ ok: true }) },
+  facilityLabel: "Establecimiento",
+  zoneLabel: "Lote",
+  penLabel: "Corral",
+  assetLabel: "Animal",
+  groupLabel: "Tropa",
+  facilityTypes: ["campo", "feedlot"],
+  zoneTypes: ["pastura", "corral"],
+  penTypes: [],
+  actorTypes: [
+    { id: "producer", name: "Productor", permissions: [] },
+    { id: "vet", name: "Veterinario / SENASA", permissions: [] }
+  ],
+  assetTypes: [],
+  eventCatalog: [],
+  transformRules: [],
+  splitRules: [],
+  mergeRules: [],
+  uiSchemas: {},
+  geoRequirements: true,
+  complianceFrameworks: ["eudr"],
+  projections: []
+} as any)
 
 const app = Fastify({ logger: { level: "info" } })
 

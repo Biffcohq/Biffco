@@ -9,14 +9,30 @@
     "lint": "echo 'Skip until Eslint 9 support'"
   },
   "dependencies": {
+    "@biffco/api": "workspace:^",
+    "@biffco/core": "workspace:^",
+    "@hookform/resolvers": "^5.2.2",
+    "@tabler/icons-react": "^3.41.0",
+    "@tanstack/react-query": "^5.95.2",
+    "@trpc/client": "^11.15.1",
+    "@trpc/react-query": "^11.15.1",
+    "framer-motion": "^12.38.0",
+    "libsodium-wrappers": "^0.8.2",
     "next": "14.2.35",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "react-hook-form": "^7.72.0",
+    "zod": "^3.23.8",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@types/node": "^22.x",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "autoprefixer": "^10.4.27",
+    "postcss": "^8.5.8",
+    "tailwindcss": "^3.4.19",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.x"
   }
 }

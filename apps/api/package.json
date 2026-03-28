@@ -2,6 +2,8 @@
   "name": "@biffco/api",
   "version": "0.1.0",
   "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "dev": "cross-env PORT=3001 tsx watch src/index.ts",
