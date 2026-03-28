@@ -1,3 +1,4 @@
+"use client"
 import { useSignupStore } from '../../stores/useSignupStore'
 import { trpc } from '../../../lib/trpc'
 import { IconArrowLeft, IconArrowRight, IconLayersLinked, IconBoxMargin, IconCircleCheckFilled } from '@tabler/icons-react'

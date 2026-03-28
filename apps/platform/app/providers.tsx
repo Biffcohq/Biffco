@@ -16,7 +16,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         httpBatchLink({
           url: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/trpc',
           async headers() {
-            // Token handling later for protected routes
             return {}
           },
         }),

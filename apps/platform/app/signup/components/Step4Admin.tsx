@@ -1,11 +1,11 @@
+"use client"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useSignupStore } from '../../stores/useSignupStore'
 import { IconArrowLeft, IconUserPlus, IconFingerprint, IconLoader2 } from '@tabler/icons-react'
 import { useState } from 'react'
-import _sodium from 'libsodium-wrappers'
-
+// Dynamic import for sodium used below
 const step4Schema = z.object({
   adminName: z.string().min(2, "Ingresa tu nombre"),
   adminEmail: z.string().email("Ingresa un email válido"),
@@ -27,8 +27,10 @@ export function Step4Admin() {
     try {
       setIsHashing(true)
       
-      await _sodium.ready
-      const sodium = _sodium
+      // Dynamic sodium evaluation
+      const sodiumModule = await import('libsodium-wrappers')
+      await sodiumModule.default.ready
+      const sodium = sodiumModule.default
       
       // BLAKE2b hash - Client Side Zero Knowledge (Fallback from Argon2 for non-sumo builds)
       const passwordBytes = new TextEncoder().encode(data.password)

@@ -1,10 +1,9 @@
+"use client"
 import { useState, useEffect } from 'react'
 import { useSignupStore } from '../../stores/useSignupStore'
 import { trpc } from '../../../lib/trpc'
 import { IconArrowLeft, IconKey, IconShieldLock, IconCopy, IconCheck, IconLoader2 } from '@tabler/icons-react'
-import * as bip39 from 'bip39'
-import { derivePath } from 'ed25519-hd-key'
-import _sodium from 'libsodium-wrappers'
+// Crypto modules are dynamically imported on client side
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useRouter } from 'next/navigation'
 
@@ -41,18 +40,21 @@ export function Step5Mnemonic() {
   useEffect(() => {
     let mounted = true
     const initCrypto = async () => {
-      await _sodium.ready
-      const sodium = _sodium
+      const bip39Module = await import('bip39')
+      const edKeyModule = await import('ed25519-hd-key')
+      const sodiumModule = await import('libsodium-wrappers')
+      await sodiumModule.default.ready
+      const sodium = sodiumModule.default
       
       // 1. Generate 12 words
-      const words = bip39.generateMnemonic()
+      const words = bip39Module.generateMnemonic()
       
       // 2. Derive Seed
-      const seed = bip39.mnemonicToSeedSync(words)
+      const seed = bip39Module.mnemonicToSeedSync(words)
       
       // 3. Derive HD Path Private Seed (Solana/Biffco standard path)
       const path = "m/44'/501'/0'/0'"
-      const derivedSeed = derivePath(path, seed.toString('hex')).key
+      const derivedSeed = edKeyModule.derivePath(path, seed.toString('hex')).key
       
       // 4. Get Ed25519 Keypair via libsodium
       const keypair = sodium.crypto_sign_seed_keypair(derivedSeed)

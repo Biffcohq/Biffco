@@ -1,18 +1,14 @@
 "use client"
 
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useSignupStore } from '../stores/useSignupStore'
-import dynamic from 'next/dynamic'
+import { Step1Organization } from './components/Step1Organization'
+import { Step2Vertical } from './components/Step2Vertical'
+import { Step3Roles } from './components/Step3Roles'
+import { Step4Admin } from './components/Step4Admin'
+import { Step5Mnemonic } from './components/Step5Mnemonic'
+import { MotionDiv } from '../components/ui/MotionDiv'
 import { IconShieldCheck } from '@tabler/icons-react'
-
-const Step1Organization = dynamic(() => import('./components/Step1Organization').then(m => m.Step1Organization), { ssr: false })
-const Step2Vertical = dynamic(() => import('./components/Step2Vertical').then(m => m.Step2Vertical), { ssr: false })
-const Step3Roles = dynamic(() => import('./components/Step3Roles').then(m => m.Step3Roles), { ssr: false })
-const Step4Admin = dynamic(() => import('./components/Step4Admin').then(m => m.Step4Admin), { ssr: false })
-const Step5Mnemonic = dynamic(() => import('./components/Step5Mnemonic').then(m => m.Step5Mnemonic), { ssr: false })
-
-// Bypass TS strict prop check on framer-motion v12 with NextJS
-const MotionDiv = motion.div as any;
 
 export default function SignupPage() {
   const step = useSignupStore(s => s.step)

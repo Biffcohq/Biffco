@@ -1,16 +1,15 @@
 "use client"
 
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+// motion handled by external component
 import { IconShieldCheck, IconLoader2, IconMail, IconLock, IconAlertCircle } from '@tabler/icons-react'
 import { trpc } from '../../lib/trpc'
 import { useAuthStore } from '../stores/useAuthStore'
-import _sodium from 'libsodium-wrappers'
+// import _sodium from 'libsodium-wrappers'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-// Bypass TS strict prop check on framer-motion v12 with NextJS
-const MotionDiv = motion.div as any;
+import { MotionDiv } from '../components/ui/MotionDiv'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -63,10 +62,12 @@ export default function LoginPage() {
     setErrorMsg('')
     setIsHashing(true)
 
-    // Hash the password purely on the client (Zero-Knowledge)
-    await _sodium.ready
-    const sodium = _sodium
     try {
+      // Dynamic import to prevent SSR crashes during Next.js build
+      const sodiumModule = await import('libsodium-wrappers')
+      await sodiumModule.default.ready
+      const sodium = sodiumModule.default
+
       const passwordBytes = new TextEncoder().encode(password)
       const hashBytes = sodium.crypto_generichash(64, passwordBytes, null)
       const passwordHash = sodium.to_hex(hashBytes)

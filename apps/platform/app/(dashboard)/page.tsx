@@ -1,5 +1,6 @@
-import { IconPackage, IconFileCheck, IconActivity, IconAlertCircle } from '@tabler/icons-react'
+"use client"
 
+import { IconPackage, IconFileCheck, IconActivity, IconAlertCircle } from '@tabler/icons-react'
 export default function PlatformRoot() {
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
