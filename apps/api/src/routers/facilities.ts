@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { facilities, workspaces } from '@biffco/db/schema'
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const facilitiesRouter = router({

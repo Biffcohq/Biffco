@@ -4,6 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
+require("./instrument");
+require("./telemetry");
+require("./workers/anchor");
 const fastify_1 = __importDefault(require("fastify"));
 const cors_1 = __importDefault(require("@fastify/cors"));
 const helmet_1 = __importDefault(require("@fastify/helmet"));
@@ -17,7 +20,7 @@ const db_1 = require("@biffco/db");
 const vertical_engine_1 = require("@biffco/core/vertical-engine");
 const livestock_1 = require("@biffco/livestock");
 // --- MOCK VERTICAL PACK ---
-vertical_engine_1.VerticalRegistry.register(livestock_1.livestockVertical);
+vertical_engine_1.verticalRegistry.register(livestock_1.livestockVertical);
 const app = (0, fastify_1.default)({ logger: { level: "info" } });
 const buildServer = async () => {
     // ─── Plugins ─────────────────────────────────────────────────────
@@ -45,12 +48,15 @@ const buildServer = async () => {
         try {
             // Verificar DB Connection.
             await db_1.db.execute(`SELECT 1`);
-            return { status: "ok", db: "connected", api_version: "v0.1.0-A.2" };
+            return { status: "ok", db: "connected", api_version: "v0.1.0-A.3" };
         }
         catch (error) {
             app.log.error(error, "Error conectando a db en /health:");
             return { status: "degraded", db: "error" };
         }
+    });
+    app.get('/', async () => {
+        return { status: "ok", service: "Biffco API" };
     });
     return app;
 };

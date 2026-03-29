@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { parcels } from '@biffco/db/schema' // zones en el playbook refieren a parcelas físicas
-import { eq, sql } from 'drizzle-orm'
+import { eq, sql } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const zonesRouter = router({

@@ -1,7 +1,7 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { Resource } from '@opentelemetry/resources';
+import { resourceFromAttributes } from '@opentelemetry/resources';
 import { SEMRESATTRS_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { env } from '@biffco/config';
 
@@ -9,7 +9,7 @@ const tracerActive = env.NODE_ENV !== "development" && env.OTEL_EXPORTER_OTLP_EN
 
 if (tracerActive) {
   const sdk = new NodeSDK({
-    resource: new Resource({
+    resource: resourceFromAttributes({
       [SEMRESATTRS_SERVICE_NAME]: 'biffco-api',
       environment: env.NODE_ENV,
     }),

@@ -3,9 +3,8 @@ import { redis } from '../redis';
 import { db } from '@biffco/db';
 import { MerkleTree } from '@biffco/core/crypto';
 import { polygonProvider } from './polygon-provider';
-import { domainEvents, anchorsLog, anchoredEvents, workspaces } from '@biffco/db/schema';
-import { eq, isNull, and, sql } from 'drizzle-orm';
-import { createId } from '@paralleldrive/cuid2';
+import { domainEvents, anchorsLog, anchoredEvents } from '@biffco/db/schema';
+import { eq, isNull, and } from '@biffco/db';
 
 export const anchorQueue = new Queue('anchor', { connection: redis as any });
 

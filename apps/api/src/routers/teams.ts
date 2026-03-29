@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { teams } from '@biffco/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const teamsRouter = router({

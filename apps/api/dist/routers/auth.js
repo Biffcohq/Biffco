@@ -10,6 +10,20 @@ const drizzle_orm_1 = require("drizzle-orm");
 const redis_1 = require("../redis");
 const rbac_1 = require("@biffco/core/rbac");
 exports.authRouter = (0, trpc_1.router)({
+    checkEmail: trpc_1.publicProcedure
+        .input(zod_1.z.object({ email: zod_1.z.string().email().toLowerCase() }))
+        .query(async ({ input, ctx }) => {
+        const { db } = ctx;
+        const existing = await db.select().from(schema_1.persons).where((0, drizzle_orm_1.eq)(schema_1.persons.email, input.email)).limit(1);
+        return { available: existing.length === 0 };
+    }),
+    checkSlug: trpc_1.publicProcedure
+        .input(zod_1.z.object({ slug: zod_1.z.string().min(2).max(50).regex(/^[a-z0-9-]+$/) }))
+        .query(async ({ input, ctx }) => {
+        const { db } = ctx;
+        const existing = await db.select().from(schema_1.workspaces).where((0, drizzle_orm_1.eq)(schema_1.workspaces.slug, input.slug)).limit(1);
+        return { available: existing.length === 0 };
+    }),
     register: trpc_1.publicProcedure
         .input(zod_1.z.object({
         workspaceName: zod_1.z.string().min(2).max(100),

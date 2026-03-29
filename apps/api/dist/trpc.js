@@ -10,7 +10,7 @@ const redis_1 = require("./redis");
 async function createContext({ req }) {
     const authHeader = req.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) {
-        return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db: db_1.db, verticalRegistry: vertical_engine_1.VerticalRegistry, request: req };
+        return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db: db_1.db, verticalRegistry: vertical_engine_1.verticalRegistry, request: req };
     }
     const token = authHeader.slice(7);
     try {
@@ -31,12 +31,12 @@ async function createContext({ req }) {
             memberPermissions: payload.permissions,
             jti: payload.jti || null,
             db: db_1.db,
-            verticalRegistry: vertical_engine_1.VerticalRegistry,
+            verticalRegistry: vertical_engine_1.verticalRegistry,
             request: req
         };
     }
     catch {
-        return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db: db_1.db, verticalRegistry: vertical_engine_1.VerticalRegistry, request: req };
+        return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db: db_1.db, verticalRegistry: vertical_engine_1.verticalRegistry, request: req };
     }
 }
 const t = server_1.initTRPC.context().create();

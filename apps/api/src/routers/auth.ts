@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server'
 import { createId } from '@paralleldrive/cuid2'
 import { router, publicProcedure, protectedProcedure } from '../trpc'
 import { workspaces, workspaceMembers, persons, credentials } from '@biffco/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq } from '@biffco/db'
 import { redis } from '../redis'
 import { Permission } from '@biffco/core/rbac'
 

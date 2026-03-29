@@ -1,0 +1,1 @@
+{"version":3,"file":"polygon-provider.d.ts","sourceRoot":"","sources":["../../src/workers/polygon-provider.ts"],"names":[],"mappings":"AASA,qBAAa,eAAe;IAC1B,OAAO,CAAC,QAAQ,CAAuC;IACvD,OAAO,CAAC,QAAQ,CAAgC;IAEhD,OAAO,CAAC,WAAW;IAkBnB;;;OAGG;IACG,MAAM,CAAC,UAAU,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,GAAG,OAAO,CAAC,MAAM,CAAC;CAuBnE;AAED,eAAO,MAAM,eAAe,iBAAwB,CAAC"}

@@ -10,6 +10,24 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
         errorShape: import("@trpc/server").TRPCDefaultErrorShape;
         transformer: false;
     }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        checkEmail: import("@trpc/server").TRPCQueryProcedure<{
+            input: {
+                email: string;
+            };
+            output: {
+                available: boolean;
+            };
+            meta: object;
+        }>;
+        checkSlug: import("@trpc/server").TRPCQueryProcedure<{
+            input: {
+                slug: string;
+            };
+            output: {
+                available: boolean;
+            };
+            meta: object;
+        }>;
         register: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 email: string;
