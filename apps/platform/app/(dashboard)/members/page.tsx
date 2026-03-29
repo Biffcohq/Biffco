@@ -61,7 +61,7 @@ export default function MembersPage() {
               </DialogHeader>
               <form onSubmit={handleInvite} className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-white">Correo electrónico</Label>
+                  <Label htmlFor="email" className="text-[var(--color-text-primary)]">Correo electrónico</Label>
                   <Input 
                     id="email" 
                     type="email"
@@ -72,10 +72,10 @@ export default function MembersPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="role" className="text-white">Rol asignado</Label>
+                  <Label htmlFor="role" className="text-[var(--color-text-primary)]">Rol asignado</Label>
                   <select 
                     id="role"
-                    className="flex h-10 w-full rounded-md border border-white/10 bg-black px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-[var(--color-neutral-300)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-primary-500)] disabled:cursor-not-allowed disabled:opacity-50"
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
                   >

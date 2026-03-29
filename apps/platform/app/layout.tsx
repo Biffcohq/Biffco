@@ -16,12 +16,15 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 })
 
+import { Toaster } from '@biffco/ui'
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
-      <body className="font-sans font-normal antialiased bg-bg text-text-primary min-h-screen flex flex-col">
+      <body className="font-sans font-normal antialiased min-h-screen flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
         <Providers>
           {children}
+          <Toaster position="top-right" />
         </Providers>
       </body>
     </html>
