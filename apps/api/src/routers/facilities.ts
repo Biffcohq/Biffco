@@ -32,16 +32,15 @@ export const facilitiesRouter = router({
       // 2. Si hay polígono, validar con PostGIS
       if (input.polygon) {
         try {
-          const result = await db.execute<{ isValid: boolean }>(
-            sql`SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`
+          const result = await db.execute<{ isValid: boolean, reason: string }>(
+            sql`SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid", ST_IsValidReason(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as reason`
           )
           const isValid = result[0]?.isValid ?? false
           if (!isValid) {
-            throw new TRPCError({ code: "BAD_REQUEST", message: "El polígono GeoJSON no es válido" })
+            throw new TRPCError({ code: "BAD_REQUEST", message: `Polígono inválido: ${result[0]?.reason ?? "Self-intersection"}` })
           }
         } catch (error: any) {
-          // Si PostGIS no está instalado o hay un error de parseo devuelto por PostgreSQL
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Error verificando la geometría: " + error.message })
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Error verificando la geometría PostGIS: " + error.message })
         }
       }
       
