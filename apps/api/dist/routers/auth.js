@@ -6,7 +6,7 @@ const server_1 = require("@trpc/server");
 const cuid2_1 = require("@paralleldrive/cuid2");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const redis_1 = require("../redis");
 const rbac_1 = require("@biffco/core/rbac");
 exports.authRouter = (0, trpc_1.router)({
@@ -14,14 +14,14 @@ exports.authRouter = (0, trpc_1.router)({
         .input(zod_1.z.object({ email: zod_1.z.string().email().toLowerCase() }))
         .query(async ({ input, ctx }) => {
         const { db } = ctx;
-        const existing = await db.select().from(schema_1.persons).where((0, drizzle_orm_1.eq)(schema_1.persons.email, input.email)).limit(1);
+        const existing = await db.select().from(schema_1.persons).where((0, db_1.eq)(schema_1.persons.email, input.email)).limit(1);
         return { available: existing.length === 0 };
     }),
     checkSlug: trpc_1.publicProcedure
         .input(zod_1.z.object({ slug: zod_1.z.string().min(2).max(50).regex(/^[a-z0-9-]+$/) }))
         .query(async ({ input, ctx }) => {
         const { db } = ctx;
-        const existing = await db.select().from(schema_1.workspaces).where((0, drizzle_orm_1.eq)(schema_1.workspaces.slug, input.slug)).limit(1);
+        const existing = await db.select().from(schema_1.workspaces).where((0, db_1.eq)(schema_1.workspaces.slug, input.slug)).limit(1);
         return { available: existing.length === 0 };
     }),
     register: trpc_1.publicProcedure
@@ -42,7 +42,7 @@ exports.authRouter = (0, trpc_1.router)({
         // 3. Verificar que el slug no está tomado
         const existing = await db.select()
             .from(schema_1.workspaces)
-            .where((0, drizzle_orm_1.eq)(schema_1.workspaces.slug, input.workspaceSlug))
+            .where((0, db_1.eq)(schema_1.workspaces.slug, input.workspaceSlug))
             .limit(1);
         if (existing.length > 0) {
             throw new server_1.TRPCError({ code: "CONFLICT", message: "El slug ya está en uso" });
@@ -50,7 +50,7 @@ exports.authRouter = (0, trpc_1.router)({
         // Check if person email already exists
         const existingPerson = await db.select()
             .from(schema_1.persons)
-            .where((0, drizzle_orm_1.eq)(schema_1.persons.email, input.email))
+            .where((0, db_1.eq)(schema_1.persons.email, input.email))
             .limit(1);
         if (existingPerson.length > 0) {
             throw new server_1.TRPCError({ code: "CONFLICT", message: "El correo electrónico ya está registrado" });
@@ -134,20 +134,20 @@ exports.authRouter = (0, trpc_1.router)({
         .mutation(async ({ input, ctx }) => {
         const { db } = ctx;
         // 1. Encontrar la persona
-        const personArr = await db.select().from(schema_1.persons).where((0, drizzle_orm_1.eq)(schema_1.persons.email, input.email)).limit(1);
+        const personArr = await db.select().from(schema_1.persons).where((0, db_1.eq)(schema_1.persons.email, input.email)).limit(1);
         const person = personArr[0];
         if (!person) {
             throw new server_1.TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" });
         }
         // 2. Verificar el hash del password
-        const credArr = await db.select().from(schema_1.credentials).where((0, drizzle_orm_1.eq)(schema_1.credentials.personId, person.id)).limit(1);
+        const credArr = await db.select().from(schema_1.credentials).where((0, db_1.eq)(schema_1.credentials.personId, person.id)).limit(1);
         const cred = credArr[0];
         if (!cred || cred.passwordHash !== input.passwordHash) {
             // Zero-Knowledge Proof: Comprobamos el hash enviado cliente vs hash guardado servidor
             throw new server_1.TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" });
         }
         // 3. Obtener el workspace primario del usuario
-        const memberArr = await db.select().from(schema_1.workspaceMembers).where((0, drizzle_orm_1.eq)(schema_1.workspaceMembers.personId, person.id)).limit(1);
+        const memberArr = await db.select().from(schema_1.workspaceMembers).where((0, db_1.eq)(schema_1.workspaceMembers.personId, person.id)).limit(1);
         const member = memberArr[0];
         if (!member) {
             throw new server_1.TRPCError({ code: "FORBIDDEN", message: "Usuario sin espacios de trabajo activos" });
@@ -160,7 +160,7 @@ exports.authRouter = (0, trpc_1.router)({
         if (member.roles.includes("admin")) {
             Object.values(rbac_1.Permission).forEach(p => finalPerms.add(p));
             // Asumiendo que obtenemos el pack del workspace
-            const wsArr = await db.select().from(schema_1.workspaces).where((0, drizzle_orm_1.eq)(schema_1.workspaces.id, member.workspaceId)).limit(1);
+            const wsArr = await db.select().from(schema_1.workspaces).where((0, db_1.eq)(schema_1.workspaces.id, member.workspaceId)).limit(1);
             if (wsArr[0]) {
                 const pack = ctx.verticalRegistry.get(wsArr[0].verticalId);
                 if (pack)

@@ -4,12 +4,12 @@ exports.teamsRouter = void 0;
 const zod_1 = require("zod");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
 exports.teamsRouter = (0, trpc_1.router)({
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
-        return ctx.db.select().from(schema_1.teams).where((0, drizzle_orm_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId));
+        return ctx.db.select().from(schema_1.teams).where((0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId));
     }),
     create: (0, trpc_1.requirePermission)(rbac_1.Permission.ORG_MANAGE)
         .input(zod_1.z.object({
@@ -34,7 +34,7 @@ exports.teamsRouter = (0, trpc_1.router)({
         const { id, ...updates } = input;
         const [updated] = await ctx.db.update(schema_1.teams)
             .set(updates)
-            .where((0, drizzle_orm_1.eq)(schema_1.teams.id, id))
+            .where((0, db_1.eq)(schema_1.teams.id, id))
             .returning();
         return updated;
     }),

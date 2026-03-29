@@ -50,17 +50,32 @@ const optionalSchema = z.object({
 const envSchema = baseSchema.merge(optionalSchema)
 
 // ─── Parsear y exportar ──────────────────────────────────────────────
-const _parsed = envSchema.safeParse(process.env)
+const skipValidation =
+  !!process.env.SKIP_ENV_VALIDATION ||
+  process.env.npm_lifecycle_event === 'build' ||
+  process.env.NEXT_PHASE === 'phase-production-build';
 
-if (!_parsed.success) {
-  console.error("❌ Variables de entorno inválidas o faltantes:")
-  console.error(_parsed.error.flatten().fieldErrors)
-  console.error("")
-  console.error("Asegurarse de que Doppler está configurado:")
-  console.error("  doppler setup")
-  console.error("  doppler run -- [tu comando]")
-  process.exit(1)
+let envData: Record<string, string | undefined> | undefined = undefined;
+
+if (skipValidation) {
+  console.log("⚠️ Saltando validación de entorno de variables (fase build detectada)");
+  // Devolver el process.env tal cual en fase build para que no explote
+  envData = process.env as any;
+} else {
+  const _parsed = envSchema.safeParse(process.env);
+  if (!_parsed.success) {
+    console.error("❌ Variables de entorno inválidas o faltantes:");
+    console.error(_parsed.error.flatten().fieldErrors);
+    console.error("");
+    console.error("Asegurarse de que Doppler está configurado:");
+    console.error("  doppler setup");
+    console.error("  doppler run -- [tu comando]");
+    process.exit(1);
+  }
+  envData = _parsed.data;
 }
 
-export const env = _parsed.data
-export type Env = typeof env
+export const env = envData as z.infer<typeof envSchema> & {
+  [key: string]: string | undefined;
+};
+export type Env = typeof env;

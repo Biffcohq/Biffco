@@ -19,4 +19,5 @@ __exportStar(require("./assets"), exports);
 __exportStar(require("./core"), exports);
 __exportStar(require("./operations"), exports);
 __exportStar(require("./locations"), exports);
+__exportStar(require("./persons"), exports);
 //# sourceMappingURL=index.js.map

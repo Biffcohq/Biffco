@@ -14,5 +14,10 @@ exports.transferOffers = (0, pg_core_1.pgTable)("transfer_offers", {
     conditions: (0, pg_core_1.jsonb)('conditions').notNull().default({}),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
     resolvedAt: (0, pg_core_1.timestamp)('resolved_at', { withTimezone: true })
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_transfer_offers_from_workspace').on(table.fromWorkspaceId),
+    (0, pg_core_1.index)('idx_transfer_offers_to_workspace').on(table.toWorkspaceId),
+    (0, pg_core_1.index)('idx_transfer_offers_asset_id').on(table.assetId),
+    (0, pg_core_1.index)('idx_transfer_offers_status').on(table.status)
+]);
 //# sourceMappingURL=operations.js.map

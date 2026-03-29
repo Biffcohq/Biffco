@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const server_1 = require("@trpc/server");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema"); // zones en el playbook refieren a parcelas físicas
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
 exports.zonesRouter = (0, trpc_1.router)({
     create: (0, trpc_1.requirePermission)(rbac_1.Permission.ZONES_MANAGE)
@@ -23,7 +23,7 @@ exports.zonesRouter = (0, trpc_1.router)({
         let locationData = { type: "Polygon", coordinates: [] };
         if (input.polygon) {
             try {
-                const result = await db.execute((0, drizzle_orm_1.sql) `SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`);
+                const result = await db.execute((0, db_1.sql) `SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`);
                 const isValid = result[0]?.isValid ?? false;
                 if (!isValid) {
                     throw new server_1.TRPCError({ code: "BAD_REQUEST", message: "Zone Polygon GeoJSON no es válido" });
@@ -44,13 +44,13 @@ exports.zonesRouter = (0, trpc_1.router)({
     }),
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
-        return ctx.db.select().from(schema_1.parcels).where((0, drizzle_orm_1.eq)(schema_1.parcels.workspaceId, ctx.workspaceId));
+        return ctx.db.select().from(schema_1.parcels).where((0, db_1.eq)(schema_1.parcels.workspaceId, ctx.workspaceId));
     }),
     getById: trpc_1.protectedProcedure
         .input(zod_1.z.object({ id: zod_1.z.string() }))
         .query(async ({ input, ctx }) => {
         const p = await ctx.db.query.parcels.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.parcels.id, input.id)
+            where: (0, db_1.eq)(schema_1.parcels.id, input.id)
         });
         if (!p)
             throw new server_1.TRPCError({ code: "NOT_FOUND" });
@@ -66,7 +66,7 @@ exports.zonesRouter = (0, trpc_1.router)({
         const { id, ...updates } = input;
         const [updated] = await ctx.db.update(schema_1.parcels)
             .set(updates)
-            .where((0, drizzle_orm_1.eq)(schema_1.parcels.id, id))
+            .where((0, db_1.eq)(schema_1.parcels.id, id))
             .returning();
         return updated;
     }),

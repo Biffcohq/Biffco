@@ -7,7 +7,7 @@ const db_1 = require("@biffco/db");
 const crypto_1 = require("@biffco/core/crypto");
 const polygon_provider_1 = require("./polygon-provider");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_2 = require("@biffco/db");
 exports.anchorQueue = new bullmq_1.Queue('anchor', { connection: redis_1.redis });
 if (!process.env.SKIP_WORKER) {
     // ─── Worker ───────────────────────────────────────────────────
@@ -18,8 +18,8 @@ if (!process.env.SKIP_WORKER) {
         // Hacemos un anti-join con anchoredEvents
         const pendingEvents = await db_1.db.select()
             .from(schema_1.domainEvents)
-            .leftJoin(schema_1.anchoredEvents, (0, drizzle_orm_1.eq)(schema_1.domainEvents.id, schema_1.anchoredEvents.eventId))
-            .where((0, drizzle_orm_1.and)((0, drizzle_orm_1.eq)(schema_1.domainEvents.workspaceId, workspaceId), (0, drizzle_orm_1.isNull)(schema_1.anchoredEvents.anchorId) // Solo eventos sin anclar
+            .leftJoin(schema_1.anchoredEvents, (0, db_2.eq)(schema_1.domainEvents.id, schema_1.anchoredEvents.eventId))
+            .where((0, db_2.and)((0, db_2.eq)(schema_1.domainEvents.workspaceId, workspaceId), (0, db_2.isNull)(schema_1.anchoredEvents.anchorId) // Solo eventos sin anclar
         ))
             .limit(100);
         if (pendingEvents.length === 0) {
@@ -34,7 +34,7 @@ if (!process.env.SKIP_WORKER) {
         const merkleRoot = tree.getRoot();
         // 3. Idempotencia: ¿Ya existe el batchId?
         const existing = await db_1.db.query.anchorsLog.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.anchorsLog.id, batchId)
+            where: (0, db_2.eq)(schema_1.anchorsLog.id, batchId)
         });
         if (existing) {
             console.info(`[AnchorJob] batchId ${batchId} ya fue anclado (${existing.polygonTxHash}). Skip.`);
@@ -68,8 +68,8 @@ if (!process.env.SKIP_WORKER) {
             const workspacesWithPending = await db_1.db
                 .selectDistinct({ workspaceId: schema_1.domainEvents.workspaceId })
                 .from(schema_1.domainEvents)
-                .leftJoin(schema_1.anchoredEvents, (0, drizzle_orm_1.eq)(schema_1.domainEvents.id, schema_1.anchoredEvents.eventId))
-                .where((0, drizzle_orm_1.isNull)(schema_1.anchoredEvents.anchorId));
+                .leftJoin(schema_1.anchoredEvents, (0, db_2.eq)(schema_1.domainEvents.id, schema_1.anchoredEvents.eventId))
+                .where((0, db_2.isNull)(schema_1.anchoredEvents.anchorId));
             for (const row of workspacesWithPending) {
                 await exports.anchorQueue.add('anchor', {
                     workspaceId: row.workspaceId,

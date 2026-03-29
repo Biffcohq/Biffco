@@ -14,7 +14,10 @@ exports.assetGroups = (0, pg_core_1.pgTable)("asset_groups", {
     metadata: (0, pg_core_1.jsonb)('metadata').notNull().default({}),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at', { withTimezone: true }).notNull().defaultNow()
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_asset_groups_workspace_id').on(table.workspaceId),
+    (0, pg_core_1.index)('idx_asset_groups_vertical_id').on(table.verticalId)
+]);
 exports.assets = (0, pg_core_1.pgTable)("assets", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
     workspaceId: (0, pg_core_1.text)('workspace_id').notNull().references(() => workspaces_1.workspaces.id),
@@ -26,5 +29,11 @@ exports.assets = (0, pg_core_1.pgTable)("assets", {
     metadata: (0, pg_core_1.jsonb)('metadata').notNull().default({}),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at', { withTimezone: true }).notNull().defaultNow()
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_assets_workspace_id').on(table.workspaceId),
+    (0, pg_core_1.index)('idx_assets_group_id').on(table.groupId),
+    (0, pg_core_1.index)('idx_assets_vertical_id').on(table.verticalId),
+    (0, pg_core_1.index)('idx_assets_status').on(table.status),
+    (0, pg_core_1.index)('idx_assets_location_id').on(table.locationId)
+]);
 //# sourceMappingURL=assets.js.map

@@ -5,7 +5,7 @@ const zod_1 = require("zod");
 const server_1 = require("@trpc/server");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
 exports.facilitiesRouter = (0, trpc_1.router)({
     create: (0, trpc_1.requirePermission)(rbac_1.Permission.FACILITIES_MANAGE)
@@ -23,7 +23,7 @@ exports.facilitiesRouter = (0, trpc_1.router)({
     }))
         .mutation(async ({ input, ctx }) => {
         const { db, workspaceId, verticalRegistry } = ctx;
-        const workspace = await db.query.workspaces.findFirst({ where: (0, drizzle_orm_1.eq)(schema_1.workspaces.id, workspaceId) });
+        const workspace = await db.query.workspaces.findFirst({ where: (0, db_1.eq)(schema_1.workspaces.id, workspaceId) });
         const pack = verticalRegistry.get(workspace.verticalId);
         if (pack && pack.facilityTypes && !pack.facilityTypes.includes(input.type)) {
             throw new server_1.TRPCError({ code: "BAD_REQUEST", message: `Tipo "${input.type}" no válido para el vertical "${workspace.verticalId}"` });
@@ -31,7 +31,7 @@ exports.facilitiesRouter = (0, trpc_1.router)({
         // 2. Si hay polígono, validar con PostGIS
         if (input.polygon) {
             try {
-                const result = await db.execute((0, drizzle_orm_1.sql) `SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`);
+                const result = await db.execute((0, db_1.sql) `SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`);
                 const isValid = result[0]?.isValid ?? false;
                 if (!isValid) {
                     throw new server_1.TRPCError({ code: "BAD_REQUEST", message: "El polígono GeoJSON no es válido" });
@@ -56,13 +56,13 @@ exports.facilitiesRouter = (0, trpc_1.router)({
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
         // Filtrar siempre por workspaceId garantiza tenant isolation. El RLS en db tmb intercede.
-        return ctx.db.select().from(schema_1.facilities).where((0, drizzle_orm_1.eq)(schema_1.facilities.workspaceId, ctx.workspaceId));
+        return ctx.db.select().from(schema_1.facilities).where((0, db_1.eq)(schema_1.facilities.workspaceId, ctx.workspaceId));
     }),
     getById: trpc_1.protectedProcedure
         .input(zod_1.z.object({ id: zod_1.z.string() }))
         .query(async ({ input, ctx }) => {
         const facility = await ctx.db.query.facilities.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.facilities.id, input.id)
+            where: (0, db_1.eq)(schema_1.facilities.id, input.id)
         });
         if (!facility)
             throw new server_1.TRPCError({ code: "NOT_FOUND" });
@@ -78,7 +78,7 @@ exports.facilitiesRouter = (0, trpc_1.router)({
         const { id, ...updates } = input;
         const [updated] = await ctx.db.update(schema_1.facilities)
             .set(updates)
-            .where((0, drizzle_orm_1.eq)(schema_1.facilities.id, id))
+            .where((0, db_1.eq)(schema_1.facilities.id, id))
             .returning();
         return updated;
     }),

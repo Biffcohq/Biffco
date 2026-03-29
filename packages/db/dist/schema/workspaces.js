@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.employees = exports.teams = exports.workspaceMembers = exports.workspaces = exports.workspacePlanEnum = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const cuid2_1 = require("@paralleldrive/cuid2");
+const persons_1 = require("./persons");
 exports.workspacePlanEnum = (0, pg_core_1.pgEnum)('workspace_plan', ['free', 'starter', 'pro', 'enterprise']);
 exports.workspaces = (0, pg_core_1.pgTable)("workspaces", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
@@ -19,7 +20,7 @@ exports.workspaces = (0, pg_core_1.pgTable)("workspaces", {
 exports.workspaceMembers = (0, pg_core_1.pgTable)("workspace_members", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
     workspaceId: (0, pg_core_1.text)('workspace_id').notNull().references(() => exports.workspaces.id),
-    personId: (0, pg_core_1.text)('person_id').notNull(), // FK a persons (se agrega en Fase A)
+    personId: (0, pg_core_1.text)('person_id').notNull().references(() => persons_1.persons.id),
     publicKey: (0, pg_core_1.text)('public_key').notNull(), // Ed25519 public key hex
     roles: (0, pg_core_1.text)('roles').array().notNull().default(['{}']),
     status: (0, pg_core_1.text)('status').notNull().default('active'), // active|suspended|revoked
@@ -27,7 +28,9 @@ exports.workspaceMembers = (0, pg_core_1.pgTable)("workspace_members", {
     acceptedAt: (0, pg_core_1.timestamp)('accepted_at', { withTimezone: true }),
     revokedAt: (0, pg_core_1.timestamp)('revoked_at', { withTimezone: true }),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_workspace_members_workspace_id').on(table.workspaceId)
+]);
 // ─── Teams ───────────────────────────────────────────────────────
 exports.teams = (0, pg_core_1.pgTable)("teams", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
@@ -35,7 +38,9 @@ exports.teams = (0, pg_core_1.pgTable)("teams", {
     name: (0, pg_core_1.text)('name').notNull(),
     description: (0, pg_core_1.text)('description'),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_teams_workspace_id').on(table.workspaceId)
+]);
 // ─── Employees ───────────────────────────────────────────────────
 exports.employees = (0, pg_core_1.pgTable)("employees", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
@@ -47,5 +52,7 @@ exports.employees = (0, pg_core_1.pgTable)("employees", {
     memberId: (0, pg_core_1.text)('member_id').references(() => exports.workspaceMembers.id), // si tiene cuenta
     isActive: (0, pg_core_1.boolean)('is_active').notNull().default(true),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_employees_workspace_id').on(table.workspaceId)
+]);
 //# sourceMappingURL=workspaces.js.map

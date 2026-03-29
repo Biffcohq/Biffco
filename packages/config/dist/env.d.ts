@@ -1,4 +1,29 @@
-export declare const env: {
+import { z } from 'zod';
+declare const envSchema: z.ZodObject<{
+    NODE_ENV: z.ZodEnum<["development", "staging", "production"]>;
+    DATABASE_URL: z.ZodString;
+    DATABASE_URL_UNPOOLED: z.ZodString;
+    APP_URL: z.ZodString;
+    WEB_URL: z.ZodString;
+    PLATFORM_URL: z.ZodString;
+    VERIFY_URL: z.ZodString;
+    REDIS_URL: z.ZodString;
+} & {
+    JWT_SECRET: z.ZodOptional<z.ZodString>;
+    JWT_REFRESH_SECRET: z.ZodOptional<z.ZodString>;
+    UPSTASH_REDIS_URL: z.ZodOptional<z.ZodString>;
+    UPSTASH_REDIS_TOKEN: z.ZodOptional<z.ZodString>;
+    POLYGON_RPC_URL: z.ZodOptional<z.ZodString>;
+    POLYGON_PRIVATE_KEY: z.ZodOptional<z.ZodString>;
+    SIMPLE_ANCHOR_ADDRESS: z.ZodOptional<z.ZodString>;
+    RESEND_API_KEY: z.ZodOptional<z.ZodString>;
+    AWS_S3_BUCKET: z.ZodOptional<z.ZodString>;
+    AWS_ACCESS_KEY_ID: z.ZodOptional<z.ZodString>;
+    AWS_SECRET_ACCESS_KEY: z.ZodOptional<z.ZodString>;
+    AWS_REGION: z.ZodOptional<z.ZodString>;
+    SENTRY_DSN: z.ZodOptional<z.ZodString>;
+    OTEL_EXPORTER_OTLP_ENDPOINT: z.ZodOptional<z.ZodString>;
+}, "strip", z.ZodTypeAny, {
     NODE_ENV: "development" | "staging" | "production";
     DATABASE_URL: string;
     DATABASE_URL_UNPOOLED: string;
@@ -21,6 +46,33 @@ export declare const env: {
     AWS_REGION?: string | undefined;
     SENTRY_DSN?: string | undefined;
     OTEL_EXPORTER_OTLP_ENDPOINT?: string | undefined;
+}, {
+    NODE_ENV: "development" | "staging" | "production";
+    DATABASE_URL: string;
+    DATABASE_URL_UNPOOLED: string;
+    APP_URL: string;
+    WEB_URL: string;
+    PLATFORM_URL: string;
+    VERIFY_URL: string;
+    REDIS_URL: string;
+    JWT_SECRET?: string | undefined;
+    JWT_REFRESH_SECRET?: string | undefined;
+    UPSTASH_REDIS_URL?: string | undefined;
+    UPSTASH_REDIS_TOKEN?: string | undefined;
+    POLYGON_RPC_URL?: string | undefined;
+    POLYGON_PRIVATE_KEY?: string | undefined;
+    SIMPLE_ANCHOR_ADDRESS?: string | undefined;
+    RESEND_API_KEY?: string | undefined;
+    AWS_S3_BUCKET?: string | undefined;
+    AWS_ACCESS_KEY_ID?: string | undefined;
+    AWS_SECRET_ACCESS_KEY?: string | undefined;
+    AWS_REGION?: string | undefined;
+    SENTRY_DSN?: string | undefined;
+    OTEL_EXPORTER_OTLP_ENDPOINT?: string | undefined;
+}>;
+export declare const env: z.infer<typeof envSchema> & {
+    [key: string]: string | undefined;
 };
 export type Env = typeof env;
+export {};
 //# sourceMappingURL=env.d.ts.map

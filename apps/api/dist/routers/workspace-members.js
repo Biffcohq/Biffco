@@ -5,20 +5,20 @@ const zod_1 = require("zod");
 const server_1 = require("@trpc/server");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
 const cuid2_1 = require("@paralleldrive/cuid2");
 exports.workspaceMembersRouter = (0, trpc_1.router)({
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
         // Middleware RLS ensures we only fetch for the current workspace
-        return ctx.db.select().from(schema_1.workspaceMembers).where((0, drizzle_orm_1.eq)(schema_1.workspaceMembers.workspaceId, ctx.workspaceId));
+        return ctx.db.select().from(schema_1.workspaceMembers).where((0, db_1.eq)(schema_1.workspaceMembers.workspaceId, ctx.workspaceId));
     }),
     getById: trpc_1.protectedProcedure
         .input(zod_1.z.object({ id: zod_1.z.string() }))
         .query(async ({ input, ctx }) => {
         const member = await ctx.db.query.workspaceMembers.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.workspaceMembers.id, input.id),
+            where: (0, db_1.eq)(schema_1.workspaceMembers.id, input.id),
         });
         if (!member)
             throw new server_1.TRPCError({ code: "NOT_FOUND" });
@@ -50,7 +50,7 @@ exports.workspaceMembersRouter = (0, trpc_1.router)({
         }
         const [revoked] = await ctx.db.update(schema_1.workspaceMembers)
             .set({ status: "revoked", revokedAt: new Date() })
-            .where((0, drizzle_orm_1.eq)(schema_1.workspaceMembers.id, input.memberId))
+            .where((0, db_1.eq)(schema_1.workspaceMembers.id, input.memberId))
             .returning();
         return revoked;
     }),

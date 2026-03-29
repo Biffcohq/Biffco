@@ -5,18 +5,18 @@ const zod_1 = require("zod");
 const server_1 = require("@trpc/server");
 const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
-const drizzle_orm_1 = require("drizzle-orm");
+const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
 exports.employeesRouter = (0, trpc_1.router)({
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
-        return ctx.db.select().from(schema_1.employees).where((0, drizzle_orm_1.eq)(schema_1.employees.workspaceId, ctx.workspaceId));
+        return ctx.db.select().from(schema_1.employees).where((0, db_1.eq)(schema_1.employees.workspaceId, ctx.workspaceId));
     }),
     getById: trpc_1.protectedProcedure
         .input(zod_1.z.object({ id: zod_1.z.string() }))
         .query(async ({ input, ctx }) => {
         const employee = await ctx.db.query.employees.findFirst({
-            where: (0, drizzle_orm_1.eq)(schema_1.employees.id, input.id),
+            where: (0, db_1.eq)(schema_1.employees.id, input.id),
         });
         if (!employee)
             throw new server_1.TRPCError({ code: "NOT_FOUND" });
@@ -49,7 +49,7 @@ exports.employeesRouter = (0, trpc_1.router)({
         const { id, ...updates } = input;
         const [updated] = await ctx.db.update(schema_1.employees)
             .set(updates)
-            .where((0, drizzle_orm_1.eq)(schema_1.employees.id, id))
+            .where((0, db_1.eq)(schema_1.employees.id, id))
             .returning();
         return updated;
     }),
@@ -58,7 +58,7 @@ exports.employeesRouter = (0, trpc_1.router)({
         .mutation(async ({ input, ctx }) => {
         const [deactivated] = await ctx.db.update(schema_1.employees)
             .set({ isActive: false })
-            .where((0, drizzle_orm_1.eq)(schema_1.employees.id, input.id))
+            .where((0, db_1.eq)(schema_1.employees.id, input.id))
             .returning();
         return deactivated;
     }),
