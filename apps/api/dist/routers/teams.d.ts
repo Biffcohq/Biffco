@@ -44,5 +44,44 @@ export declare const teamsRouter: import("@trpc/server").TRPCBuiltRouter<{
         } | undefined;
         meta: object;
     }>;
+    delete: import("@trpc/server").TRPCMutationProcedure<{
+        input: {
+            id: string;
+        };
+        output: {
+            id: string;
+            name: string;
+            createdAt: Date;
+            workspaceId: string;
+            description: string | null;
+        } | undefined;
+        meta: object;
+    }>;
+    addMember: import("@trpc/server").TRPCMutationProcedure<{
+        input: {
+            teamId: string;
+            memberId: string;
+        };
+        output: {
+            id: string;
+            createdAt: Date;
+            teamId: string;
+            memberId: string;
+        } | undefined;
+        meta: object;
+    }>;
+    removeMember: import("@trpc/server").TRPCMutationProcedure<{
+        input: {
+            teamId: string;
+            memberId: string;
+        };
+        output: {
+            id: string;
+            createdAt: Date;
+            teamId: string;
+            memberId: string;
+        } | undefined;
+        meta: object;
+    }>;
 }>>;
 //# sourceMappingURL=teams.d.ts.map

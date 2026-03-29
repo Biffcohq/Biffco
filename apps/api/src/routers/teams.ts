@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { teams } from '@biffco/db/schema'
-import { eq } from '@biffco/db'
+import { teams, teamMembers } from '@biffco/db/schema'
+import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const teamsRouter = router({
@@ -39,5 +39,57 @@ export const teamsRouter = router({
         .returning()
       
       return updated
+    }),
+
+  delete: requirePermission(Permission.ORG_MANAGE)
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const [deleted] = await ctx.db.delete(teams)
+        .where(and(eq(teams.id, input.id), eq(teams.workspaceId, ctx.workspaceId!)))
+        .returning()
+      return deleted
+    }),
+
+  addMember: requirePermission(Permission.ORG_MANAGE)
+    .input(z.object({
+      teamId: z.string(),
+      memberId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      // Validar que el team pertenece al workspace
+      const team = await ctx.db.query.teams.findFirst({
+        where: and(eq(teams.id, input.teamId), eq(teams.workspaceId, ctx.workspaceId!))
+      })
+      if (!team) throw new Error("Team not found")
+
+      const [newMember] = await ctx.db.insert(teamMembers).values({
+        teamId: input.teamId,
+        memberId: input.memberId,
+      }).returning()
+      
+      return newMember
+    }),
+
+  removeMember: requirePermission(Permission.ORG_MANAGE)
+    .input(z.object({
+      teamId: z.string(),
+      memberId: z.string(),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const team = await ctx.db.query.teams.findFirst({
+        where: and(eq(teams.id, input.teamId), eq(teams.workspaceId, ctx.workspaceId!))
+      })
+      if (!team) throw new Error("Team not found")
+
+      const [removed] = await ctx.db.delete(teamMembers)
+        .where(
+          and(
+            eq(teamMembers.teamId, input.teamId),
+            eq(teamMembers.memberId, input.memberId)
+          )
+        )
+        .returning()
+      
+      return removed
     }),
 })

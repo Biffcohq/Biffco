@@ -265,6 +265,45 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             } | undefined;
             meta: object;
         }>;
+        delete: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                id: string;
+            };
+            output: {
+                id: string;
+                name: string;
+                createdAt: Date;
+                workspaceId: string;
+                description: string | null;
+            } | undefined;
+            meta: object;
+        }>;
+        addMember: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                teamId: string;
+                memberId: string;
+            };
+            output: {
+                id: string;
+                createdAt: Date;
+                teamId: string;
+                memberId: string;
+            } | undefined;
+            meta: object;
+        }>;
+        removeMember: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                teamId: string;
+                memberId: string;
+            };
+            output: {
+                id: string;
+                createdAt: Date;
+                teamId: string;
+                memberId: string;
+            } | undefined;
+            meta: object;
+        }>;
     }>>;
     employees: import("@trpc/server").TRPCBuiltRouter<{
         ctx: import("../trpc").TRPCContext;
@@ -297,10 +336,10 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 createdAt: Date;
                 isActive: boolean;
                 workspaceId: string;
+                memberId: string | null;
                 role: string;
                 dni: string | null;
                 supervisorId: string | null;
-                memberId: string | null;
             };
             meta: object;
         }>;
@@ -316,10 +355,10 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 createdAt: Date;
                 isActive: boolean;
                 workspaceId: string;
+                memberId: string | null;
                 role: string;
                 dni: string | null;
                 supervisorId: string | null;
-                memberId: string | null;
             } | undefined;
             meta: object;
         }>;
@@ -371,12 +410,12 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             input: {
                 name: string;
                 type: string;
-                country?: string | undefined;
-                address?: string | undefined;
                 polygon?: {
                     type: "Polygon";
                     coordinates: number[][][];
                 } | undefined;
+                country?: string | undefined;
+                address?: string | undefined;
                 licenseNumber?: string | undefined;
             };
             output: {
@@ -410,6 +449,31 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 id: string;
             };
             output: {
+                zones: {
+                    pens: {
+                        id: string;
+                        name: string;
+                        createdAt: Date;
+                        updatedAt: Date;
+                        isActive: boolean;
+                        workspaceId: string;
+                        facilityId: string;
+                        capacity: string | null;
+                        zoneId: string | null;
+                        currentOccupancy: string;
+                    }[];
+                    id: string;
+                    name: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    isActive: boolean;
+                    workspaceId: string;
+                    type: string;
+                    facilityId: string;
+                    capacity: string | null;
+                    polygon: unknown;
+                    gfwStatus: string;
+                }[];
                 id: string;
                 name: string;
                 createdAt: Date;
@@ -449,7 +513,9 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 name: string;
-                areaHectares?: number | undefined;
+                type: string;
+                facilityId: string;
+                capacity?: number | undefined;
                 polygon?: {
                     type: "Polygon";
                     coordinates: number[][][];
@@ -462,8 +528,11 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 updatedAt: Date;
                 isActive: boolean;
                 workspaceId: string;
-                geoJson: unknown;
-                areaHectares: string | null;
+                type: string;
+                facilityId: string;
+                capacity: string | null;
+                polygon: unknown;
+                gfwStatus: string;
             } | undefined;
             meta: object;
         }>;
@@ -471,10 +540,13 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             input: void;
             output: {
                 id: string;
+                facilityId: string;
                 workspaceId: string;
                 name: string;
-                geoJson: unknown;
-                areaHectares: string | null;
+                type: string;
+                capacity: string | null;
+                polygon: unknown;
+                gfwStatus: string;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
@@ -492,8 +564,11 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 updatedAt: Date;
                 isActive: boolean;
                 workspaceId: string;
-                geoJson: unknown;
-                areaHectares: string | null;
+                type: string;
+                facilityId: string;
+                capacity: string | null;
+                polygon: unknown;
+                gfwStatus: string;
             };
             meta: object;
         }>;
@@ -505,10 +580,13 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             };
             output: {
                 id: string;
+                facilityId: string;
                 workspaceId: string;
                 name: string;
-                geoJson: unknown;
-                areaHectares: string | null;
+                type: string;
+                capacity: string | null;
+                polygon: unknown;
+                gfwStatus: string;
                 isActive: boolean;
                 createdAt: Date;
                 updatedAt: Date;
@@ -525,18 +603,38 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
         create: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 name: string;
+                facilityId: string;
                 capacity?: number | undefined;
+                zoneId?: string | undefined;
             };
             output: {
                 id: string;
                 name: string;
-                capacity: number | undefined;
-            };
+                createdAt: Date;
+                updatedAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                facilityId: string;
+                capacity: string | null;
+                zoneId: string | null;
+                currentOccupancy: string;
+            } | undefined;
             meta: object;
         }>;
         list: import("@trpc/server").TRPCQueryProcedure<{
             input: void;
-            output: never[];
+            output: {
+                id: string;
+                facilityId: string;
+                zoneId: string | null;
+                workspaceId: string;
+                name: string;
+                capacity: string | null;
+                currentOccupancy: string;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            }[];
             meta: object;
         }>;
         getById: import("@trpc/server").TRPCQueryProcedure<{
@@ -546,6 +644,14 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             output: {
                 id: string;
                 name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                facilityId: string;
+                capacity: string | null;
+                zoneId: string | null;
+                currentOccupancy: string;
             };
             meta: object;
         }>;
@@ -555,8 +661,17 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 delta: number;
             };
             output: {
-                ok: boolean;
-            };
+                id: string;
+                facilityId: string;
+                zoneId: string | null;
+                workspaceId: string;
+                name: string;
+                capacity: string | null;
+                currentOccupancy: string;
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            } | undefined;
             meta: object;
         }>;
     }>>;

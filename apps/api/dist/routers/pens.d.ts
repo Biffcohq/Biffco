@@ -7,18 +7,38 @@ export declare const pensRouter: import("@trpc/server").TRPCBuiltRouter<{
     create: import("@trpc/server").TRPCMutationProcedure<{
         input: {
             name: string;
+            facilityId: string;
             capacity?: number | undefined;
+            zoneId?: string | undefined;
         };
         output: {
             id: string;
             name: string;
-            capacity: number | undefined;
-        };
+            createdAt: Date;
+            updatedAt: Date;
+            isActive: boolean;
+            workspaceId: string;
+            facilityId: string;
+            capacity: string | null;
+            zoneId: string | null;
+            currentOccupancy: string;
+        } | undefined;
         meta: object;
     }>;
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
-        output: never[];
+        output: {
+            id: string;
+            facilityId: string;
+            zoneId: string | null;
+            workspaceId: string;
+            name: string;
+            capacity: string | null;
+            currentOccupancy: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        }[];
         meta: object;
     }>;
     getById: import("@trpc/server").TRPCQueryProcedure<{
@@ -28,6 +48,14 @@ export declare const pensRouter: import("@trpc/server").TRPCBuiltRouter<{
         output: {
             id: string;
             name: string;
+            createdAt: Date;
+            updatedAt: Date;
+            isActive: boolean;
+            workspaceId: string;
+            facilityId: string;
+            capacity: string | null;
+            zoneId: string | null;
+            currentOccupancy: string;
         };
         meta: object;
     }>;
@@ -37,8 +65,17 @@ export declare const pensRouter: import("@trpc/server").TRPCBuiltRouter<{
             delta: number;
         };
         output: {
-            ok: boolean;
-        };
+            id: string;
+            facilityId: string;
+            zoneId: string | null;
+            workspaceId: string;
+            name: string;
+            capacity: string | null;
+            currentOccupancy: string;
+            isActive: boolean;
+            createdAt: Date;
+            updatedAt: Date;
+        } | undefined;
         meta: object;
     }>;
 }>>;

@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { facilities, workspaces } from '@biffco/db/schema'
-import { eq, sql } from '@biffco/db'
+import { facilities, workspaces, zones, pens } from '@biffco/db/schema'
+import { eq, sql, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const facilitiesRouter = router({
@@ -69,10 +69,30 @@ export const facilitiesRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const facility = await ctx.db.query.facilities.findFirst({
-        where: eq(facilities.id, input.id)
+        where: and(eq(facilities.id, input.id), eq(facilities.workspaceId, ctx.workspaceId!)),
+        with: {
+          // Note: To use 'with' queries securely, ensure Drizzle relations are defined,
+          // manually fetching otherwise if relations aren't configured in schema index.
+        }
       })
       if (!facility) throw new TRPCError({ code: "NOT_FOUND" })
-      return facility
+
+      // Fetch zones and pens manually since Drizzle relations might not be setup
+      const facilityZones = await ctx.db.query.zones.findMany({
+        where: eq(zones.facilityId, facility.id)
+      });
+      
+      const facilityPens = await ctx.db.query.pens.findMany({
+        where: eq(pens.facilityId, facility.id)
+      });
+      
+      return {
+        ...facility,
+        zones: facilityZones.map(z => ({
+          ...z,
+          pens: facilityPens.filter(p => p.zoneId === z.id)
+        }))
+      }
     }),
 
   update: requirePermission(Permission.FACILITIES_MANAGE)

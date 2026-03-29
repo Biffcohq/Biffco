@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.employees = exports.teams = exports.workspaceMembers = exports.workspaces = exports.workspacePlanEnum = void 0;
+exports.employees = exports.teamMembers = exports.teams = exports.workspaceMembers = exports.workspaces = exports.workspacePlanEnum = void 0;
 const pg_core_1 = require("drizzle-orm/pg-core");
 const cuid2_1 = require("@paralleldrive/cuid2");
 const persons_1 = require("./persons");
@@ -40,6 +40,16 @@ exports.teams = (0, pg_core_1.pgTable)("teams", {
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (table) => [
     (0, pg_core_1.index)('idx_teams_workspace_id').on(table.workspaceId)
+]);
+// ─── Team Members ────────────────────────────────────────────────
+exports.teamMembers = (0, pg_core_1.pgTable)("team_members", {
+    id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),
+    teamId: (0, pg_core_1.text)('team_id').notNull().references(() => exports.teams.id, { onDelete: 'cascade' }),
+    memberId: (0, pg_core_1.text)('member_id').notNull().references(() => exports.workspaceMembers.id, { onDelete: 'cascade' }),
+    createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+    (0, pg_core_1.index)('idx_team_members_team_id').on(table.teamId),
+    (0, pg_core_1.index)('idx_team_members_member_id').on(table.memberId)
 ]);
 // ─── Employees ───────────────────────────────────────────────────
 exports.employees = (0, pg_core_1.pgTable)("employees", {

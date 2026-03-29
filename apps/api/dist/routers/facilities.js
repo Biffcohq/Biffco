@@ -62,11 +62,28 @@ exports.facilitiesRouter = (0, trpc_1.router)({
         .input(zod_1.z.object({ id: zod_1.z.string() }))
         .query(async ({ input, ctx }) => {
         const facility = await ctx.db.query.facilities.findFirst({
-            where: (0, db_1.eq)(schema_1.facilities.id, input.id)
+            where: (0, db_1.and)((0, db_1.eq)(schema_1.facilities.id, input.id), (0, db_1.eq)(schema_1.facilities.workspaceId, ctx.workspaceId)),
+            with: {
+            // Note: To use 'with' queries securely, ensure Drizzle relations are defined,
+            // manually fetching otherwise if relations aren't configured in schema index.
+            }
         });
         if (!facility)
             throw new server_1.TRPCError({ code: "NOT_FOUND" });
-        return facility;
+        // Fetch zones and pens manually since Drizzle relations might not be setup
+        const facilityZones = await ctx.db.query.zones.findMany({
+            where: (0, db_1.eq)(schema_1.zones.facilityId, facility.id)
+        });
+        const facilityPens = await ctx.db.query.pens.findMany({
+            where: (0, db_1.eq)(schema_1.pens.facilityId, facility.id)
+        });
+        return {
+            ...facility,
+            zones: facilityZones.map(z => ({
+                ...z,
+                pens: facilityPens.filter(p => p.zoneId === z.id)
+            }))
+        };
     }),
     update: (0, trpc_1.requirePermission)(rbac_1.Permission.FACILITIES_MANAGE)
         .input(zod_1.z.object({

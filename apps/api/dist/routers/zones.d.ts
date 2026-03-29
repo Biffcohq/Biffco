@@ -7,7 +7,9 @@ export declare const zonesRouter: import("@trpc/server").TRPCBuiltRouter<{
     create: import("@trpc/server").TRPCMutationProcedure<{
         input: {
             name: string;
-            areaHectares?: number | undefined;
+            type: string;
+            facilityId: string;
+            capacity?: number | undefined;
             polygon?: {
                 type: "Polygon";
                 coordinates: number[][][];
@@ -20,8 +22,11 @@ export declare const zonesRouter: import("@trpc/server").TRPCBuiltRouter<{
             updatedAt: Date;
             isActive: boolean;
             workspaceId: string;
-            geoJson: unknown;
-            areaHectares: string | null;
+            type: string;
+            facilityId: string;
+            capacity: string | null;
+            polygon: unknown;
+            gfwStatus: string;
         } | undefined;
         meta: object;
     }>;
@@ -29,10 +34,13 @@ export declare const zonesRouter: import("@trpc/server").TRPCBuiltRouter<{
         input: void;
         output: {
             id: string;
+            facilityId: string;
             workspaceId: string;
             name: string;
-            geoJson: unknown;
-            areaHectares: string | null;
+            type: string;
+            capacity: string | null;
+            polygon: unknown;
+            gfwStatus: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;
@@ -50,8 +58,11 @@ export declare const zonesRouter: import("@trpc/server").TRPCBuiltRouter<{
             updatedAt: Date;
             isActive: boolean;
             workspaceId: string;
-            geoJson: unknown;
-            areaHectares: string | null;
+            type: string;
+            facilityId: string;
+            capacity: string | null;
+            polygon: unknown;
+            gfwStatus: string;
         };
         meta: object;
     }>;
@@ -63,10 +74,13 @@ export declare const zonesRouter: import("@trpc/server").TRPCBuiltRouter<{
         };
         output: {
             id: string;
+            facilityId: string;
             workspaceId: string;
             name: string;
-            geoJson: unknown;
-            areaHectares: string | null;
+            type: string;
+            capacity: string | null;
+            polygon: unknown;
+            gfwStatus: string;
             isActive: boolean;
             createdAt: Date;
             updatedAt: Date;

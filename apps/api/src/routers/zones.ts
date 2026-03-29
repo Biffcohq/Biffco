@@ -1,15 +1,17 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { parcels } from '@biffco/db/schema' // zones en el playbook refieren a parcelas físicas
-import { eq, sql } from '@biffco/db'
+import { zones, facilities } from '@biffco/db/schema'
+import { eq, sql, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const zonesRouter = router({
   create: requirePermission(Permission.ZONES_MANAGE)
     .input(z.object({
+      facilityId: z.string(),
       name: z.string().min(1).max(100),
-      areaHectares: z.number().optional(),
+      type: z.string(),
+      capacity: z.number().int().positive().optional(),
       polygon: z.object({
         type: z.literal("Polygon"),
         coordinates: z.array(z.array(z.array(z.number()))),
@@ -18,46 +20,51 @@ export const zonesRouter = router({
     .mutation(async ({ input, ctx }) => {
       const { db, workspaceId } = ctx
       
-      // PostGIS validation
-      let locationData = { type: "Polygon", coordinates: [] }
+      const facility = await db.query.facilities.findFirst({
+        where: and(eq(facilities.id, input.facilityId), eq(facilities.workspaceId, workspaceId!))
+      })
+      if (!facility) throw new TRPCError({ code: "NOT_FOUND", message: "Facility not found" })
+
       if (input.polygon) {
         try {
-          const result = await db.execute<{ isValid: boolean }>(
-            sql`SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid"`
+          const result = await db.execute<{ isValid: boolean, reason: string }>(
+            sql`SELECT ST_IsValid(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as "isValid", ST_IsValidReason(ST_GeomFromGeoJSON(${JSON.stringify(input.polygon)})) as reason`
           )
           const isValid = result[0]?.isValid ?? false
           if (!isValid) {
-            throw new TRPCError({ code: "BAD_REQUEST", message: "Zone Polygon GeoJSON no es válido" })
+            throw new TRPCError({ code: "BAD_REQUEST", message: `Polígono inválido: ${result[0]?.reason ?? "Self-intersection"}` })
           }
-          locationData = input.polygon as any
         } catch (error: any) {
           throw new TRPCError({ code: "BAD_REQUEST", message: "Error verificando la geometría PostGIS: " + error.message })
         }
       }
       
-      const [parcel] = await db.insert(parcels).values({
+      const [zone] = await db.insert(zones).values({
         workspaceId: workspaceId!,
+        facilityId: input.facilityId,
         name: input.name,
-        areaHectares: input.areaHectares?.toString() ?? null,
-        geoJson: locationData,
+        type: input.type,
+        capacity: input.capacity?.toString() ?? null,
+        polygon: input.polygon ? input.polygon : null,
+        gfwStatus: 'pending',
       }).returning()
       
-      return parcel
+      return zone
     }),
 
   list: protectedProcedure
     .query(async ({ ctx }) => {
-      return ctx.db.select().from(parcels).where(eq(parcels.workspaceId, ctx.workspaceId!))
+      return ctx.db.select().from(zones).where(eq(zones.workspaceId, ctx.workspaceId!))
     }),
 
   getById: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
-      const p = await ctx.db.query.parcels.findFirst({
-        where: eq(parcels.id, input.id)
+      const zEntity = await ctx.db.query.zones.findFirst({
+        where: and(eq(zones.id, input.id), eq(zones.workspaceId, ctx.workspaceId!))
       })
-      if (!p) throw new TRPCError({ code: "NOT_FOUND" })
-      return p
+      if (!zEntity) throw new TRPCError({ code: "NOT_FOUND" })
+      return zEntity
     }),
 
   update: requirePermission(Permission.ZONES_MANAGE)
@@ -68,9 +75,9 @@ export const zonesRouter = router({
     }))
     .mutation(async ({ input, ctx }) => {
       const { id, ...updates } = input
-      const [updated] = await ctx.db.update(parcels)
+      const [updated] = await ctx.db.update(zones)
         .set(updates)
-        .where(eq(parcels.id, id))
+        .where(and(eq(zones.id, id), eq(zones.workspaceId, ctx.workspaceId!)))
         .returning()
       
       return updated

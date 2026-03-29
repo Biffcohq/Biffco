@@ -38,5 +38,47 @@ exports.teamsRouter = (0, trpc_1.router)({
             .returning();
         return updated;
     }),
+    delete: (0, trpc_1.requirePermission)(rbac_1.Permission.ORG_MANAGE)
+        .input(zod_1.z.object({ id: zod_1.z.string() }))
+        .mutation(async ({ input, ctx }) => {
+        const [deleted] = await ctx.db.delete(schema_1.teams)
+            .where((0, db_1.and)((0, db_1.eq)(schema_1.teams.id, input.id), (0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId)))
+            .returning();
+        return deleted;
+    }),
+    addMember: (0, trpc_1.requirePermission)(rbac_1.Permission.ORG_MANAGE)
+        .input(zod_1.z.object({
+        teamId: zod_1.z.string(),
+        memberId: zod_1.z.string(),
+    }))
+        .mutation(async ({ input, ctx }) => {
+        // Validar que el team pertenece al workspace
+        const team = await ctx.db.query.teams.findFirst({
+            where: (0, db_1.and)((0, db_1.eq)(schema_1.teams.id, input.teamId), (0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId))
+        });
+        if (!team)
+            throw new Error("Team not found");
+        const [newMember] = await ctx.db.insert(schema_1.teamMembers).values({
+            teamId: input.teamId,
+            memberId: input.memberId,
+        }).returning();
+        return newMember;
+    }),
+    removeMember: (0, trpc_1.requirePermission)(rbac_1.Permission.ORG_MANAGE)
+        .input(zod_1.z.object({
+        teamId: zod_1.z.string(),
+        memberId: zod_1.z.string(),
+    }))
+        .mutation(async ({ input, ctx }) => {
+        const team = await ctx.db.query.teams.findFirst({
+            where: (0, db_1.and)((0, db_1.eq)(schema_1.teams.id, input.teamId), (0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId))
+        });
+        if (!team)
+            throw new Error("Team not found");
+        const [removed] = await ctx.db.delete(schema_1.teamMembers)
+            .where((0, db_1.and)((0, db_1.eq)(schema_1.teamMembers.teamId, input.teamId), (0, db_1.eq)(schema_1.teamMembers.memberId, input.memberId)))
+            .returning();
+        return removed;
+    }),
 });
 //# sourceMappingURL=teams.js.map

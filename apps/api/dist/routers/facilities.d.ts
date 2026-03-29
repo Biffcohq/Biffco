@@ -8,12 +8,12 @@ export declare const facilitiesRouter: import("@trpc/server").TRPCBuiltRouter<{
         input: {
             name: string;
             type: string;
-            country?: string | undefined;
-            address?: string | undefined;
             polygon?: {
                 type: "Polygon";
                 coordinates: number[][][];
             } | undefined;
+            country?: string | undefined;
+            address?: string | undefined;
             licenseNumber?: string | undefined;
         };
         output: {
@@ -47,6 +47,31 @@ export declare const facilitiesRouter: import("@trpc/server").TRPCBuiltRouter<{
             id: string;
         };
         output: {
+            zones: {
+                pens: {
+                    id: string;
+                    name: string;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    isActive: boolean;
+                    workspaceId: string;
+                    facilityId: string;
+                    capacity: string | null;
+                    zoneId: string | null;
+                    currentOccupancy: string;
+                }[];
+                id: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                type: string;
+                facilityId: string;
+                capacity: string | null;
+                polygon: unknown;
+                gfwStatus: string;
+            }[];
             id: string;
             name: string;
             createdAt: Date;

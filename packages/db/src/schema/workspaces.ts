@@ -43,6 +43,17 @@ export const teams = pgTable("teams", {
   index('idx_teams_workspace_id').on(table.workspaceId)
 ])
 
+// ─── Team Members ────────────────────────────────────────────────
+export const teamMembers = pgTable("team_members", {
+  id:           text('id').primaryKey().$defaultFn(() => createId()),
+  teamId:       text('team_id').notNull().references(() => teams.id, { onDelete: 'cascade' }),
+  memberId:     text('member_id').notNull().references(() => workspaceMembers.id, { onDelete: 'cascade' }),
+  createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, (table) => [
+  index('idx_team_members_team_id').on(table.teamId),
+  index('idx_team_members_member_id').on(table.memberId)
+])
+
 // ─── Employees ───────────────────────────────────────────────────
 export const employees = pgTable("employees", {
   id:           text('id').primaryKey().$defaultFn(() => createId()),

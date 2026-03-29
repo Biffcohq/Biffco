@@ -29,10 +29,10 @@ export declare const employeesRouter: import("@trpc/server").TRPCBuiltRouter<{
             createdAt: Date;
             isActive: boolean;
             workspaceId: string;
+            memberId: string | null;
             role: string;
             dni: string | null;
             supervisorId: string | null;
-            memberId: string | null;
         };
         meta: object;
     }>;
@@ -48,10 +48,10 @@ export declare const employeesRouter: import("@trpc/server").TRPCBuiltRouter<{
             createdAt: Date;
             isActive: boolean;
             workspaceId: string;
+            memberId: string | null;
             role: string;
             dni: string | null;
             supervisorId: string | null;
-            memberId: string | null;
         } | undefined;
         meta: object;
     }>;

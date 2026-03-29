@@ -92,7 +92,7 @@ export default function LandingPage(): ReactElement {
             <h1 className="text-[3.5rem] md:text-[5rem] lg:text-[6.5rem] font-bold tracking-tighter text-[var(--color-text-primary)] leading-[1.05] mb-6">
               Build and deploy on the <br className="hidden md:block" />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--color-text-primary)] to-[var(--color-text-secondary)]">
-                Trust Cloud.
+                on the Trust Cloud.
               </span>
             </h1>
 
