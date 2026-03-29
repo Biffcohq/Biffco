@@ -7,4 +7,5 @@ export interface InvitationEmailProps {
     expiresIn?: string;
 }
 export declare function InvitationEmail({ workspaceName, inviterName, verticalLabel, acceptUrl, }: InvitationEmailProps): import("react/jsx-runtime").JSX.Element;
+export default InvitationEmail;
 //# sourceMappingURL=InvitationEmail.d.ts.map

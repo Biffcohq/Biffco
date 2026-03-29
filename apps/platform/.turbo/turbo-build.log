@@ -18,16 +18,16 @@
    Collecting build traces ...
 
 Route (app)                              Size     First Load JS
-┌ ○ /                                    2.79 kB         112 kB
-├ ○ /_not-found                          142 B          87.6 kB
-├ ○ /facilities                          2.81 kB        90.3 kB
-├ ○ /login                               3.53 kB         160 kB
-├ ○ /members                             2.97 kB         113 kB
-└ ○ /signup                              10.3 kB         166 kB
-+ First Load JS shared by all            87.5 kB
-  ├ chunks/1a8804fd-c1a863a91feaa13a.js  53.6 kB
-  ├ chunks/772-4c9432813fa9d7b5.js       31.7 kB
-  └ other shared chunks (total)          2.11 kB
+┌ ○ /                                    2.81 kB         113 kB
+├ ○ /_not-found                          142 B          87.9 kB
+├ ○ /facilities                          2.82 kB        90.5 kB
+├ ○ /login                               3.56 kB         160 kB
+├ ○ /members                             155 kB          264 kB
+└ ○ /signup                              10.3 kB         167 kB
++ First Load JS shared by all            87.7 kB
+  ├ chunks/1a8804fd-24d478a7b7a1446e.js  53.6 kB
+  ├ chunks/772-7c953159dc0c2065.js       31.9 kB
+  └ other shared chunks (total)          2.18 kB
 
 
 ○  (Static)  prerendered as static content

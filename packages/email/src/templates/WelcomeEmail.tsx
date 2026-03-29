@@ -69,3 +69,5 @@ export function WelcomeEmail({
     </Html>
   );
 }
+
+export default WelcomeEmail;

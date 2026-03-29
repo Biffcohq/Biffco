@@ -3,9 +3,36 @@
 import { trpc } from '@/lib/trpc'
 import { IconUsers, IconUserPlus, IconSearch } from '@tabler/icons-react'
 import { Skeleton } from '@/app/components/ui/Skeleton'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast } from '@biffco/ui'
+import { useState } from 'react'
 
 export default function MembersPage() {
+  const trpcUtils = trpc.useUtils()
   const { data: members, isLoading } = trpc.workspaceMembers.list.useQuery()
+  const inviteMutation = trpc.workspaceMembers.invite.useMutation({
+    onSuccess: () => {
+      toast.success("Invitación enviada exitosamente")
+      setIsInviteOpen(false)
+      setInviteEmail("")
+      trpcUtils.workspaceMembers.list.invalidate()
+    },
+    onError: (err) => {
+      toast.error(err.message || "Error al enviar la invitación")
+    }
+  })
+
+  const [isInviteOpen, setIsInviteOpen] = useState(false)
+  const [inviteEmail, setInviteEmail] = useState("")
+  const [inviteRole, setInviteRole] = useState("member")
+
+  const handleInvite = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!inviteEmail) return
+    inviteMutation.mutate({
+      email: inviteEmail,
+      roles: [inviteRole]
+    })
+  }
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -18,10 +45,56 @@ export default function MembersPage() {
           </h1>
           <p className="text-text-secondary text-sm">Gestiona los miembros y permisos de tu espacio de trabajo.</p>
         </div>
-        <button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
-          <IconUserPlus size={18} />
-          Invitar Miembro
-        </button>
+          <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
+            <DialogTrigger asChild>
+              <button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+                <IconUserPlus size={18} />
+                Invitar Miembro
+              </button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invitar al Equipo</DialogTitle>
+                <DialogDescription>
+                  Ingresa el correo electrónico del usuario que deseas invitar a Biffco.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleInvite} className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email" className="text-white">Correo electrónico</Label>
+                  <Input 
+                    id="email" 
+                    type="email"
+                    placeholder="ejemplo@organizacion.com" 
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="role" className="text-white">Rol asignado</Label>
+                  <select 
+                    id="role"
+                    className="flex h-10 w-full rounded-md border border-white/10 bg-black px-3 py-2 text-sm text-white focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                  >
+                    <option value="member">Miembro Operativo</option>
+                    <option value="admin">Administrador</option>
+                    <option value="auditor">Auditor (Solo lectura)</option>
+                  </select>
+                </div>
+                <DialogFooter className="mt-4">
+                  <Button type="button" variant="outline" onClick={() => setIsInviteOpen(false)} disabled={inviteMutation.isPending}>
+                    Cancelar
+                  </Button>
+                  <Button type="submit" disabled={inviteMutation.isPending || !inviteEmail}>
+                    {inviteMutation.isPending ? "Enviando..." : "Enviar Invitación"}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
       </div>
 
       {/* Main Content Area */}

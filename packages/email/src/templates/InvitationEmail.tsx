@@ -64,3 +64,5 @@ export function InvitationEmail({
   );
 }
 
+export default InvitationEmail;
+

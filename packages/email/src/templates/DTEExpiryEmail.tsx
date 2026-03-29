@@ -67,3 +67,5 @@ export function DTEExpiryEmail({
     </Html>
   );
 }
+
+export default DTEExpiryEmail;

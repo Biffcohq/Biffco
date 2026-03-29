@@ -6,4 +6,5 @@ export interface HoldAlertEmailProps {
     url: string;
 }
 export declare function HoldAlertEmail({ assetId, assetType, reason, heldAt, url, }: HoldAlertEmailProps): import("react/jsx-runtime").JSX.Element;
+export default HoldAlertEmail;
 //# sourceMappingURL=HoldAlertEmail.d.ts.map

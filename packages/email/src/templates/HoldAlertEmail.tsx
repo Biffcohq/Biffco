@@ -70,3 +70,5 @@ export function HoldAlertEmail({
     </Html>
   );
 }
+
+export default HoldAlertEmail;
