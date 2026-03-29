@@ -27,6 +27,8 @@ const resendReady = !!config_1.env.RESEND_API_KEY;
 const resend = resendReady ? new resend_1.Resend(config_1.env.RESEND_API_KEY) : null;
 __exportStar(require("./templates/InvitationEmail"), exports);
 __exportStar(require("./templates/WelcomeEmail"), exports);
+__exportStar(require("./templates/HoldAlertEmail"), exports);
+__exportStar(require("./templates/DTEExpiryEmail"), exports);
 async function sendEmail({ to, subject, component, props }) {
     const { render } = await import('@react-email/render');
     const html = await render(react_1.default.createElement(component, props));

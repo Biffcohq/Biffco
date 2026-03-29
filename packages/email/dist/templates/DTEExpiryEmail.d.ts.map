@@ -1,0 +1,1 @@
+{"version":3,"file":"DTEExpiryEmail.d.ts","sourceRoot":"","sources":["../../src/templates/DTEExpiryEmail.tsx"],"names":[],"mappings":"AAcA,MAAM,WAAW,mBAAmB;IAClC,UAAU,EAAE,MAAM,CAAC;IACnB,YAAY,EAAE,MAAM,CAAC;IACrB,UAAU,EAAE,MAAM,CAAC;IACnB,GAAG,EAAE,MAAM,CAAC;CACb;AAED,wBAAgB,cAAc,CAAC,EAC7B,UAAwB,EACxB,YAAkD,EAClD,UAA4C,EAC5C,GAAyB,GAC1B,EAAE,mBAAmB,2CA0CrB"}

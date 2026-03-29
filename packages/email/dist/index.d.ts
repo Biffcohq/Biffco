@@ -1,6 +1,8 @@
 import React from 'react';
 export * from './templates/InvitationEmail';
 export * from './templates/WelcomeEmail';
+export * from './templates/HoldAlertEmail';
+export * from './templates/DTEExpiryEmail';
 export declare function sendEmail<T>({ to, subject, component, props }: {
     to: string;
     subject: string;

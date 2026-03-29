@@ -1,2 +1,9 @@
-export declare function WelcomeEmail(): import("react/jsx-runtime").JSX.Element;
+export interface WelcomeEmailProps {
+    workspaceName?: string;
+    memberName?: string;
+    verticalLabel?: string;
+    dashboardUrl?: string;
+    firstSteps?: string[];
+}
+export declare function WelcomeEmail({ workspaceName, memberName, verticalLabel, dashboardUrl, firstSteps }: WelcomeEmailProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=WelcomeEmail.d.ts.map

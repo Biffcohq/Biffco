@@ -9,6 +9,8 @@ const resend = resendReady ? new Resend(env.RESEND_API_KEY) : null;
 
 export * from './templates/InvitationEmail';
 export * from './templates/WelcomeEmail';
+export * from './templates/HoldAlertEmail';
+export * from './templates/DTEExpiryEmail';
 
 export async function sendEmail<T>({
   to, subject, component, props
