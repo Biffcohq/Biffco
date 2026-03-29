@@ -1,0 +1,30 @@
+export declare const Permission: {
+    readonly ASSETS_CREATE: "assets.create";
+    readonly ASSETS_READ: "assets.read";
+    readonly ASSETS_UPDATE: "assets.update";
+    readonly ASSETS_SPLIT: "assets.split";
+    readonly ASSETS_MERGE: "assets.merge";
+    readonly ASSETS_TRANSFORM: "assets.transform";
+    readonly EVENTS_APPEND: "events.append";
+    readonly EVENTS_READ: "events.read";
+    readonly TRANSFERS_INITIATE: "transfers.initiate";
+    readonly TRANSFERS_ACCEPT: "transfers.accept";
+    readonly TRANSFERS_REJECT: "transfers.reject";
+    readonly HOLDS_IMPOSE: "holds.impose";
+    readonly HOLDS_LIFT: "holds.lift";
+    readonly FACILITIES_MANAGE: "facilities.manage";
+    readonly ZONES_MANAGE: "zones.manage";
+    readonly PENS_MANAGE: "pens.manage";
+    readonly ORG_MANAGE: "org.manage";
+    readonly MEMBERS_INVITE: "members.invite";
+    readonly MEMBERS_REVOKE: "members.revoke";
+    readonly EMPLOYEES_MANAGE: "employees.manage";
+    readonly BILLING_MANAGE: "billing.manage";
+    readonly SETTINGS_MANAGE: "settings.manage";
+    readonly CERTIFICATIONS_LINK: "certifications.link";
+    readonly ANALYTICS_VIEW: "analytics.view";
+    readonly REPORTS_GENERATE: "reports.generate";
+    readonly AUDIT_READ: "audit.read";
+};
+export type Permission = typeof Permission[keyof typeof Permission];
+//# sourceMappingURL=permissions.d.ts.map

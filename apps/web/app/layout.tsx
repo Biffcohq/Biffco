@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { ReactNode, ReactElement } from "react";
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 
@@ -21,7 +21,7 @@ export const metadata = {
   description: 'Infraestructura de confianza criptográfica para cualquier cadena de valor global. El core no sabe qué es una vaca ni qué es un mineral, solo criptografía inmutable.',
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }): ReactElement {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       {/* El atributo bg de surface lo agregamos al body, así como el scroll sutil */}

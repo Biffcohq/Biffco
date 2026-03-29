@@ -11,6 +11,7 @@
   "dependencies": {
     "@biffco/db": "workspace:^",
     "@biffco/ui": "workspace:^",
+    "@react-pdf/renderer": "^4.3.2",
     "drizzle-orm": "^0.45.1",
     "next": "14.2.35",
     "react": "^18",

@@ -1,11 +1,11 @@
 "use client"
 
 import { IconLogout } from '@tabler/icons-react'
-import { useRouter } from 'next/navigation'
+
 import { trpc } from '@/lib/trpc'
 import { useAuthStore } from '@/app/stores/useAuthStore'
 export function LogoutButton() {
-  const router = useRouter()
+
   const utils = trpc.useUtils()
   // const logoutState = useUIStore(s => s.resetStore) // Si hubiera una función para limpiar estado local
   
@@ -13,12 +13,12 @@ export function LogoutButton() {
     onSuccess: () => {
       utils.client.clear()
       useAuthStore.getState().clearSession() // Important: clears Zustand state
-      router.push('/login')
+      window.location.href = process.env.NEXT_PUBLIC_WEB_URL || 'https://biffco.co'
     },
     onError: (err: any) => {
       console.error("Logout error", err)
       useAuthStore.getState().clearSession() 
-      router.push('/login')
+      window.location.href = process.env.NEXT_PUBLIC_WEB_URL || 'https://biffco.co'
     }
   })
 

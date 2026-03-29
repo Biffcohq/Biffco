@@ -12,14 +12,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1019.0",
+    "@aws-sdk/s3-request-presigner": "^3.1019.0",
     "@biffco/config": "workspace:^",
     "@biffco/core": "workspace:^",
     "@biffco/db": "workspace:^",
+    "@biffco/email": "workspace:*",
     "@biffco/livestock": "workspace:^",
     "@biffco/shared": "workspace:^",
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
     "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "^9.4.0",
     "@fastify/rate-limit": "^10.3.0",
     "@opentelemetry/auto-instrumentations-node": "^0.72.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.214.0",
@@ -34,6 +38,7 @@
     "ethers": "^6.16.0",
     "fastify": "^5.8.4",
     "ioredis": "^5.10.1",
+    "multer": "^2.1.1",
     "tsx": "^4.21.0",
     "zod": "^3.23.8"
   },

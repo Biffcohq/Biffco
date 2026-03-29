@@ -8,6 +8,8 @@ export * from './components/Avatar'
 export * from './components/Modal'
 export * from './components/EmptyState'
 export * from './components/Toaster'
+export * from './components/Textarea'
+export * from './components/Label'
 
 export * from './domain/SignatureBadge'
 export * from './domain/EventTimeline'
