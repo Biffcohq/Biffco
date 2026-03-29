@@ -180,6 +180,26 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
             } | undefined;
             meta: object;
         }>;
+        acceptInvite: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                publicKey: string;
+                wsIdx: number;
+                inviteToken: string;
+            };
+            output: {
+                id: string;
+                workspaceId: string;
+                personId: string;
+                publicKey: string;
+                roles: string[];
+                status: string;
+                invitedAt: Date;
+                acceptedAt: Date | null;
+                revokedAt: Date | null;
+                createdAt: Date;
+            };
+            meta: object;
+        }>;
         revoke: import("@trpc/server").TRPCMutationProcedure<{
             input: {
                 memberId: string;
@@ -352,12 +372,12 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 name: string;
                 type: string;
                 country?: string | undefined;
-                licenseNumber?: string | undefined;
                 address?: string | undefined;
                 polygon?: {
                     type: "Polygon";
                     coordinates: number[][][];
                 } | undefined;
+                licenseNumber?: string | undefined;
             };
             output: {
                 id: string;

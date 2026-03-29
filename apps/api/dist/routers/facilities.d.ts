@@ -9,12 +9,12 @@ export declare const facilitiesRouter: import("@trpc/server").TRPCBuiltRouter<{
             name: string;
             type: string;
             country?: string | undefined;
-            licenseNumber?: string | undefined;
             address?: string | undefined;
             polygon?: {
                 type: "Polygon";
                 coordinates: number[][][];
             } | undefined;
+            licenseNumber?: string | undefined;
         };
         output: {
             id: string;

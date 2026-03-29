@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+/* global console */
+/* eslint-disable no-console, no-undef */
 const sdk_node_1 = require("@opentelemetry/sdk-node");
 const auto_instrumentations_node_1 = require("@opentelemetry/auto-instrumentations-node");
 const exporter_trace_otlp_http_1 = require("@opentelemetry/exporter-trace-otlp-http");
