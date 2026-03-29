@@ -4,9 +4,8 @@ import { domainEvents, anchoredEvents, anchorsLog } from '@biffco/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import { BlockchainAnchorBadge } from '@biffco/ui';
 
-// This runs on the Edge/Server for extremely fast load
-export const runtime = "edge";
-
+// This runs on Node.js to support postgres.js connections
+// export const runtime = "edge";
 interface VerifyPageProps {
   params: {
     assetId: string;

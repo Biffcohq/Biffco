@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import { DAGVisualizer, DAGAsset } from './DAGVisualizer';
 import { EventTimeline, MockDomainEvent } from './EventTimeline';
