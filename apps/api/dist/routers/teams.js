@@ -9,7 +9,14 @@ const rbac_1 = require("@biffco/core/rbac");
 exports.teamsRouter = (0, trpc_1.router)({
     list: trpc_1.protectedProcedure
         .query(async ({ ctx }) => {
-        return ctx.db.select().from(schema_1.teams).where((0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId));
+        // Returns all teams with an array of their member IDs.
+        const allTeams = await ctx.db.select().from(schema_1.teams).where((0, db_1.eq)(schema_1.teams.workspaceId, ctx.workspaceId));
+        const allMembers = await ctx.db.select().from(schema_1.teamMembers);
+        // Group members by teamId
+        return allTeams.map(t => ({
+            ...t,
+            memberIds: allMembers.filter(m => m.teamId === t.id).map(m => m.memberId)
+        }));
     }),
     create: (0, trpc_1.requirePermission)(rbac_1.Permission.ORG_MANAGE)
         .input(zod_1.z.object({

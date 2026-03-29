@@ -7,7 +7,14 @@ import { Permission } from '@biffco/core/rbac'
 export const teamsRouter = router({
   list: protectedProcedure
     .query(async ({ ctx }) => {
-      return ctx.db.select().from(teams).where(eq(teams.workspaceId, ctx.workspaceId!))
+      // Returns all teams with an array of their member IDs.
+      const allTeams = await ctx.db.select().from(teams).where(eq(teams.workspaceId, ctx.workspaceId!))
+      const allMembers = await ctx.db.select().from(teamMembers)
+      // Group members by teamId
+      return allTeams.map(t => ({
+        ...t,
+        memberIds: allMembers.filter(m => m.teamId === t.id).map(m => m.memberId)
+      }))
     }),
 
   create: requirePermission(Permission.ORG_MANAGE)

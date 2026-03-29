@@ -7,6 +7,7 @@ export declare const teamsRouter: import("@trpc/server").TRPCBuiltRouter<{
     list: import("@trpc/server").TRPCQueryProcedure<{
         input: void;
         output: {
+            memberIds: string[];
             id: string;
             workspaceId: string;
             name: string;

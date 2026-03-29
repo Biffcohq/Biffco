@@ -27,5 +27,7 @@ export * from './domain/EventTimeline'
 export * from './domain/SyncStatusBadge'
 export * from './domain/ChainOfCustodyView'
 export * from './components/BlockchainAnchorBadge'
+export * from './domain/EvidenceThumb'
+export * from './domain/GeoComplianceBadge'
 
 export * from './lib/utils'
