@@ -21,6 +21,7 @@ export const appRouter = router({
   zones: zonesRouter,
   pens: pensRouter,
   assets: assetsRouter,
+  events: eventsRouter,
   verticals: verticalsRouter,
 })
 
