@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { domainEvents, assets } from '@biffco/db/schema'
-import { randomUUID } from 'crypto'
 import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
@@ -18,8 +17,10 @@ export const eventsRouter = router({
     }).optional())
     .query(async ({ input, ctx }) => {
       const conditions = []
-      // Tenant Isolation implicito evaluando assets.workspaceId no es facil porque la tabla event no tiene workspaceId directo.
-      // Se debe hacer JOIN o los eventos asumen que el cliente consulta por un streamId al que tiene acceso.
+      
+      // Tenant Isolation: solo listamos eventos del workspace actual
+      conditions.push(eq(domainEvents.workspaceId, ctx.workspaceId!))
+
       if (input?.streamId) {
         conditions.push(eq(domainEvents.streamId, input.streamId))
       }
@@ -37,30 +38,35 @@ export const eventsRouter = router({
     }),
 
   // APÉNDICE INMUTABLE: Agrega un evento a un 'stream' (Asset)
-  append: requirePermission(Permission.EVENTS_APPEND) // Si tu sistema de RBAC usa EVENTS_APPEND. Ajusta si es ASSETS_UPDATE.
+  append: requirePermission(Permission.EVENTS_APPEND) // Ajustando RBAC
     .input(z.object({
       streamId: z.string(),
+      streamType: z.enum(['asset', 'asset_group']).default('asset'),
       eventType: z.string(),
       payload: z.record(z.unknown()),
       signature: z.string().optional(),
       publicKey: z.string().optional(),
-      hash: z.string() // El ID inmutable precomputado o generado por el arbol de merkle local
+      hash: z.string(), // SHA-256 local
+      previousHash: z.string().optional()
     }))
     .mutation(async ({ input, ctx }) => {
-      const { db, workspaceId } = ctx
+      const { db, workspaceId, memberId } = ctx
       
-      // 1. Verificar existencia y propiedad del asset en este workspace
-      const asset = await db.query.assets.findFirst({
-        where: and(eq(assets.id, input.streamId), eq(assets.workspaceId, workspaceId!))
-      })
+      if (!workspaceId) {
+         throw new TRPCError({ code: "UNAUTHORIZED", message: "Missing Workspace" })
+      }
 
-      if (!asset) {
-        throw new TRPCError({ code: "NOT_FOUND", message: "Activo (Stream) no encontrado." })
+      // 1. Verificar existencia y propiedad del asset en este workspace
+      if (input.streamType === 'asset') {
+         const asset = await db.query.assets.findFirst({
+           where: and(eq(assets.id, input.streamId), eq(assets.workspaceId, workspaceId))
+         })
+         if (!asset) {
+           throw new TRPCError({ code: "NOT_FOUND", message: "Activo (Stream) no encontrado." })
+         }
       }
 
       // 2. Validación Mock ED25519 (Lógica Placeholder)
-      // En un entorno de producción, aquí se usa @noble/ed25519 para regenerar el Payload Stringified 
-      // y compararlo contra input.signature usando input.publicKey
       if (input.signature && input.publicKey) {
          const isValidSignature = true // MOCK: Cambiar a ED25519Verify()
          if (!isValidSignature) {
@@ -70,15 +76,15 @@ export const eventsRouter = router({
 
       // 3. Persistir Evento en el Ledger
       const [newEvent] = await db.insert(domainEvents).values({
-        id: randomUUID(),
+        workspaceId: workspaceId,
         streamId: input.streamId,
-        version: 1, // Autoincremental basado en query(max version where streamId)
+        streamType: input.streamType,
         eventType: input.eventType,
-        payload: input.payload,
+        data: input.payload,
         signature: input.signature,
-        publicKey: input.publicKey,
         hash: input.hash,
-        createdBy: ctx.personId || "system"
+        previousHash: input.previousHash,
+        signerId: memberId || "system"
       }).returning()
 
       // 4. Actualizar estado derivado del Asset en cascada si es necesario 
@@ -96,7 +102,7 @@ export const eventsRouter = router({
          correlationId: z.string().optional() // ID para tracking del batch completo
       }))
       .mutation(async ({ input }) => {
-         // Lógica para Batch Events a desarrollar...
+         // Lógica para Batch Events a desarrollar en el siguiente paso logístico
          return { success: true, processed: input.streamIds.length }
       })
 })
