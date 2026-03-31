@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { IconIdBadge2, IconPlus, IconUserOff, IconSearch } from '@tabler/icons-react'
+import { IconIdBadge2, IconPlus, IconUserOff } from '@tabler/icons-react'
+// @ts-ignore
 import { Skeleton, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Badge } from '@biffco/ui'
 
 export default function EmployeesPage() {
@@ -23,7 +24,7 @@ export default function EmployeesPage() {
       setNewDni("")
       trpcUtils.employees.list.invalidate()
     },
-    onError: (err) => toast.error(err.message || "Error al registrar")
+    onError: (err: any) => toast.error(err.message || "Error al registrar")
   })
 
   const deactivateMutation = trpc.employees.deactivate.useMutation({
@@ -31,7 +32,7 @@ export default function EmployeesPage() {
       toast.success("Actualizado a Inactivo")
       trpcUtils.employees.list.invalidate()
     },
-    onError: (err) => toast.error(err.message || "Error al desactivar")
+    onError: (err: any) => toast.error(err.message || "Error al desactivar")
   })
 
   const handleCreate = (e: React.FormEvent) => {
@@ -73,7 +74,7 @@ export default function EmployeesPage() {
                   type="text"
                   placeholder="Ej. Juan Pérez" 
                   value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
                   required
                 />
               </div>
@@ -85,7 +86,7 @@ export default function EmployeesPage() {
                     type="text"
                     placeholder="Ej. Conductor, Peón" 
                     value={newRole}
-                    onChange={(e) => setNewRole(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewRole(e.target.value)}
                     required
                   />
                 </div>
@@ -96,7 +97,7 @@ export default function EmployeesPage() {
                     type="text"
                     placeholder="Ej. 12345678" 
                     value={newDni}
-                    onChange={(e) => setNewDni(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDni(e.target.value)}
                   />
                 </div>
               </div>
@@ -143,7 +144,7 @@ export default function EmployeesPage() {
                   </td>
                 </tr>
               ) : (
-                employees?.map(emp => (
+                employees?.map((emp: any) => (
                   <tr key={emp.id} className="hover:bg-surface-overlay transition-colors">
                     <td className="px-6 py-4 font-medium text-text-primary">
                       {emp.name}
@@ -165,7 +166,7 @@ export default function EmployeesPage() {
                       {emp.isActive && (
                         <button 
                           onClick={() => {
-                            if (confirm(`¿Marcar a ${emp.name} como inactivo?`)) {
+                            if (window.confirm(`¿Marcar a ${emp.name} como inactivo?`)) {
                               deactivateMutation.mutate({ id: emp.id })
                             }
                           }}

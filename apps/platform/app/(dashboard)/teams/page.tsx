@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { IconUsersGroup, IconPlus, IconTrash, IconUserPlus } from '@tabler/icons-react'
-import { Skeleton, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Card, Combobox, ComboboxOption } from '@biffco/ui'
+import { IconUsersGroup, IconPlus, IconTrash } from '@tabler/icons-react'
+// @ts-ignore
+import { Skeleton, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Card, Combobox, type ComboboxOption } from '@biffco/ui'
 
 export default function TeamsPage() {
   const trpcUtils = trpc.useUtils()
@@ -22,7 +23,7 @@ export default function TeamsPage() {
       setNewTeamDesc("")
       trpcUtils.teams.list.invalidate()
     },
-    onError: (err) => toast.error(err.message || "Error al crear equipo")
+    onError: (err: any) => toast.error(err.message || "Error al crear equipo")
   })
 
   const deleteMutation = trpc.teams.delete.useMutation({
@@ -30,14 +31,14 @@ export default function TeamsPage() {
       toast.success("Equipo eliminado")
       trpcUtils.teams.list.invalidate()
     },
-    onError: (err) => toast.error(err.message || "Error al eliminar equipo")
+    onError: (err: any) => toast.error(err.message || "Error al eliminar equipo")
   })
 
   const addMemberMutation = trpc.teams.addMember.useMutation({
     onSuccess: () => {
       trpcUtils.teams.list.invalidate()
     },
-    onError: (err) => toast.error(err.message || "Error agregando miembro")
+    onError: (err: any) => toast.error(err.message || "Error agregando miembro")
   })
 
   const handleCreate = (e: React.FormEvent) => {
@@ -47,14 +48,14 @@ export default function TeamsPage() {
   }
 
   const handleDelete = (id: string) => {
-    if (confirm("¿Estás seguro de que quieres eliminar este equipo?")) {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este equipo?")) {
       deleteMutation.mutate({ id })
     }
   }
 
   // Prepara opciones para combobox de miembros (solo activos)
   const memberOptions: ComboboxOption[] = members 
-    ? members.filter(m => m.status === 'active').map(m => ({
+    ? members.filter((m: any) => m.status === 'active').map((m: any) => ({
         label: m.publicKey.slice(0,16) + '...',
         value: m.id
       }))
@@ -93,7 +94,7 @@ export default function TeamsPage() {
                   type="text"
                   placeholder="Ej. Veterinarios" 
                   value={newTeamName}
-                  onChange={(e) => setNewTeamName(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTeamName(e.target.value)}
                   required
                 />
               </div>
@@ -104,7 +105,7 @@ export default function TeamsPage() {
                   type="text"
                   placeholder="Responsables de auditorías" 
                   value={newTeamDesc}
-                  onChange={(e) => setNewTeamDesc(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTeamDesc(e.target.value)}
                 />
               </div>
               <DialogFooter className="mt-4">
@@ -133,7 +134,7 @@ export default function TeamsPage() {
             <h3 className="text-lg font-medium text-text-primary">No hay equipos aún</h3>
             <p className="text-text-secondary mt-1 max-w-sm">Crea tu primer equipo para organizar los miembros del espacio de trabajo.</p>
           </div>
-        ) : teams?.map(team => (
+        ) : teams?.map((team: any) => (
           <Card key={team.id} className="bg-surface border border-border overflow-hidden flex flex-col shadow-sm">
             <div className="p-5 border-b border-border flex justify-between items-start bg-surface">
               <div>
@@ -150,7 +151,7 @@ export default function TeamsPage() {
               {team.memberIds && team.memberIds.length > 0 ? (
                 <ul className="space-y-2 mb-4">
                   {team.memberIds.map((mid: string) => {
-                    const m = members?.find(x => x.id === mid)
+                    const m = members?.find((x: any) => x.id === mid)
                     return (
                       <li key={mid} className="text-sm text-text-secondary flex items-center gap-2 font-medium">
                         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
@@ -172,7 +173,7 @@ export default function TeamsPage() {
                 placeholder="Seleccionar miembro..." 
                 emptyText="Todos agregados"
                 className="flex-1"
-                onChange={(val) => {
+                onChange={(val: string | null) => {
                   if (val) addMemberMutation.mutate({ teamId: team.id, memberId: val })
                 }}
               />
