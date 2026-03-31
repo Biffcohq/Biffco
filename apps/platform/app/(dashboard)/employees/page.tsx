@@ -44,7 +44,7 @@ export default function EmployeesPage() {
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-text-primary">
             <IconIdBadge2 size={24} className="text-primary" />
             Personal
           </h1>
@@ -67,7 +67,7 @@ export default function EmployeesPage() {
             </DialogHeader>
             <form onSubmit={handleCreate} className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-white">Nombre Completo</Label>
+                <Label htmlFor="name" className="text-text-primary">Nombre Completo</Label>
                 <Input 
                   id="name" 
                   type="text"
@@ -79,7 +79,7 @@ export default function EmployeesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="role" className="text-white">Cargo / Rol</Label>
+                  <Label htmlFor="role" className="text-text-primary">Cargo / Rol</Label>
                   <Input 
                     id="role" 
                     type="text"
@@ -90,7 +90,7 @@ export default function EmployeesPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="dni" className="text-white">DNI / Identificación</Label>
+                  <Label htmlFor="dni" className="text-text-primary">DNI / Identificación</Label>
                   <Input 
                     id="dni" 
                     type="text"
@@ -113,45 +113,45 @@ export default function EmployeesPage() {
         </Dialog>
       </div>
 
-      <div className="border border-white/10 rounded-lg overflow-hidden bg-zinc-950">
+      <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-black text-zinc-400 border-b border-white/5">
+            <thead className="text-xs uppercase bg-surface-raised text-text-secondary border-b border-border font-semibold">
               <tr>
-                <th scope="col" className="px-6 py-4 font-medium">Nombre</th>
-                <th scope="col" className="px-6 py-4 font-medium">Cargo</th>
-                <th scope="col" className="px-6 py-4 font-medium">DNI</th>
-                <th scope="col" className="px-6 py-4 font-medium">Estado</th>
-                <th scope="col" className="px-6 py-4 font-medium text-right">Acciones</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Nombre</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Cargo</th>
+                <th scope="col" className="px-6 py-4 font-semibold">DNI</th>
+                <th scope="col" className="px-6 py-4 font-semibold">Estado</th>
+                <th scope="col" className="px-6 py-4 font-semibold text-right">Acciones</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border">
               {isLoading ? (
                 Array(3).fill(0).map((_, i) => (
-                  <tr key={i} className="hover:bg-white/5 transition-colors">
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-32" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-24" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-20" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full" /></td>
-                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto" /></td>
+                  <tr key={i} className="hover:bg-surface-overlay transition-colors">
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-20 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full bg-surface-raised" /></td>
+                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto bg-surface-raised" /></td>
                   </tr>
                 ))
               ) : employees?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-zinc-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-text-secondary">
                     No hay personal registrado en este espacio de trabajo.
                   </td>
                 </tr>
               ) : (
                 employees?.map(emp => (
-                  <tr key={emp.id} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-6 py-4 font-medium text-white">
+                  <tr key={emp.id} className="hover:bg-surface-overlay transition-colors">
+                    <td className="px-6 py-4 font-medium text-text-primary">
                       {emp.name}
                     </td>
-                    <td className="px-6 py-4 text-zinc-300">
+                    <td className="px-6 py-4 text-text-secondary">
                       {emp.role}
                     </td>
-                    <td className="px-6 py-4 text-zinc-400 font-mono text-xs">
+                    <td className="px-6 py-4 text-text-secondary font-mono text-xs">
                       {emp.dni || "-"}
                     </td>
                     <td className="px-6 py-4">
@@ -169,7 +169,7 @@ export default function EmployeesPage() {
                               deactivateMutation.mutate({ id: emp.id })
                             }
                           }}
-                          className="text-zinc-500 hover:text-yellow-500 transition-colors p-2 rounded-md hover:bg-white/5"
+                          className="text-text-muted hover:text-warning transition-colors p-2 rounded-md hover:bg-surface-raised"
                           title="Desactivar personal"
                         >
                           <IconUserOff size={16} />

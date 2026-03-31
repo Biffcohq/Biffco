@@ -64,7 +64,7 @@ export default function TeamsPage() {
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-text-primary">
             <IconUsersGroup size={24} className="text-primary" />
             Equipos
           </h1>
@@ -73,7 +73,7 @@ export default function TeamsPage() {
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-text-primary hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+            <Button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
               <IconPlus size={18} />
               Crear Equipo
             </Button>
@@ -123,38 +123,38 @@ export default function TeamsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {isLoadingTeams || isLoadingMembers ? (
           <>
-            <Skeleton className="h-48 w-full rounded-xl bg-white/5" />
-            <Skeleton className="h-48 w-full rounded-xl bg-white/5" />
-            <Skeleton className="h-48 w-full rounded-xl bg-white/5" />
+            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
+            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
+            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
           </>
         ) : teams?.length === 0 ? (
-          <div className="col-span-full py-12 text-center rounded-lg border flex flex-col items-center justify-center bg-black border-white/10">
-            <IconUsersGroup size={48} className="text-text-secondary opacity-20 mb-4" />
+          <div className="col-span-full py-12 text-center rounded-lg border flex flex-col items-center justify-center bg-surface border-border">
+            <IconUsersGroup size={48} className="text-text-muted opacity-40 mb-4" />
             <h3 className="text-lg font-medium text-text-primary">No hay equipos aún</h3>
             <p className="text-text-secondary mt-1 max-w-sm">Crea tu primer equipo para organizar los miembros del espacio de trabajo.</p>
           </div>
         ) : teams?.map(team => (
-          <Card key={team.id} className="bg-zinc-950 border border-white/10 overflow-hidden flex flex-col">
-            <div className="p-5 border-b border-white/5 flex justify-between items-start">
+          <Card key={team.id} className="bg-surface border border-border overflow-hidden flex flex-col shadow-sm">
+            <div className="p-5 border-b border-border flex justify-between items-start bg-surface">
               <div>
                 <h3 className="font-semibold text-text-primary text-lg">{team.name}</h3>
                 <p className="text-text-secondary text-sm mt-1">{team.description || "Sin descripción"}</p>
               </div>
-              <button onClick={() => handleDelete(team.id)} className="text-zinc-500 hover:text-red-400 transition-colors">
+              <button onClick={() => handleDelete(team.id)} className="text-text-muted hover:text-red-500 transition-colors">
                  <IconTrash size={18} />
               </button>
             </div>
-            <div className="p-5 flex-1 bg-black/20">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-3">Miembros ({team.memberIds?.length || 0})</h4>
+            <div className="p-5 flex-1 bg-surface-raised">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">Miembros ({team.memberIds?.length || 0})</h4>
               
               {team.memberIds && team.memberIds.length > 0 ? (
                 <ul className="space-y-2 mb-4">
                   {team.memberIds.map((mid: string) => {
                     const m = members?.find(x => x.id === mid)
                     return (
-                      <li key={mid} className="text-sm text-zinc-300 flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center text-primary text-xs">
-                           {m ? m.publicKey.slice(0, 2) : '?'}
+                      <li key={mid} className="text-sm text-text-secondary flex items-center gap-2 font-medium">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
+                           {m ? m.publicKey.slice(0, 2).toUpperCase() : '?'}
                         </div>
                         {m ? m.publicKey.slice(0, 16) + '...' : mid}
                       </li>
@@ -162,16 +162,16 @@ export default function TeamsPage() {
                   })}
                 </ul>
               ) : (
-                <p className="text-sm text-zinc-500 italic mb-4">No hay miembros en este equipo</p>
+                <p className="text-sm text-text-muted italic mb-4">No hay miembros en este equipo</p>
               )}
             </div>
             
-            <div className="p-4 border-t border-white/5 bg-zinc-950 flex items-center gap-2">
+            <div className="p-4 border-t border-border bg-surface flex items-center gap-2">
               <Combobox 
                 options={memberOptions.filter(o => !team.memberIds?.includes(o.value))} 
                 placeholder="Seleccionar miembro..." 
                 emptyText="Todos agregados"
-                className="flex-1 bg-black"
+                className="flex-1"
                 onChange={(val) => {
                   if (val) addMemberMutation.mutate({ teamId: team.id, memberId: val })
                 }}
