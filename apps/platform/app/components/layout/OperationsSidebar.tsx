@@ -3,15 +3,14 @@ import React from 'react'
 
 import { useUIStore } from '../../stores/useUIStore'
 import {
-  IconBuilding,
-  IconUsers,
-  IconPackage,
+  IconArrowLeft,
+  IconBox,
   IconFileCheck,
-  IconLeaf,
-  IconChartBar,
+  IconListDetails,
+  IconShape,
+  IconChartDonut,
   IconChevronLeft,
-  IconChevronRight,
-  IconShieldCheck
+  IconChevronRight
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
@@ -22,61 +21,55 @@ interface NavGroup {
   label: string
   items: {
     label: string
-    href: string
+    // eslint-disable-next-line no-unused-vars
+    href: (ws: string) => string
     icon: React.ElementType
   }[]
 }
 
 const navGroups: NavGroup[] = [
   {
-    label: "Gestión",
+    label: "Trazabilidad",
     items: [
-      { label: "Mi Workspace", href: "/", icon: IconBuilding },
-      { label: "Equipo", href: "/members", icon: IconUsers },
-      { label: "Equipos/Roles", href: "/teams", icon: IconUsers },
-      { label: "Empleados", href: "/employees", icon: IconUsers },
-      { label: "Wallet (Claves)", href: "/settings/wallet", icon: IconShieldCheck },
+      { label: "Activos (Assets)", href: (ws) => `/${ws}/assets`, icon: IconBox },
+      { label: "Eventos Clínicos", href: (ws) => `/${ws}/events`, icon: IconListDetails },
+      { label: "Agrupaciones (Lotes)", href: (ws) => `/${ws}/groups`, icon: IconShape },
     ]
   },
   {
-    label: "Operaciones",
+    label: "Validación",
     items: [
-      { label: "Facilities", href: "/facilities", icon: IconPackage },
-      { label: "Eventos", href: "/events", icon: IconFileCheck },
-    ]
-  },
-  {
-    label: "Compliance",
-    items: [
-      { label: "EUDR", href: "/eudr", icon: IconLeaf },
-      { label: "Analytics", href: "/analytics", icon: IconChartBar },
+      { label: "Auditorías", href: (ws) => `/${ws}/audits`, icon: IconFileCheck },
+      { label: "Reportes", href: (ws) => `/${ws}/reports`, icon: IconChartDonut },
     ]
   }
 ]
 
-export function Sidebar() {
+export function OperationsSidebar({ wsId }: { wsId: string }) {
   const isCollapsed = useUIStore(s => s.isSidebarCollapsed)
   const toggle = useUIStore(s => s.toggleSidebar)
   const pathname = usePathname()
+  
+  // Obtenemos el profile para el usuario (global)
   const { data: profile } = trpc.workspaces.getProfile.useQuery()
-
+  // También podríamos obtener el detalle del workspace actual si existiera el endpoint workspaces.getById
+  
   return (
     <aside 
       className={`relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
         isCollapsed ? 'w-16' : 'w-[240px]'
       }`}
     >
-      {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
-        <Link href="/" className="flex items-center gap-2 overflow-hidden h-full py-2">
-          {/* Logo / Isotipo */}
-          <div className="flex items-center justify-center bg-primary rounded-md w-8 h-8 shrink-0 shadow-sm text-white">
-            <IconShieldCheck size={20} stroke={2} />
+      {/* Header operations back to Management */}
+      <div className="h-14 flex items-center px-4 border-b border-border shrink-0">
+        <Link href="/" className="flex items-center gap-2 overflow-hidden h-full py-2 hover:opacity-80 transition-opacity w-full">
+          <div className="flex items-center justify-center bg-surface-raised border border-border rounded-md w-8 h-8 shrink-0 text-text-secondary">
+            <IconArrowLeft size={18} stroke={2} />
           </div>
           {!isCollapsed && (
-            <div className="flex flex-col whitespace-nowrap">
-              <span className="font-bold text-sm leading-tight text-text-primary tracking-wide">Biffco Corp</span>
-              <span className="text-[10px] text-text-muted uppercase tracking-widest">Ganadería Bovina</span>
+            <div className="flex flex-col whitespace-nowrap overflow-hidden">
+               <span className="font-bold text-sm leading-tight text-text-primary tracking-wide truncate">Volver a Admin</span>
+               <span className="text-[10px] text-text-muted uppercase tracking-widest truncate">Workspace: {wsId.substring(0,8)}</span>
             </div>
           )}
         </Link>
@@ -101,20 +94,20 @@ export function Sidebar() {
               </h3>
             )}
             
-            {/* Si está colapsado, una rayita divisoria para separar el primer grupo del resto */}
-            {isCollapsed && idx > 0 && <div className="h-px bg-white/10 mx-auto w-6 mb-2 mt-1" />}
+            {isCollapsed && idx > 0 && <div className="h-px bg-border mx-auto w-6 mb-2 mt-1" />}
 
             {group.items.map((item) => {
-              const isActive = pathname === item.href
+              const href = item.href(wsId)
+              const isActive = pathname.startsWith(href)
               const Icon = item.icon
               return (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={href}
+                  href={href}
                   className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-colors overflow-hidden shrink-0 ${
                     isActive 
-                      ? 'bg-white/10 text-white font-medium' 
-                      : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      ? 'bg-primary/10 text-primary font-medium border border-primary/20' 
+                      : 'text-text-secondary hover:bg-surface-raised hover:text-text-primary border border-transparent'
                   }`}
                   title={isCollapsed ? item.label : undefined}
                 >
@@ -132,15 +125,15 @@ export function Sidebar() {
       </div>
 
       {/* Footer User Profile */}
-      <div className="p-3 border-t border-white/10 shrink-0 mx-2 mb-2 rounded-lg bg-surface-overlay/30 mt-auto">
+      <div className="p-3 border-t border-border shrink-0 mx-2 mb-2 rounded-lg bg-surface-raised mt-auto">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="shrink-0 rounded-full bg-orange size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
             {profile?.name ? profile.name.substring(0,2) : "WK"}
           </div>
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-sm font-medium text-white truncate">{profile?.name || "Cargando..."}</span>
-              <span className="text-xs text-white/50 truncate">Workspace</span>
+              <span className="text-sm font-medium text-text-primary truncate">{profile?.name || "Cargando..."}</span>
+              <span className="text-[10px] text-success flex items-center gap-1"><span className="size-1.5 rounded-full bg-success block"></span> Operador Local</span>
             </div>
           )}
           {!isCollapsed && (

@@ -48,14 +48,14 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-y-0 right-0 z-50 flex h-auto w-[400px] flex-col rounded-l-[10px] border-l border-[var(--color-neutral-200)] bg-[var(--color-bg-primary)] outline-none ring-0",
+        "fixed inset-y-0 right-0 z-50 flex h-auto w-[400px] flex-col rounded-l-[10px] border-l border-[var(--color-neutral-200)] bg-[var(--color-surface)] outline-none ring-0",
         className
       )}
       {...props}
     >
       <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6">
         <DrawerClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <X className="h-4 w-4 text-[var(--color-text-primary)]" />
+          <X className="h-4 w-4 text-text-primary]" />
           <span className="sr-only">Close</span>
         </DrawerClose>
       </div>
@@ -94,7 +94,7 @@ const DrawerTitle = React.forwardRef<
   <DrawerPrimitive.Title
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight text-[var(--color-text-primary)]",
+      "text-lg font-semibold leading-none tracking-tight text-text-primary]",
       className
     )}
     {...props}

@@ -40,13 +40,13 @@ function Calendar({
         ),
         day_range_end: "day-range-end",
         day_selected:
-          "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary)] hover:text-white focus:bg-[var(--color-primary)] focus:text-white",
-        day_today: "bg-[var(--color-surface-raised)] text-[var(--color-text-primary)]",
+          "bg-[var(--color-primary)] text-text-primary hover:bg-[var(--color-primary)] hover:text-text-primary focus:bg-[var(--color-primary)] focus:text-text-primary",
+        day_today: "bg-[var(--color-surface-raised)] text-text-primary]",
         day_outside:
           "day-outside text-[var(--color-text-secondary)] opacity-50 aria-selected:bg-[var(--color-surface-raised)]/50 aria-selected:text-[var(--color-text-secondary)] aria-selected:opacity-30",
         day_disabled: "text-[var(--color-text-secondary)] opacity-50",
         day_range_middle:
-          "aria-selected:bg-[var(--color-surface-raised)] aria-selected:text-[var(--color-text-primary)]",
+          "aria-selected:bg-[var(--color-surface-raised)] aria-selected:text-text-primary]",
         day_hidden: "invisible",
         ...classNames,
       }}

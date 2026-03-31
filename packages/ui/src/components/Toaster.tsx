@@ -9,10 +9,10 @@ export function Toaster({ ...props }: React.ComponentProps<typeof Sonner>) {
       toastOptions={{
         classNames: {
           toast:
-            "group toast group-[.toaster]:bg-[var(--color-surface)] group-[.toaster]:text-[var(--color-text-primary)] group-[.toaster]:border-[var(--color-border)] group-[.toaster]:shadow-lg font-sans",
+            "group toast group-[.toaster]:bg-[var(--color-surface)] group-[.toaster]:text-text-primary] group-[.toaster]:border-[var(--color-border)] group-[.toaster]:shadow-lg font-sans",
           description: "group-[.toast]:text-[var(--color-text-secondary)]",
           actionButton:
-            "group-[.toast]:bg-[var(--color-primary)] group-[.toast]:text-white",
+            "group-[.toast]:bg-[var(--color-primary)] group-[.toast]:text-text-primary",
           cancelButton:
             "group-[.toast]:bg-[var(--color-surface-raised)] group-[.toast]:text-[var(--color-text-secondary)]",
           error: "group-[.toaster]:bg-red-950 group-[.toaster]:text-red-200 group-[.toaster]:border-red-900",

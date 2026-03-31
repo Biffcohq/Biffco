@@ -42,7 +42,7 @@ export function Combobox({
           aria-expanded={open}
           disabled={disabled}
           className={cn(
-            "flex h-10 w-full items-center justify-between rounded-md border border-[var(--color-neutral-300)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm ring-offset-[var(--color-bg-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+            "flex h-10 w-full items-center justify-between rounded-md border border-border] bg-[var(--color-surface)] px-3 py-2 text-sm ring-offset-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-500)] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
             className
           )}
         >
@@ -53,7 +53,7 @@ export function Combobox({
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
-        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
+        <CommandPrimitive className="flex h-full w-full flex-col overflow-hidden rounded-md bg-[var(--color-surface)] text-text-primary]">
           <div className="flex items-center border-b border-[var(--color-neutral-200)] px-3">
             <CommandPrimitive.Input 
               className="flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-[var(--color-text-secondary)] disabled:cursor-not-allowed disabled:opacity-50"
@@ -64,7 +64,7 @@ export function Combobox({
             <CommandPrimitive.Empty className="py-6 text-center text-sm text-[var(--color-text-secondary)]">
               {emptyText}
             </CommandPrimitive.Empty>
-            <CommandPrimitive.Group className="overflow-hidden p-1 text-[var(--color-text-primary)]">
+            <CommandPrimitive.Group className="overflow-hidden p-1 text-text-primary]">
               {options.map((option) => (
                 <CommandPrimitive.Item
                   key={option.value}
@@ -74,7 +74,7 @@ export function Combobox({
                     setOpen(false)
                   }}
                   className={cn(
-                    "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-[var(--color-neutral-100)] aria-selected:text-[var(--color-text-primary)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
+                    "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-[var(--color-neutral-100)] aria-selected:text-text-primary] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                   )}
                 >
                   <Check

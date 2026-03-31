@@ -47,7 +47,7 @@ export default function MembersPage() {
         </div>
           <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
             <DialogTrigger asChild>
-              <button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+              <button className="bg-primary text-text-primary hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
                 <IconUserPlus size={18} />
                 Invitar Miembro
               </button>
@@ -61,7 +61,7 @@ export default function MembersPage() {
               </DialogHeader>
               <form onSubmit={handleInvite} className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email" className="text-[var(--color-text-primary)]">Correo electrónico</Label>
+                  <Label htmlFor="email" className="text-text-primary]">Correo electrónico</Label>
                   <Input 
                     id="email" 
                     type="email"
@@ -72,10 +72,10 @@ export default function MembersPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="role" className="text-[var(--color-text-primary)]">Rol asignado</Label>
+                  <Label htmlFor="role" className="text-text-primary]">Rol asignado</Label>
                   <select 
                     id="role"
-                    className="flex h-10 w-full rounded-md border border-[var(--color-neutral-300)] bg-[var(--color-bg-primary)] px-3 py-2 text-sm text-[var(--color-text-primary)] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--color-primary-500)] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="flex h-10 w-full rounded-md border border-border] bg-[var(--color-surface)] px-3 py-2 text-sm text-text-primary] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50] disabled:cursor-not-allowed disabled:opacity-50"
                     value={inviteRole}
                     onChange={(e) => setInviteRole(e.target.value)}
                   >
@@ -158,7 +158,7 @@ export default function MembersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         {member.roles.map((role: string) => (
-                          <span key={role} className="inline-flex items-center rounded-md bg-white/5 border border-white/10 px-2.5 py-0.5 text-xs font-semibold text-text-primary shadow-sm">
+                          <span key={role} className="inline-flex items-center rounded-md bg-surface-raised border border-border px-2.5 py-0.5 text-xs font-semibold text-text-primary shadow-sm">
                             {role}
                           </span>
                         ))}

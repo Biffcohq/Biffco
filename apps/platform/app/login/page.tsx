@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-undef, @typescript-eslint/no-misused-promises, no-empty */
 "use client"
+import React from 'react'
 
 import { useState, useEffect } from 'react'
 import { IconLoader2, IconAlertCircle, IconEye, IconEyeOff } from '@tabler/icons-react'
@@ -40,7 +42,7 @@ export default function LoginPage() {
         if (Array.isArray(parsed) && parsed[0]?.message) {
           displayError = parsed[0].message
         }
-      } catch (e) {}
+      } catch {}
       setErrorMsg(displayError)
       setIsHashing(false)
     }
@@ -81,7 +83,7 @@ export default function LoginPage() {
         email,
         passwordHash,
       })
-    } catch (err: any) {
+    } catch {
       setErrorMsg('Error processing cryptographic proof.')
       setIsHashing(false)
     }

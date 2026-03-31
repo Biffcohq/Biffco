@@ -8,6 +8,8 @@ import { employeesRouter } from './employees'
 import { facilitiesRouter } from './facilities'
 import { zonesRouter } from './zones'
 import { pensRouter } from './pens'
+import { assetsRouter } from './assets'
+import { eventsRouter } from './events'
 
 export const appRouter = router({
   auth: authRouter,
@@ -18,6 +20,7 @@ export const appRouter = router({
   facilities: facilitiesRouter,
   zones: zonesRouter,
   pens: pensRouter,
+  assets: assetsRouter,
   verticals: verticalsRouter,
 })
 

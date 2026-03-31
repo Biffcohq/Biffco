@@ -10,7 +10,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   ({ label, error, className = '', ...props }, ref) => {
     return (
       <div className="flex flex-col gap-1 w-full">
-        {label && <label className="text-sm font-medium text-[var(--color-text-primary)]">{label}</label>}
+        {label && <label className="text-sm font-medium text-text-primary]">{label}</label>}
         <textarea 
           ref={ref}
           className={cn(

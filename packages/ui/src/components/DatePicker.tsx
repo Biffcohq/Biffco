@@ -28,7 +28,7 @@ export function DatePicker({
         <Button
           variant={"outline"}
           className={cn(
-            "w-[280px] justify-start text-left font-normal bg-[var(--color-surface)] border-[var(--color-border)] text-[var(--color-text-primary)]",
+            "w-[280px] justify-start text-left font-normal bg-[var(--color-surface)] border-[var(--color-border)] text-text-primary]",
             !date && "text-[var(--color-text-secondary)]",
             className
           )}

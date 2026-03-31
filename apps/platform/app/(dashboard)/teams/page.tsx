@@ -73,7 +73,7 @@ export default function TeamsPage() {
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+            <Button className="bg-primary text-text-primary hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
               <IconPlus size={18} />
               Crear Equipo
             </Button>
@@ -87,7 +87,7 @@ export default function TeamsPage() {
             </DialogHeader>
             <form onSubmit={handleCreate} className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-white">Nombre del equipo</Label>
+                <Label htmlFor="name" className="text-text-primary">Nombre del equipo</Label>
                 <Input 
                   id="name" 
                   type="text"
@@ -98,7 +98,7 @@ export default function TeamsPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="desc" className="text-white">Descripción (opcional)</Label>
+                <Label htmlFor="desc" className="text-text-primary">Descripción (opcional)</Label>
                 <Input 
                   id="desc" 
                   type="text"
@@ -130,15 +130,15 @@ export default function TeamsPage() {
         ) : teams?.length === 0 ? (
           <div className="col-span-full py-12 text-center rounded-lg border flex flex-col items-center justify-center bg-black border-white/10">
             <IconUsersGroup size={48} className="text-text-secondary opacity-20 mb-4" />
-            <h3 className="text-lg font-medium text-white">No hay equipos aún</h3>
+            <h3 className="text-lg font-medium text-text-primary">No hay equipos aún</h3>
             <p className="text-text-secondary mt-1 max-w-sm">Crea tu primer equipo para organizar los miembros del espacio de trabajo.</p>
           </div>
         ) : teams?.map(team => (
           <Card key={team.id} className="bg-zinc-950 border border-white/10 overflow-hidden flex flex-col">
             <div className="p-5 border-b border-white/5 flex justify-between items-start">
               <div>
-                <h3 className="font-semibold text-white text-lg">{team.name}</h3>
-                <p className="text-zinc-400 text-sm mt-1">{team.description || "Sin descripción"}</p>
+                <h3 className="font-semibold text-text-primary text-lg">{team.name}</h3>
+                <p className="text-text-secondary text-sm mt-1">{team.description || "Sin descripción"}</p>
               </div>
               <button onClick={() => handleDelete(team.id)} className="text-zinc-500 hover:text-red-400 transition-colors">
                  <IconTrash size={18} />

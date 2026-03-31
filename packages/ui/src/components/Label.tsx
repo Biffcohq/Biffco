@@ -7,7 +7,7 @@ const labelVariants = cva(
   {
     variants: {
       color: {
-        default: "text-[var(--color-text-primary)]",
+        default: "text-text-primary]",
         secondary: "text-[var(--color-text-secondary)]",
         error: "text-[var(--color-error)]",
       },

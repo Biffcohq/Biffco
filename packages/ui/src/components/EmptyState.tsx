@@ -10,7 +10,7 @@ const emptyStateVariants = cva(
       variant: {
         default: "p-8",
         minimal: "p-4",
-        card: "p-10 rounded-xl border border-[var(--color-neutral-200)] bg-[var(--color-bg-primary)] shadow-sm max-w-lg",
+        card: "p-10 rounded-xl border border-[var(--color-neutral-200)] bg-[var(--color-surface)] shadow-sm max-w-lg",
       },
     },
     defaultVariants: {
@@ -45,7 +45,7 @@ export function EmptyState({
       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[var(--color-neutral-100)] text-[var(--color-text-secondary)]">
         {icon || <IconPackage className="h-8 w-8 stroke-1" />}
       </div>
-      <h3 className="text-lg font-semibold text-[var(--color-text-primary)] mb-1">
+      <h3 className="text-lg font-semibold text-text-primary] mb-1">
         {title}
       </h3>
       {description && (

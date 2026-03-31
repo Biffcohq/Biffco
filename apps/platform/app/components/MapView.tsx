@@ -1,6 +1,4 @@
 import dynamic from 'next/dynamic'
-import { Skeleton } from '@biffco/ui'
-
 const MapWrapper = dynamic(
   () => import('./MapWrapper').then((mod) => mod.default),
   {
@@ -14,6 +12,6 @@ const MapWrapper = dynamic(
   }
 )
 
-export function MapView(props: any) {
+export function MapView(props: Record<string, unknown>) {
   return <MapWrapper {...props} />
 }
