@@ -76,7 +76,7 @@ export default function TeamsPage() {
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+            <Button className="whitespace-nowrap">
               <IconPlus size={18} />
               Crear Equipo
             </Button>

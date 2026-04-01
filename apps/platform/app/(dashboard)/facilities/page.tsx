@@ -41,7 +41,7 @@ export default function FacilitiesPage() {
         </div>
         <button 
           onClick={() => window.alert("Modal de registro de Facility pendiente de conexión (Día 7)")}
-          className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+          className="whitespace-nowrap"
         >
           <IconPlus size={18} />
           Registrar Infraestructura

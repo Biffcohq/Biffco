@@ -47,7 +47,7 @@ export default function MembersPage() {
         </div>
           <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
             <DialogTrigger asChild>
-              <button className="bg-primary text-text-primary hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 whitespace-nowrap">
+              <button className="whitespace-nowrap">
                 <IconUserPlus size={18} />
                 Invitar Miembro
               </button>

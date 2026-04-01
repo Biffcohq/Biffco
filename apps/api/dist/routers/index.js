@@ -11,6 +11,8 @@ const employees_1 = require("./employees");
 const facilities_1 = require("./facilities");
 const zones_1 = require("./zones");
 const pens_1 = require("./pens");
+const assets_1 = require("./assets");
+const events_1 = require("./events");
 exports.appRouter = (0, trpc_1.router)({
     auth: auth_1.authRouter,
     workspaces: workspaces_1.workspacesRouter,
@@ -20,6 +22,8 @@ exports.appRouter = (0, trpc_1.router)({
     facilities: facilities_1.facilitiesRouter,
     zones: zones_1.zonesRouter,
     pens: pens_1.pensRouter,
+    assets: assets_1.assetsRouter,
+    events: events_1.eventsRouter,
     verticals: verticals_1.verticalsRouter,
 });
 //# sourceMappingURL=index.js.map

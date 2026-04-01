@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '../lib/utils'
@@ -7,10 +8,10 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        primary: 'bg-[var(--color-primary)] text-text-primary hover:bg-[var(--color-primary-hover)]',
-        secondary: 'bg-[var(--color-surface)] text-text-primary] border border-[var(--color-border)] hover:bg-[var(--color-surface-raised)]',
-        ghost: 'bg-transparent text-text-primary] hover:bg-[var(--color-surface-overlay)]',
-        destructive: 'bg-[var(--color-error)] text-text-primary hover:bg-red-700',
+        primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)]',
+        secondary: 'bg-[var(--color-surface)] text-[var(--color-text-primary)] border border-[var(--color-border)] hover:bg-[var(--color-surface-raised)]',
+        ghost: 'bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-surface-overlay)]',
+        destructive: 'bg-[var(--color-error)] text-white hover:bg-red-700',
         outline: 'bg-transparent text-[var(--color-primary)] border border-[var(--color-primary)] hover:bg-[var(--color-primary-subtle)]',
       },
       size: {

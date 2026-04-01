@@ -57,7 +57,7 @@ export default function PlatformRoot() {
                <p className="text-sm font-medium text-text-primary">No hay eventos recientes</p>
                <p className="text-xs text-text-secondary">Parece que aún no has registrado operaciones en la cadena de custodia.</p>
              </div>
-             <button className="mt-2 bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
+             <button className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
                Registrar primer evento
              </button>
           </div>
