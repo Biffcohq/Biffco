@@ -52,6 +52,10 @@ export const mergeRouter = router({
 
         const hasHolds = parentHolds.length > 0
 
+        if (!parentAssets[0]) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Error al resolver la vertical" })
+        }
+
         // 3. Crear The Titan (El Super-Activo fusionado hijo)
         const [child] = await tx.insert(assets).values({
           workspaceId: workspaceId,
@@ -64,6 +68,10 @@ export const mergeRouter = router({
             isMergeResult: true
           }
         }).returning()
+
+        if (!child) {
+          throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Falló la creación del activo" })
+        }
 
         // 4. Copiar e Inyectar todos los Holds al Hijo
         if (hasHolds) {

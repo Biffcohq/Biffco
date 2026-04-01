@@ -2,14 +2,13 @@
 
 import React, { useState, useMemo } from 'react'
 import { trpc } from '@/lib/trpc'
-import { IconArrowRight, IconAlertTriangle, IconLayersDifference, IconPlus, IconTrash, IconCheck } from '@tabler/icons-react'
+import { IconArrowRight, IconAlertTriangle, IconLayersDifference, IconCheck } from '@tabler/icons-react'
 import { useRouter } from 'next/navigation'
 // @ts-ignore
 import { Button, Input, toast, Badge } from '@biffco/ui'
 
 export default function MergePage({ params }: { params: { wsId: string } }) {
   const router = useRouter()
-  const trpcUtils = trpc.useUtils()
   
   const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([])
   const [outputType, setOutputType] = useState('BulkAsset')

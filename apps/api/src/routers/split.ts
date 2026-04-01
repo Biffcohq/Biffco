@@ -82,6 +82,10 @@ export const splitRouter = router({
             }
           }).returning()
 
+          if (!child) {
+            throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Falló la creación de las fracciones" })
+          }
+
           createdChildren.push(child)
 
           // 6. Si el padre tiene Holds, el hijo obligatoriamente los copia intactos (Cápsula ineludible)
