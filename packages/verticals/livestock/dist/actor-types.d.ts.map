@@ -1,0 +1,1 @@
+{"version":3,"file":"actor-types.d.ts","sourceRoot":"","sources":["../src/actor-types.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,MAAM,mBAAmB,CAAA;AAE9C,MAAM,WAAW,mBAAmB;IAClC,EAAE,EAAE,MAAM,CAAA;IACV,IAAI,EAAE,MAAM,CAAA;IACZ,WAAW,EAAE,UAAU,EAAE,CAAA;CAC1B;AAED,eAAO,MAAM,mBAAmB,EAAE,mBAAmB,EA0KpD,CAAA"}

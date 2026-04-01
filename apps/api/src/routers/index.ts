@@ -17,6 +17,7 @@ import { holdsRouter } from './holds'
 import { uploadRouter } from './upload'
 import { verifyRouter } from './verify'
 import { transfersRouter } from './transfers'
+import { transformRouter } from './transform'
 
 export const appRouter = router({
   auth: authRouter,
@@ -37,6 +38,7 @@ export const appRouter = router({
   events: eventsRouter,
   transfers: transfersRouter,
   verticals: verticalsRouter,
+  transform: transformRouter,
 })
 
 export type AppRouter = typeof appRouter

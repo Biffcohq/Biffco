@@ -186,6 +186,9 @@ importers:
       '@biffco/core':
         specifier: workspace:^
         version: link:../../packages/core
+      '@biffco/livestock':
+        specifier: workspace:^
+        version: link:../../packages/verticals/livestock
       '@biffco/ui':
         specifier: workspace:^
         version: link:../../packages/ui
@@ -664,13 +667,16 @@ importers:
       '@biffco/shared':
         specifier: workspace:*
         version: link:../../shared
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
     devDependencies:
-      '@biffco/config':
-        specifier: workspace:*
-        version: link:../../config
       typescript:
         specifier: ^5.0.0
         version: 5.9.3
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.1(@types/node@25.5.0)(terser@5.46.1)
 
 packages:
 

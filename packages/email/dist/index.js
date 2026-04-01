@@ -19,7 +19,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmail = sendEmail;
 /* global console */
-/* eslint-disable no-undef, no-console */
 const react_1 = __importDefault(require("react"));
 const resend_1 = require("resend");
 const config_1 = require("@biffco/config");
@@ -29,6 +28,7 @@ __exportStar(require("./templates/InvitationEmail"), exports);
 __exportStar(require("./templates/WelcomeEmail"), exports);
 __exportStar(require("./templates/HoldAlertEmail"), exports);
 __exportStar(require("./templates/DTEExpiryEmail"), exports);
+__exportStar(require("./templates/TransferOfferEmail"), exports);
 async function sendEmail({ to, subject, component, props }) {
     const { render } = await import('@react-email/render');
     const html = await render(react_1.default.createElement(component, props));

@@ -2,3 +2,8 @@
 > @biffco/api@0.1.0 typecheck C:\Users\weare\Documents\Projects\Biffco\apps\api
 > tsc --noEmit
 
+src/routers/transform.ts(6,19): error TS6133: 'isNull' is declared but its value is never read.
+src/routers/transform.ts(27,72): error TS2339: Property 'type' does not exist on type 'PgTableWithColumns<{ name: "domain_events"; schema: undefined; columns: { globalId: PgColumn<{ name: "global_id"; tableName: "domain_events"; dataType: "number"; columnType: "PgBigSerial53"; data: number; driverParam: number; ... 8 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; createdAt: PgColumn<...>...'.
+src/routers/transform.ts(39,32): error TS6133: 'tx' is declared but its value is never read.
+src/routers/transform.ts(47,33): error TS6133: 'animal' is declared but its value is never read.
+ ELIFECYCLE  Command failed with exit code 2.

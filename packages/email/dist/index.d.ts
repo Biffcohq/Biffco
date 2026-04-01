@@ -3,6 +3,7 @@ export * from './templates/InvitationEmail';
 export * from './templates/WelcomeEmail';
 export * from './templates/HoldAlertEmail';
 export * from './templates/DTEExpiryEmail';
+export * from './templates/TransferOfferEmail';
 export declare function sendEmail<T>({ to, subject, component, props }: {
     to: string;
     subject: string;

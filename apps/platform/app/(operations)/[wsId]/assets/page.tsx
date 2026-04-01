@@ -17,13 +17,25 @@ export default function AssetsPage({ params }: { params: { wsId: string } }) {
     // La búsqueda local se aplicará en memoria por ahora, o podrías pasar el query al router.
   })
 
-  type AssetData = { id: string, type: string, status: string, createdAt: Date | string }
+  type AssetData = { 
+    id: string, 
+    type: string, 
+    status: string, 
+    createdAt: Date | string, 
+    metadata?: Record<string, unknown> 
+  }
 
-  const filteredAssets = assets?.filter((a: AssetData) => 
-    !searchTerm || 
-    a.id.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    a.type.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredAssets = assets?.filter((a: AssetData) => {
+    const term = searchTerm.toLowerCase();
+    const meta = a.metadata as Record<string, unknown> | undefined;
+    const cat = String(meta?.category || '').toLowerCase();
+    const brd = String(meta?.breed || '').toLowerCase();
+    return !searchTerm || 
+      a.id.toLowerCase().includes(term) || 
+      a.type.toLowerCase().includes(term) ||
+      cat.includes(term) ||
+      brd.includes(term)
+  })
 
   const renderStatusBadge = (status: string) => {
     switch(status.toUpperCase()) {
@@ -52,10 +64,10 @@ export default function AssetsPage({ params }: { params: { wsId: string } }) {
             <IconLayersDifference size={18} />
             Agrupar
           </button>
-          <button className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-sm">
+          <Link href={`/${params.wsId}/assets/new`} className="bg-primary text-white hover:bg-primary-hover px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 shadow-sm">
             <IconPlus size={18} />
             Alta de Activo
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -95,10 +107,12 @@ export default function AssetsPage({ params }: { params: { wsId: string } }) {
           <table className="w-full text-left text-sm text-text-secondary">
             <thead className="text-xs uppercase bg-surface-raised text-text-muted sticky top-0 border-b border-border z-10 font-bold">
               <tr>
-                <th className="px-6 py-4 font-semibold tracking-wider">Activo ID (Hash)</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Tipo (Vertical)</th>
+                <th className="px-6 py-4 font-semibold tracking-wider w-[120px]">ID (Hash)</th>
+                <th className="px-6 py-4 font-semibold tracking-wider">Vertical</th>
+                <th className="px-6 py-4 font-semibold tracking-wider">Clasificación Zootécnica</th>
+                <th className="px-6 py-4 font-semibold tracking-wider text-center">Cumplimiento GFW</th>
                 <th className="px-6 py-4 font-semibold tracking-wider">Estado</th>
-                <th className="px-6 py-4 font-semibold tracking-wider">Creado</th>
+                <th className="px-6 py-4 font-semibold tracking-wider">Ingreso</th>
                 <th className="px-6 py-4 font-semibold tracking-wider text-right">Acciones</th>
               </tr>
             </thead>
@@ -107,10 +121,12 @@ export default function AssetsPage({ params }: { params: { wsId: string } }) {
                 // Skeleton loading state
                 Array.from({ length: 5 }).map((_, i) => (
                   <tr key={i} className="animate-pulse">
-                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-24"></div></td>
-                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-16"></div></td>
                     <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-20"></div></td>
+                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-16"></div></td>
                     <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-32"></div></td>
+                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-24"></div></td>
+                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-20"></div></td>
+                    <td className="px-6 py-4"><div className="h-4 bg-border/50 rounded w-24"></div></td>
                     <td className="px-6 py-4"></td>
                   </tr>
                 ))
@@ -128,15 +144,44 @@ export default function AssetsPage({ params }: { params: { wsId: string } }) {
                        {asset.id.substring(asset.id.indexOf('-'))}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="font-medium bg-bg border border-border px-2 py-1 rounded text-xs">
+                      <span className="font-medium bg-bg border border-border px-2 py-1 rounded text-[10px] uppercase tracking-wider text-text-secondary">
                         {asset.type}
                       </span>
                     </td>
                     <td className="px-6 py-4">
+                      {asset.type === 'AnimalAsset' || asset.type === 'DerivedAsset' ? (
+                        <div className="flex flex-col gap-0.5">
+                           <span className="text-sm font-semibold text-text-primary capitalize">
+                             {String(asset.metadata?.category || 'Genérico')}
+                           </span>
+                           <span className="text-[10px] text-text-muted uppercase tracking-wide">
+                             {String(asset.metadata?.breed || '-')} • {String(asset.metadata?.lastWeight || '')} kg
+                           </span>
+                        </div>
+                      ) : (
+                        <span className="text-xs text-text-muted italic">N/A</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                       {asset.type === 'AnimalAsset' ? (
+                          asset.metadata?.gfwStatus === 'clear' ? (
+                             <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-emerald-100 text-emerald-600" title="GFW Zero Deforestation">
+                               ✓
+                             </span>
+                          ) : (
+                             <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-red-100 text-red-600 font-bold" title="Deforestation Risk">
+                               !
+                             </span>
+                          )
+                       ) : (
+                          <span className="text-text-muted">-</span>
+                       )}
+                    </td>
+                    <td className="px-6 py-4">
                       {renderStatusBadge(asset.status)}
                     </td>
-                    <td className="px-6 py-4 text-xs">
-                      {asset.createdAt ? format(new Date(asset.createdAt), "dd MMM, yyyy HH:mm") : 'N/A'}
+                    <td className="px-6 py-4 text-xs font-mono text-text-secondary">
+                      {asset.createdAt ? format(new Date(asset.createdAt), "dd MMM, HH:mm") : 'N/A'}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <Link 

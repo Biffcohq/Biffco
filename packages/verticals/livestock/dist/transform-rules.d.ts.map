@@ -1,0 +1,1 @@
+{"version":3,"file":"transform-rules.d.ts","sourceRoot":"","sources":["../src/transform-rules.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,aAAa;IAC5B,EAAE,EAAE,MAAM,CAAA;IACV,UAAU,EAAE,MAAM,EAAE,CAAA;IACpB,WAAW,EAAE,MAAM,EAAE,CAAA;IACrB,WAAW,EAAE,MAAM,EAAE,CAAA;CACtB;AAED,eAAO,MAAM,uBAAuB,EAAE,aAAa,EAalD,CAAA"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"merge-rules.d.ts","sourceRoot":"","sources":["../src/merge-rules.ts"],"names":[],"mappings":"AACA,MAAM,WAAW,SAAS;IACxB,UAAU,EAAE,MAAM,EAAE,CAAA;IACpB,UAAU,EAAE,MAAM,CAAA;IAClB,eAAe,EAAE,MAAM,EAAE,CAAA;IACzB,cAAc,EAAE,MAAM,CAAC,MAAM,EAAE,CAAC,MAAM,EAAE,GAAG,EAAE,KAAK,GAAG,CAAC,CAAA;CACvD;AAED,eAAO,MAAM,mBAAmB,EAAE,SAAS,EA+B1C,CAAA"}

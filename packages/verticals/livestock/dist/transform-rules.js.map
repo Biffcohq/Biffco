@@ -1,0 +1,1 @@
+{"version":3,"file":"transform-rules.js","sourceRoot":"","sources":["../src/transform-rules.ts"],"names":[],"mappings":";;;AAOa,QAAA,uBAAuB,GAAoB;IACtD;QACE,EAAE,EAAE,qBAAqB;QACzB,UAAU,EAAE,CAAC,aAAa,CAAC;QAC3B,WAAW,EAAE,CAAC,cAAc,CAAC;QAC7B,WAAW,EAAE;YACX,eAAe;YACf,iBAAiB;YACjB,WAAW;YACX,cAAc;YACd,uBAAuB;SACxB;KACF;CACF,CAAA"}

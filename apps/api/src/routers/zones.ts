@@ -4,6 +4,7 @@ import { router, protectedProcedure, requirePermission } from '../trpc'
 import { zones, facilities } from '@biffco/db/schema'
 import { eq, sql, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
+import { GFWWorker } from '../workers/gfw-check'
 
 export const zonesRouter = router({
   create: requirePermission(Permission.ZONES_MANAGE)
@@ -34,8 +35,9 @@ export const zonesRouter = router({
           if (!isValid) {
             throw new TRPCError({ code: "BAD_REQUEST", message: `Polígono inválido: ${result[0]?.reason ?? "Self-intersection"}` })
           }
-        } catch (error: any) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Error verificando la geometría PostGIS: " + error.message })
+        } catch (err: unknown) {
+          const errorMsg = err instanceof Error ? err.message : String(err)
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Error verificando la geometría PostGIS: " + errorMsg })
         }
       }
       
@@ -78,6 +80,26 @@ export const zonesRouter = router({
       const [updated] = await ctx.db.update(zones)
         .set(updates)
         .where(and(eq(zones.id, id), eq(zones.workspaceId, ctx.workspaceId!)))
+        .returning()
+      
+      return updated
+    }),
+
+  evaluateGfw: requirePermission(Permission.ZONES_MANAGE)
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const zEntity = await ctx.db.query.zones.findFirst({
+        where: and(eq(zones.id, input.id), eq(zones.workspaceId, ctx.workspaceId!))
+      })
+      if (!zEntity) throw new TRPCError({ code: "NOT_FOUND" })
+      if (!zEntity.polygon) throw new TRPCError({ code: "BAD_REQUEST", message: "Zone has no polygon" })
+      
+      const result = await GFWWorker.checkPolygonAgainstGFW(zEntity.polygon)
+      const newStatus = result.isDeforested ? 'failed' : 'passed'
+      
+      const [updated] = await ctx.db.update(zones)
+        .set({ gfwStatus: newStatus })
+        .where(eq(zones.id, input.id))
         .returning()
       
       return updated

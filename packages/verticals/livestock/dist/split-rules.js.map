@@ -1,0 +1,1 @@
+{"version":3,"file":"split-rules.js","sourceRoot":"","sources":["../src/split-rules.ts"],"names":[],"mappings":";;;AAMa,QAAA,mBAAmB,GAAgB;IAC9C;QACE,UAAU,EAAE,CAAC,UAAU,CAAC;QACxB,WAAW,EAAE,CAAC,UAAU,CAAC;QACzB,iBAAiB,EAAE,UAAU;KAC9B;IACD;QACE,UAAU,EAAE,CAAC,UAAU,CAAC;QACxB,WAAW,EAAE,CAAC,UAAU,EAAE,aAAa,CAAC;QACxC,iBAAiB,EAAE,UAAU;KAC9B;CACF,CAAA"}

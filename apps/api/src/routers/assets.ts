@@ -103,5 +103,28 @@ export const assetsRouter = router({
       }).returning()
       
       return newAsset
+    }),
+
+  getEudrMetrics: protectedProcedure
+    .query(async ({ ctx }) => {
+      const items = await ctx.db.query.assets.findMany({
+        where: and(eq(assets.workspaceId, ctx.workspaceId!), eq(assets.type, "AnimalAsset")),
+      })
+
+      const total = items.length
+      const withPolygon = items.filter(i => (i.metadata as Record<string, unknown>)?.locationId).length
+      // Simulate DTEs being valid natively
+      const validDte = items.filter(i => i.status === 'ACTIVE').length
+      const gfwClear = items.filter(i => {
+        const meta = i.metadata as Record<string, unknown> | null;
+        return meta?.gfwStatus === 'clear' || meta?.gfwStatus === 'passed'
+      }).length
+
+      return {
+        totalAnimals: total,
+        withPolygon,
+        validDte,
+        gfwClear
+      }
     })
 })

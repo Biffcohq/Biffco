@@ -18,12 +18,12 @@ import { setupPdfRoutes } from './routers/pdf-route'
 import { env } from '@biffco/config'
 import { db } from '@biffco/db'
 import { verticalRegistry } from '@biffco/core/vertical-engine'
-import { livestockVertical } from '@biffco/livestock'
+import { livestockVerticalPack } from '@biffco/livestock'
 
 export type { AppRouter } from './routers/index'
 
-// --- MOCK VERTICAL PACK ---
-verticalRegistry.register(livestockVertical)
+// Registro dinámico de la Fase C: Vertical Ganadero
+verticalRegistry.register(livestockVerticalPack)
 
 const app = Fastify({ logger: { level: "info" } })
 

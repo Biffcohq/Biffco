@@ -21,23 +21,25 @@ export interface MockDomainEvent {
 
 export interface EventTimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   events: MockDomainEvent[];
+  resolveLabel?: (type: string) => string;
+  resolveIcon?: (type: string) => React.ReactNode;
 }
 
-export function EventTimeline({ events, className, ...props }: EventTimelineProps) {
+export function EventTimeline({ events, resolveLabel, resolveIcon, className, ...props }: EventTimelineProps) {
   return (
     <div className={cn("space-y-6 relative before:absolute before:inset-0 before:ml-4 before:-translate-x-px before:h-full before:w-0.5 before:bg-[var(--color-border)]", className)} {...props}>
       {events.map((event) => (
         <div key={event.id} className="relative flex items-start gap-4 group">
           {/* Icon marker */}
           <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-primary)] shadow shrink-0 z-10 transition-transform group-hover:scale-110 mt-1">
-            <IconFileCheck className="w-4 h-4" />
+            {resolveIcon ? resolveIcon(event.type) : <IconFileCheck className="w-4 h-4" />}
           </div>
           
           {/* Card */}
           <div className="flex-1 min-w-0 bg-[var(--color-surface)] p-4 rounded-xl border border-[var(--color-border)] shadow-sm hover:shadow-md transition-shadow">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
               <div className="flex flex-col min-w-0">
-                <span className="text-[var(--color-text-primary)] font-semibold text-sm truncate">{event.type}</span>
+                <span className="text-[var(--color-text-primary)] font-semibold text-sm truncate">{resolveLabel ? resolveLabel(event.type) : event.type}</span>
                 <span className="font-mono text-[11px] text-[var(--color-text-secondary)] whitespace-nowrap">{event.occurredAt}</span>
               </div>
               <div className="shrink-0">
