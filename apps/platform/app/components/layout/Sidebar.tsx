@@ -11,7 +11,8 @@ import {
   IconChartBar,
   IconChevronLeft,
   IconChevronRight,
-  IconShieldCheck
+  IconShieldCheck,
+  IconAlertTriangle
 } from '@tabler/icons-react'
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
@@ -48,6 +49,7 @@ const navGroups: NavGroup[] = [
   {
     label: "Compliance",
     items: [
+      { label: "Cuarentenas", href: "/holds", icon: IconAlertTriangle },
       { label: "EUDR", href: "/eudr", icon: IconLeaf },
       { label: "Analytics", href: "/analytics", icon: IconChartBar },
     ]

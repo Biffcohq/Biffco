@@ -13,6 +13,7 @@ import { eventsRouter } from './events'
 import { assetGroupsRouter } from './assetGroups'
 import { splitRouter } from './split'
 import { mergeRouter } from './merge'
+import { holdsRouter } from './holds'
 export const appRouter = router({
   auth: authRouter,
   workspaces: workspacesRouter,
@@ -26,6 +27,7 @@ export const appRouter = router({
   assetGroups: assetGroupsRouter,
   split: splitRouter,
   merge: mergeRouter,
+  holds: holdsRouter,
   events: eventsRouter,
   verticals: verticalsRouter,
 })
