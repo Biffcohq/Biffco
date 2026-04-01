@@ -3,6 +3,7 @@
 import { IconPackage, IconFileCheck, IconActivity, IconAlertCircle } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
+import Link from 'next/link'
 
 export default function PlatformRoot() {
   const { data: workspace, isLoading } = trpc.workspaces.getProfile.useQuery()
@@ -57,9 +58,9 @@ export default function PlatformRoot() {
                <p className="text-sm font-medium text-text-primary">No hay eventos recientes</p>
                <p className="text-xs text-text-secondary">Parece que aún no has registrado operaciones en la cadena de custodia.</p>
              </div>
-             <a href={`/${workspace?.id}/assets/new`} className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
+             <Link href={`/${workspace?.id}/assets/new`} className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
                Registrar primer animal (Livestock)
-             </a>>
+             </Link>
           </div>
         </div>
 
@@ -88,9 +89,9 @@ export default function PlatformRoot() {
               <h2 className="text-xl font-bold text-primary mb-1">Motor de Trazabilidad Ganadera</h2>
               <p className="text-sm text-text-secondary">Accede directamente al panel operativo de ganadería para registrar hacienda, faenas y cortes.</p>
             </div>
-            <a href={`/${workspace?.id}/assets`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
+            <Link href={`/${workspace?.id}/assets`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
                Ir a Ganadería <IconPackage size={18}/>
-            </a>
+            </Link>
         </div>
 
       </div>
