@@ -10,7 +10,7 @@ import { zonesRouter } from './zones'
 import { pensRouter } from './pens'
 import { assetsRouter } from './assets'
 import { eventsRouter } from './events'
-
+import { assetGroupsRouter } from './assetGroups'
 export const appRouter = router({
   auth: authRouter,
   workspaces: workspacesRouter,
@@ -21,6 +21,7 @@ export const appRouter = router({
   zones: zonesRouter,
   pens: pensRouter,
   assets: assetsRouter,
+  assetGroups: assetGroupsRouter,
   events: eventsRouter,
   verticals: verticalsRouter,
 })
