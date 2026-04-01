@@ -47,11 +47,11 @@ export default function EmployeesPage() {
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-text-primary">
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
             <IconIdBadge2 size={24} className="text-primary" />
             Personal
           </h1>
-          <p className="text-text-secondary text-sm">Gestiona el personal operativo y en terreno de tu organización.</p>
+          <p className="text-slate-500 text-sm">Gestiona el personal operativo y en terreno de tu organización.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -70,7 +70,7 @@ export default function EmployeesPage() {
             </DialogHeader>
             <form onSubmit={handleCreate} className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-text-primary">Nombre Completo</Label>
+                <Label htmlFor="name" className="text-slate-900">Nombre Completo</Label>
                 <Input 
                   id="name" 
                   type="text"
@@ -82,7 +82,7 @@ export default function EmployeesPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="role" className="text-text-primary">Cargo / Rol</Label>
+                  <Label htmlFor="role" className="text-slate-900">Cargo / Rol</Label>
                   <Input 
                     id="role" 
                     type="text"
@@ -93,7 +93,7 @@ export default function EmployeesPage() {
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="dni" className="text-text-primary">DNI / Identificación</Label>
+                  <Label htmlFor="dni" className="text-slate-900">DNI / Identificación</Label>
                   <Input 
                     id="dni" 
                     type="text"
@@ -116,10 +116,10 @@ export default function EmployeesPage() {
         </Dialog>
       </div>
 
-      <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-surface">
+      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-surface-raised text-text-secondary border-b border-border font-semibold">
+            <thead className="text-xs uppercase bg-slate-50 text-slate-500 border-b border-slate-200 font-semibold">
               <tr>
                 <th scope="col" className="px-6 py-4 font-semibold">Nombre</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Cargo</th>
@@ -131,30 +131,30 @@ export default function EmployeesPage() {
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 Array(3).fill(0).map((_, i) => (
-                  <tr key={i} className="hover:bg-surface-overlay transition-colors">
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 bg-surface-raised" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 bg-surface-raised" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-20 bg-surface-raised" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full bg-surface-raised" /></td>
-                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto bg-surface-raised" /></td>
+                  <tr key={i} className="hover:bg-slate-100 transition-colors">
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 bg-slate-50" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 bg-slate-50" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-20 bg-slate-50" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full bg-slate-50" /></td>
+                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto bg-slate-50" /></td>
                   </tr>
                 ))
               ) : employees?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-text-secondary">
+                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
                     No hay personal registrado en este espacio de trabajo.
                   </td>
                 </tr>
               ) : (
                 employees?.map((emp: any) => (
-                  <tr key={emp.id} className="hover:bg-surface-overlay transition-colors">
-                    <td className="px-6 py-4 font-medium text-text-primary">
+                  <tr key={emp.id} className="hover:bg-slate-100 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900">
                       {emp.name}
                     </td>
-                    <td className="px-6 py-4 text-text-secondary">
+                    <td className="px-6 py-4 text-slate-500">
                       {emp.role}
                     </td>
-                    <td className="px-6 py-4 text-text-secondary font-mono text-xs">
+                    <td className="px-6 py-4 text-slate-500 font-mono text-xs">
                       {emp.dni || "-"}
                     </td>
                     <td className="px-6 py-4">
@@ -172,7 +172,7 @@ export default function EmployeesPage() {
                               deactivateMutation.mutate({ id: emp.id })
                             }
                           }}
-                          className="text-text-muted hover:text-warning transition-colors p-2 rounded-md hover:bg-surface-raised"
+                          className="text-slate-400 hover:text-warning transition-colors p-2 rounded-md hover:bg-slate-50"
                           title="Desactivar personal"
                         >
                           <IconUserOff size={16} />

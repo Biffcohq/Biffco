@@ -67,11 +67,11 @@ export default function TeamsPage() {
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex items-center justify-between">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-text-primary">
+          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
             <IconUsersGroup size={24} className="text-primary" />
             Equipos
           </h1>
-          <p className="text-text-secondary text-sm">Organiza a los miembros de tu espacio en grupos lógicos.</p>
+          <p className="text-slate-500 text-sm">Organiza a los miembros de tu espacio en grupos lógicos.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -90,7 +90,7 @@ export default function TeamsPage() {
             </DialogHeader>
             <form onSubmit={handleCreate} className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name" className="text-text-primary">Nombre del equipo</Label>
+                <Label htmlFor="name" className="text-slate-900">Nombre del equipo</Label>
                 <Input 
                   id="name" 
                   type="text"
@@ -101,7 +101,7 @@ export default function TeamsPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="desc" className="text-text-primary">Descripción (opcional)</Label>
+                <Label htmlFor="desc" className="text-slate-900">Descripción (opcional)</Label>
                 <Input 
                   id="desc" 
                   type="text"
@@ -126,36 +126,36 @@ export default function TeamsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {isLoadingTeams || isLoadingMembers ? (
           <>
-            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
-            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
-            <Skeleton className="h-48 w-full rounded-xl bg-surface-raised" />
+            <Skeleton className="h-48 w-full rounded-xl bg-slate-50" />
+            <Skeleton className="h-48 w-full rounded-xl bg-slate-50" />
+            <Skeleton className="h-48 w-full rounded-xl bg-slate-50" />
           </>
         ) : teams?.length === 0 ? (
-          <div className="col-span-full py-12 text-center rounded-lg border flex flex-col items-center justify-center bg-surface border-border">
-            <IconUsersGroup size={48} className="text-text-muted opacity-40 mb-4" />
-            <h3 className="text-lg font-medium text-text-primary">No hay equipos aún</h3>
-            <p className="text-text-secondary mt-1 max-w-sm">Crea tu primer equipo para organizar los miembros del espacio de trabajo.</p>
+          <div className="col-span-full py-12 text-center rounded-lg border flex flex-col items-center justify-center bg-white border-slate-200">
+            <IconUsersGroup size={48} className="text-slate-400 opacity-40 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900">No hay equipos aún</h3>
+            <p className="text-slate-500 mt-1 max-w-sm">Crea tu primer equipo para organizar los miembros del espacio de trabajo.</p>
           </div>
         ) : teams?.map((team: any) => (
-          <Card key={team.id} className="bg-surface border border-border overflow-hidden flex flex-col shadow-sm">
-            <div className="p-5 border-b border-border flex justify-between items-start bg-surface">
+          <Card key={team.id} className="bg-white border border-slate-200 overflow-hidden flex flex-col shadow-sm">
+            <div className="p-5 border-b border-slate-200 flex justify-between items-start bg-white">
               <div>
-                <h3 className="font-semibold text-text-primary text-lg">{team.name}</h3>
-                <p className="text-text-secondary text-sm mt-1">{team.description || "Sin descripción"}</p>
+                <h3 className="font-semibold text-slate-900 text-lg">{team.name}</h3>
+                <p className="text-slate-500 text-sm mt-1">{team.description || "Sin descripción"}</p>
               </div>
-              <button onClick={() => handleDelete(team.id)} className="text-text-muted hover:text-red-500 transition-colors">
+              <button onClick={() => handleDelete(team.id)} className="text-slate-400 hover:text-red-500 transition-colors">
                  <IconTrash size={18} />
               </button>
             </div>
-            <div className="p-5 flex-1 bg-surface-raised">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">Miembros ({team.memberIds?.length || 0})</h4>
+            <div className="p-5 flex-1 bg-slate-50">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Miembros ({team.memberIds?.length || 0})</h4>
               
               {team.memberIds && team.memberIds.length > 0 ? (
                 <ul className="space-y-2 mb-4">
                   {team.memberIds.map((mid: string) => {
                     const m = members?.find((x: any) => x.id === mid)
                     return (
-                      <li key={mid} className="text-sm text-text-secondary flex items-center gap-2 font-medium">
+                      <li key={mid} className="text-sm text-slate-500 flex items-center gap-2 font-medium">
                         <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-bold">
                            {m ? m.publicKey.slice(0, 2).toUpperCase() : '?'}
                         </div>
@@ -165,11 +165,11 @@ export default function TeamsPage() {
                   })}
                 </ul>
               ) : (
-                <p className="text-sm text-text-muted italic mb-4">No hay miembros en este equipo</p>
+                <p className="text-sm text-slate-400 italic mb-4">No hay miembros en este equipo</p>
               )}
             </div>
             
-            <div className="p-4 border-t border-border bg-surface flex items-center gap-2">
+            <div className="p-4 border-t border-slate-200 bg-white flex items-center gap-2">
               <Combobox 
                 options={memberOptions.filter(o => !team.memberIds?.includes(o.value))} 
                 placeholder="Seleccionar miembro..." 
