@@ -4,6 +4,7 @@ import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, domainEvents, workspaces } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
+import { holds } from '@biffco/db/schema'
 
 export const assetsRouter = router({
   
@@ -51,9 +52,18 @@ export const assetsRouter = router({
         limit: 10
       })
 
+      // Traer los holds activos del activo (útil para Worst-case compliance warning)
+      const assetHolds = await ctx.db.query.holds.findMany({
+        where: and(
+          eq(holds.assetId, asset.id),
+          eq(holds.isActive, true)
+        )
+      })
+
       return {
         ...asset,
-        events: assetEvents
+        events: assetEvents,
+        holds: assetHolds
       }
     }),
 

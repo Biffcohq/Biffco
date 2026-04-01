@@ -26,6 +26,7 @@ export const assets = pgTable("assets", {
   status:       text('status').notNull().default('active'),
   locationId:   text('location_id'),            // FK a locations
   metadata:     jsonb('metadata').notNull().default({}),
+  parentIds:    jsonb('parent_ids').$type<string[]>().notNull().default([]),
   createdAt:    timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:    timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 }, (table) => [
@@ -33,5 +34,6 @@ export const assets = pgTable("assets", {
   index('idx_assets_group_id').on(table.groupId),
   index('idx_assets_vertical_id').on(table.verticalId),
   index('idx_assets_status').on(table.status),
-  index('idx_assets_location_id').on(table.locationId)
+  index('idx_assets_location_id').on(table.locationId),
+  index('idx_assets_parent_ids').using('gin', table.parentIds)
 ])

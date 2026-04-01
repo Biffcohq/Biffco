@@ -11,6 +11,8 @@ import { pensRouter } from './pens'
 import { assetsRouter } from './assets'
 import { eventsRouter } from './events'
 import { assetGroupsRouter } from './assetGroups'
+import { splitRouter } from './split'
+import { mergeRouter } from './merge'
 export const appRouter = router({
   auth: authRouter,
   workspaces: workspacesRouter,
@@ -22,6 +24,8 @@ export const appRouter = router({
   pens: pensRouter,
   assets: assetsRouter,
   assetGroups: assetGroupsRouter,
+  split: splitRouter,
+  merge: mergeRouter,
   events: eventsRouter,
   verticals: verticalsRouter,
 })
