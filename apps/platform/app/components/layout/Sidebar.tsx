@@ -102,7 +102,7 @@ export function Sidebar() {
             )}
             
             {/* Si está colapsado, una rayita divisoria para separar el primer grupo del resto */}
-            {isCollapsed && idx > 0 && <div className="h-px bg-white/10 mx-auto w-6 mb-2 mt-1" />}
+            {isCollapsed && idx > 0 && <div className="h-px bg-slate-200 mx-auto w-6 mb-2 mt-1" />}
 
             {group.items.map((item) => {
               const isActive = pathname === item.href
@@ -113,8 +113,8 @@ export function Sidebar() {
                   href={item.href}
                   className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-colors overflow-hidden shrink-0 ${
                     isActive 
-                      ? 'bg-white/10 text-white font-medium' 
-                      : 'text-white/70 hover:bg-white/5 hover:text-white'
+                      ? 'bg-primary/10 text-primary font-medium' 
+                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
                   title={isCollapsed ? item.label : undefined}
                 >
@@ -132,15 +132,15 @@ export function Sidebar() {
       </div>
 
       {/* Footer User Profile */}
-      <div className="p-3 border-t border-white/10 shrink-0 mx-2 mb-2 rounded-lg bg-surface-overlay/30 mt-auto">
+      <div className="p-3 border-t border-slate-200 shrink-0 mx-2 mb-2 rounded-lg bg-slate-50 mt-auto">
         <div className="flex items-center gap-3 overflow-hidden">
           <div className="shrink-0 rounded-full bg-orange size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
             {profile?.name ? profile.name.substring(0,2) : "WK"}
           </div>
           {!isCollapsed && (
             <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-sm font-medium text-white truncate">{profile?.name || "Cargando..."}</span>
-              <span className="text-xs text-white/50 truncate">Workspace</span>
+              <span className="text-sm font-medium text-slate-900 truncate">{profile?.name || "Cargando..."}</span>
+              <span className="text-xs text-slate-500 truncate">Workspace</span>
             </div>
           )}
           {!isCollapsed && (
