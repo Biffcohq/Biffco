@@ -307,8 +307,8 @@ export default function LandingPage(): ReactElement {
               <a href="/" className="hover:opacity-80 transition-opacity inline-block" aria-label="Biffco Home">
                 <img src="/biffco-iso-color.svg" alt="Biffco" className="h-5 w-auto" />
               </a>
-              <div className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                <strong className="font-semibold text-[var(--color-text-primary)] font-mono text-[11px] uppercase tracking-wider">Biffco Inc.</strong><br/>
+              <div className="text-[13px] text-[var(--color-text-secondary)] leading-relaxed">
+                <strong className="font-semibold text-[var(--color-text-primary)] font-mono text-[12px] uppercase tracking-wider">Biffco Inc.</strong><br/>
                 Global Headquarters<br/>
                 Córdoba, AR.
               </div>
