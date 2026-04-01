@@ -39,13 +39,13 @@ export default function FacilitiesPage() {
           </h1>
           <p className="text-text-secondary text-sm">Gestiona tus áreas operativas geolocalizadas según el cumplimiento EUDR.</p>
         </div>
-        <button 
+        <Button 
           onClick={() => window.alert("Modal de registro de Facility pendiente de conexión (Día 7)")}
-          className="whitespace-nowrap"
+          className="whitespace-nowrap w-fit"
         >
           <IconPlus size={18} />
           Registrar Infraestructura
-        </button>
+        </Button>
       </div>
 
       <div className="flex items-center gap-2 bg-surface-raised p-1 rounded-lg w-fit border border-border shrink-0">

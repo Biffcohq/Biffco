@@ -47,10 +47,10 @@ export default function MembersPage() {
         </div>
           <Dialog open={isInviteOpen} onOpenChange={setIsInviteOpen}>
             <DialogTrigger asChild>
-              <button className="whitespace-nowrap">
+              <Button className="whitespace-nowrap w-fit">
                 <IconUserPlus size={18} />
                 Invitar Miembro
-              </button>
+              </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
