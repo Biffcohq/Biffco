@@ -190,7 +190,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
                      <label className="text-xs text-text-secondary">Tipo Técnico del Vertical</label>
                      <Input 
                        value={outputType}
-                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOutputType(e.target.value)}
+                       onChange={(e: { target: { value: React.SetStateAction<string> } }) => setOutputType(e.target.value)}
                        placeholder="Ej. LiquidContainer"
                        disabled={isSubmitting}
                      />
@@ -199,7 +199,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
                      <label className="text-xs text-text-secondary">Nombre / Identificador Logístico</label>
                      <Input 
                        value={outputName}
-                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOutputName(e.target.value)}
+                       onChange={(e: { target: { value: React.SetStateAction<string> } }) => setOutputName(e.target.value)}
                        placeholder="Cisterna #09"
                        disabled={isSubmitting}
                      />
