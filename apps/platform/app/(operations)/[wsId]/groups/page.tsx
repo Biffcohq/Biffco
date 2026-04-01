@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable no-undef */
 "use client"
 
 import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { IconLayersDifference, IconSearch, IconPlus, IconArrowRight, IconShape } from '@tabler/icons-react'
+import { IconSearch, IconPlus, IconArrowRight, IconShape } from '@tabler/icons-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
 // @ts-ignore
