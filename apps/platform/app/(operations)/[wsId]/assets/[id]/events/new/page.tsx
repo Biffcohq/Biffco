@@ -7,8 +7,36 @@ import { trpc } from '@/lib/trpc'
 import { IconSignature, IconLockSquareRounded, IconArrowLeft, IconQrcode, IconFileCheck } from '@tabler/icons-react'
 import Link from 'next/link'
 // @ts-ignore
-import { Button, Input, Label, toast, Badge } from '@biffco/ui'
+import { Button, Input, Label, toast, Badge, DynamicFormRenderer, FormSchema } from '@biffco/ui'
 import { createId } from '@paralleldrive/cuid2'
+
+// MOCK REGISTRY: En Fase D esto vendrá hidratado globalmente por el paquete de cada industria (VerticalPack)
+const SCHEMA_REGISTRY: Record<string, { label: string, schema: FormSchema }> = {
+  'ANIMAL_VACCINATED': {
+    label: 'Vacunación (Salud Animal)',
+    schema: {
+       vaccineName: { type: 'string', label: 'Nombre de la Vacuna', required: true, placeholder: 'Ej. Aftosa Bivalente' },
+       dose: { type: 'number', label: 'Dosis Aplicada (ml)', required: true },
+       veterinarian: { type: 'string', label: 'Matrícula Veterinario', required: true }
+    }
+  },
+  'GPS_CHECK_IN': {
+    label: 'Check-in Geográfico',
+    schema: {
+      latitude: { type: 'number', label: 'Latitud', required: true, placeholder: '-31.4201' },
+      longitude: { type: 'number', label: 'Longitud', required: true, placeholder: '-64.1888' },
+      notes: { type: 'string', label: 'Observaciones', placeholder: 'Terreno despejado...' }
+    }
+  },
+  'OWNERSHIP_TRANSFER': {
+    label: 'Traspaso de Propiedad',
+    schema: {
+      newOwnerId: { type: 'string', label: 'ID del Nuevo Propietario', required: true },
+      salePrice: { type: 'number', label: 'Precio de Venta (Opcional)' },
+      requiresInspection: { type: 'boolean', label: 'Requiere inspección sanitaria previa' }
+    }
+  }
+}
 
 export default function NewEventPage({ params }: { params: { wsId: string, id: string } }) {
   const router = useRouter()
@@ -16,11 +44,7 @@ export default function NewEventPage({ params }: { params: { wsId: string, id: s
   
   // Estado local para construir el JSON del evento (Mocking DynamicFormRenderer)
   const [eventType, setEventType] = useState('ANIMAL_VACCINATED')
-  const [payloadForm, setPayloadForm] = useState({ 
-    vaccineName: '', 
-    dose: '', 
-    veterinarian: '' 
-  })
+  const [payloadForm, setPayloadForm] = useState<Record<string, any>>({})
 
   // Simulación del "Firmador Operativo" 
   const [isSigning, setIsSigning] = useState(false)
@@ -106,35 +130,26 @@ export default function NewEventPage({ params }: { params: { wsId: string, id: s
                 <select 
                   id="eventType"
                   value={eventType}
-                  onChange={(e) => setEventType(e.target.value)}
+                  onChange={(e) => {
+                    setEventType(e.target.value)
+                    setPayloadForm({}) // Reset form on vertical/event change
+                  }}
                   className="flex h-10 w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={isSigning || txHash !== null}
                 >
-                   <option value="ANIMAL_VACCINATED">Vacunación (Salud Animal)</option>
-                   <option value="GPS_CHECK_IN">Check-in Geográfico</option>
-                   <option value="OWNERSHIP_TRANSFER">Traspaso de Propiedad</option>
+                   {Object.entries(SCHEMA_REGISTRY).map(([key, item]) => (
+                     <option key={key} value={key}>{item.label}</option>
+                   ))}
                 </select>
              </div>
 
-             {/* Simulacro de Dynamic Form Injected */}
-             {eventType === 'ANIMAL_VACCINATED' && (
-               <div className="grid gap-4 bg-surface-raised p-4 rounded-lg border border-border/50">
-                 <div className="grid gap-2">
-                    <Label htmlFor="vaccine" className="text-text-secondary">Nombre de la Vacuna</Label>
-                    <Input id="vaccine" value={payloadForm.vaccineName} onChange={(e: any) => setPayloadForm({...payloadForm, vaccineName: e.target.value})} placeholder="Ej. Aftosa Bivalente" required disabled={isSigning || txHash !== null} />
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
-                   <div className="grid gap-2">
-                      <Label htmlFor="dose" className="text-text-secondary">Dosis Aplicada</Label>
-                      <Input id="dose" value={payloadForm.dose} onChange={(e: any) => setPayloadForm({...payloadForm, dose: e.target.value})} placeholder="2 ml" required disabled={isSigning || txHash !== null} />
-                   </div>
-                   <div className="grid gap-2">
-                      <Label htmlFor="vet" className="text-text-secondary">Matrícula Veterinario</Label>
-                      <Input id="vet" value={payloadForm.veterinarian} onChange={(e: any) => setPayloadForm({...payloadForm, veterinarian: e.target.value})} placeholder="MP-99411" required disabled={isSigning || txHash !== null}/>
-                   </div>
-                 </div>
-               </div>
-             )}
+             {/* UI Inyectada agnósticamente según el JSON Schema seleccionado */}
+             <DynamicFormRenderer 
+               schema={SCHEMA_REGISTRY[eventType]?.schema || {}}
+               data={payloadForm}
+               onChange={setPayloadForm}
+               disabled={isSigning || txHash !== null}
+             />
 
              {/* UI de Botón de Firma Estilizado */}
              {!txHash ? (
