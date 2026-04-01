@@ -308,7 +308,7 @@ export default function LandingPage(): ReactElement {
                 <img src="/biffco-iso-color.svg" alt="Biffco" className="h-5 w-auto" />
               </a>
               <div className="text-[15px] text-[var(--color-text-secondary)] leading-relaxed">
-                <strong className="font-semibold text-[var(--color-text-primary)] font-mono text-[12px] uppercase tracking-wider">Biffco Inc.</strong><br/>
+                <strong className="font-semibold text-[var(--color-text-primary)] font-mono text-[11px] uppercase tracking-wider">Biffco Inc.</strong><br/>
                 Global Headquarters<br/>
                 Córdoba, AR.
               </div>
