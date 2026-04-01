@@ -19,11 +19,11 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
   const { data: assets, isLoading } = trpc.assets.list.useQuery({ limit: 100 })
 
   const mergeMutation = trpc.merge.createMerge.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: { childId: string, consumedCount: number }) => {
       toast.success(`Fusión Exitosa: ${data.consumedCount} activos unificados en el ID ${data.childId.slice(0, 8)}.`)
       router.push(`/${params.wsId}/assets`)
     },
-    onError: (err: any) => {
+    onError: (err: { message?: string }) => {
       toast.error(err.message || "Error al realizar la fusión")
     }
   })
@@ -31,11 +31,11 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
   // Derive selection data
   const selectedAssets = useMemo(() => {
     if (!assets) return []
-    return selectedAssetIds.map(id => assets.find((a: any) => a.id === id)).filter(Boolean)
+    return selectedAssetIds.map(id => assets.find((a: { id: string }) => a.id === id)).filter(Boolean)
   }, [selectedAssetIds, assets])
 
   // Worst-Case Compliance Check based on status
-  const infectedAssets = selectedAssets.filter((a: any) => a.status === 'QUARANTINE' || a.status === 'LOCKED')
+  const infectedAssets = selectedAssets.filter((a: { status?: string }) => a.status === 'QUARANTINE' || a.status === 'LOCKED')
   const hasComplianceRisk = infectedAssets.length > 0
 
   const toggleAsset = (id: string) => {
@@ -91,7 +91,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
             <div className="overflow-y-auto p-2 flex flex-col gap-1 flex-1">
                {isLoading ? (
                  <p className="text-xs text-center p-4 text-text-muted animate-pulse">Cargando inventario...</p>
-               ) : assets?.filter((a: any) => !['CLOSED_BY_SPLIT', 'CLOSED_BY_MERGE', 'SLAUGHTERED'].includes(a.status)).map((asset: any) => {
+               ) : assets?.filter((a: { status: string }) => !['CLOSED_BY_SPLIT', 'CLOSED_BY_MERGE', 'SLAUGHTERED'].includes(a.status)).map((asset: { id: string, status: string, type: string }) => {
                  const isSelected = selectedAssetIds.includes(asset.id)
                  const isRisk = asset.status === 'QUARANTINE' || asset.status === 'LOCKED'
                  return (
@@ -135,7 +135,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
                    <>
                      {/* Entradas */}
                      <div className="flex flex-col gap-2 relative z-10 w-1/3">
-                        {selectedAssets.slice(0, 4).map((a: any, i) => (
+                        {selectedAssets.slice(0, 4).map((a: { id: string, status: string }) => (
                           <div key={a.id} className={`w-full py-1.5 px-3 rounded text-xs font-mono text-center border shadow-sm ${
                             ['QUARANTINE', 'LOCKED'].includes(a.status) ? 'bg-error text-white border-error/50' : 'bg-surface border-border text-text-primary'
                           }`}>
@@ -190,7 +190,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
                      <label className="text-xs text-text-secondary">Tipo Técnico del Vertical</label>
                      <Input 
                        value={outputType}
-                       onChange={(e: any) => setOutputType(e.target.value)}
+                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOutputType(e.target.value)}
                        placeholder="Ej. LiquidContainer"
                        disabled={isSubmitting}
                      />
@@ -199,7 +199,7 @@ export default function MergePage({ params }: { params: { wsId: string } }) {
                      <label className="text-xs text-text-secondary">Nombre / Identificador Logístico</label>
                      <Input 
                        value={outputName}
-                       onChange={(e: any) => setOutputName(e.target.value)}
+                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOutputName(e.target.value)}
                        placeholder="Cisterna #09"
                        disabled={isSubmitting}
                      />
