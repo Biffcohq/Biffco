@@ -57,9 +57,9 @@ export default function PlatformRoot() {
                <p className="text-sm font-medium text-text-primary">No hay eventos recientes</p>
                <p className="text-xs text-text-secondary">Parece que aún no has registrado operaciones en la cadena de custodia.</p>
              </div>
-             <button className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
-               Registrar primer evento
-             </button>
+             <a href={`/${workspace?.id}/assets/new`} className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
+               Registrar primer animal (Livestock)
+             </a>>
           </div>
         </div>
 
@@ -80,6 +80,17 @@ export default function PlatformRoot() {
                 <p className="text-xs text-text-secondary mt-1">El 98% de tus lotes provienen de zonas sin deforestación registrada desde 2020.</p>
              </div>
           </div>
+        </div>
+
+        {/* Access to Livestock Engine */}
+        <div className="lg:col-span-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm p-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-primary mb-1">Motor de Trazabilidad Ganadera</h2>
+              <p className="text-sm text-text-secondary">Accede directamente al panel operativo de ganadería para registrar hacienda, faenas y cortes.</p>
+            </div>
+            <a href={`/${workspace?.id}/assets`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
+               Ir a Ganadería <IconPackage size={18}/>
+            </a>
         </div>
 
       </div>
