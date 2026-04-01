@@ -700,6 +700,7 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 groupId: string | null;
                 type: string;
                 locationId: string | null;
+                parentIds: string[];
             }[];
             meta: object;
         }>;
@@ -713,14 +714,24 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                     data: unknown;
                     createdAt: Date;
                     workspaceId: string;
+                    hash: string;
                     globalId: number;
                     streamId: string;
                     streamType: string;
                     eventType: string;
-                    hash: string;
                     previousHash: string | null;
                     signature: string | null;
                     signerId: string | null;
+                }[];
+                holds: {
+                    id: string;
+                    createdAt: Date;
+                    isActive: boolean;
+                    workspaceId: string;
+                    assetId: string;
+                    reason: string;
+                    issuerId: string;
+                    releasedAt: Date | null;
                 }[];
                 id: string;
                 createdAt: Date;
@@ -732,6 +743,7 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 groupId: string | null;
                 type: string;
                 locationId: string | null;
+                parentIds: string[];
             };
             meta: object;
         }>;
@@ -754,7 +766,243 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 groupId: string | null;
                 type: string;
                 locationId: string | null;
+                parentIds: string[];
             } | undefined;
+            meta: object;
+        }>;
+    }>>;
+    assetGroups: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        getWithAssets: import("@trpc/server").TRPCQueryProcedure<{
+            input: {
+                verticalId?: string | undefined;
+            };
+            output: {
+                assets: {
+                    id: string;
+                    groupId: string | null;
+                    status: string;
+                }[];
+                totalActive: number;
+                id: string;
+                workspaceId: string;
+                verticalId: string;
+                name: string;
+                quantity: number;
+                isActive: boolean;
+                metadata: unknown;
+                createdAt: Date;
+                updatedAt: Date;
+            }[];
+            meta: object;
+        }>;
+        create: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                name: string;
+                verticalId?: string | undefined;
+                metadata?: Record<string, any> | undefined;
+                initialQuantity?: number | undefined;
+            };
+            output: {
+                id: string;
+                name: string;
+                createdAt: Date;
+                updatedAt: Date;
+                verticalId: string;
+                isActive: boolean;
+                workspaceId: string;
+                quantity: number;
+                metadata: unknown;
+            } | undefined;
+            meta: object;
+        }>;
+        addAssets: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                groupId: string;
+                assetIds: string[];
+            };
+            output: {
+                success: boolean;
+                count: number;
+            };
+            meta: object;
+        }>;
+        dissolve: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                id: string;
+            };
+            output: {
+                success: boolean;
+                dissolvedGroup: string;
+            };
+            meta: object;
+        }>;
+    }>>;
+    split: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        createSplit: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                inputAssetId: string;
+                outputAllocations: {
+                    quantity?: number | undefined;
+                    metadata?: Record<string, unknown> | undefined;
+                }[];
+            };
+            output: {
+                success: boolean;
+                parent: string;
+                childrenCount: number;
+                holdsInherited: number;
+            };
+            meta: object;
+        }>;
+    }>>;
+    merge: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        createMerge: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                inputAssetIds: string[];
+                outputType: string;
+                outputMetadata?: Record<string, unknown> | undefined;
+            };
+            output: {
+                success: boolean;
+                childId: string;
+                consumedCount: number;
+                holdsInherited: number;
+            };
+            meta: object;
+        }>;
+    }>>;
+    holds: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        list: import("@trpc/server").TRPCQueryProcedure<{
+            input: void;
+            output: {
+                id: string;
+                createdAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                assetId: string;
+                reason: string;
+                issuerId: string;
+                releasedAt: Date | null;
+            }[];
+            meta: object;
+        }>;
+        impose: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                assetId: string;
+                reason: string;
+            };
+            output: {
+                id: string;
+                createdAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                assetId: string;
+                reason: string;
+                issuerId: string;
+                releasedAt: Date | null;
+            };
+            meta: object;
+        }>;
+        lift: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                holdId: string;
+                reason?: string | undefined;
+            };
+            output: {
+                success: boolean;
+                remainedInQuarantine: boolean;
+            };
+            meta: object;
+        }>;
+    }>>;
+    upload: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        getSignedUrl: import("@trpc/server").TRPCMutationProcedure<{
+            input: {
+                filename: string;
+                contentType: string;
+                assetId?: string | undefined;
+            };
+            output: {
+                url: string;
+                key: string;
+                expiresInSecs: number;
+            };
+            meta: object;
+        }>;
+    }>>;
+    verify: import("@trpc/server").TRPCBuiltRouter<{
+        ctx: import("../trpc").TRPCContext;
+        meta: object;
+        errorShape: import("@trpc/server").TRPCDefaultErrorShape;
+        transformer: false;
+    }, import("@trpc/server").TRPCDecorateCreateRouterOptions<{
+        getAssetById: import("@trpc/server").TRPCQueryProcedure<{
+            input: {
+                id: string;
+            };
+            output: {
+                events: {
+                    globalId: number;
+                    id: string;
+                    workspaceId: string;
+                    streamId: string;
+                    streamType: string;
+                    eventType: string;
+                    data: unknown;
+                    hash: string;
+                    previousHash: string | null;
+                    signature: string | null;
+                    signerId: string | null;
+                    createdAt: Date;
+                }[];
+                holds: {
+                    id: string;
+                    assetId: string;
+                    workspaceId: string;
+                    reason: string;
+                    isActive: boolean;
+                    issuerId: string;
+                    createdAt: Date;
+                    releasedAt: Date | null;
+                }[];
+                anchor: null;
+                id: string;
+                workspaceId: string;
+                groupId: string | null;
+                verticalId: string;
+                type: string;
+                status: string;
+                locationId: string | null;
+                metadata: unknown;
+                parentIds: string[];
+                createdAt: Date;
+                updatedAt: Date;
+            };
             meta: object;
         }>;
     }>>;
@@ -776,11 +1024,11 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 data: unknown;
                 createdAt: Date;
                 workspaceId: string;
+                hash: string;
                 globalId: number;
                 streamId: string;
                 streamType: string;
                 eventType: string;
-                hash: string;
                 previousHash: string | null;
                 signature: string | null;
                 signerId: string | null;
@@ -789,9 +1037,9 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
         }>;
         append: import("@trpc/server").TRPCMutationProcedure<{
             input: {
+                hash: string;
                 streamId: string;
                 eventType: string;
-                hash: string;
                 payload: Record<string, unknown>;
                 publicKey?: string | undefined;
                 streamType?: "asset" | "asset_group" | undefined;
@@ -803,11 +1051,11 @@ export declare const appRouter: import("@trpc/server").TRPCBuiltRouter<{
                 data: unknown;
                 createdAt: Date;
                 workspaceId: string;
+                hash: string;
                 globalId: number;
                 streamId: string;
                 streamType: string;
                 eventType: string;
-                hash: string;
                 previousHash: string | null;
                 signature: string | null;
                 signerId: string | null;

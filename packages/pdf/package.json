@@ -1,0 +1,15 @@
+{
+  "name": "@biffco/pdf",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "dependencies": {
+    "@react-pdf/renderer": "^4.3.2",
+    "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.3",
+    "@types/react": "^18.3.3"
+  }
+}

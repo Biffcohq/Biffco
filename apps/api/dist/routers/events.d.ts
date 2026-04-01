@@ -16,11 +16,11 @@ export declare const eventsRouter: import("@trpc/server").TRPCBuiltRouter<{
             data: unknown;
             createdAt: Date;
             workspaceId: string;
+            hash: string;
             globalId: number;
             streamId: string;
             streamType: string;
             eventType: string;
-            hash: string;
             previousHash: string | null;
             signature: string | null;
             signerId: string | null;
@@ -29,9 +29,9 @@ export declare const eventsRouter: import("@trpc/server").TRPCBuiltRouter<{
     }>;
     append: import("@trpc/server").TRPCMutationProcedure<{
         input: {
+            hash: string;
             streamId: string;
             eventType: string;
-            hash: string;
             payload: Record<string, unknown>;
             publicKey?: string | undefined;
             streamType?: "asset" | "asset_group" | undefined;
@@ -43,11 +43,11 @@ export declare const eventsRouter: import("@trpc/server").TRPCBuiltRouter<{
             data: unknown;
             createdAt: Date;
             workspaceId: string;
+            hash: string;
             globalId: number;
             streamId: string;
             streamType: string;
             eventType: string;
-            hash: string;
             previousHash: string | null;
             signature: string | null;
             signerId: string | null;

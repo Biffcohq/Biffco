@@ -1,7 +1,10 @@
+/* global process */
+/* eslint-env node */
 import 'dotenv/config'
 import './instrument'
 import './telemetry'
 import './workers/anchor'
+import { scheduleExpirationCron } from './workers/cron-worker'
 
 import Fastify from 'fastify'
 import cors from '@fastify/cors'
@@ -11,6 +14,7 @@ import jwt from '@fastify/jwt'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 import { createContext } from './trpc'
 import { appRouter } from './routers/index'
+import { setupPdfRoutes } from './routers/pdf-route'
 import { env } from '@biffco/config'
 import { db } from '@biffco/db'
 import { verticalRegistry } from '@biffco/core/vertical-engine'
@@ -48,6 +52,9 @@ const buildServer = async () => {
     trpcOptions: { router: appRouter, createContext }
   })
 
+  // ─── Native REST / PDF Endpoints ──────────────────────────────────
+  await setupPdfRoutes(app)
+
   // ─── Health check ─────────────────────────────────────────────────
   app.get('/health', async () => {
     try {
@@ -74,10 +81,13 @@ const start = async () => {
     const port = Number(process.env.PORT) || 3001
     await app.listen({ port, host: "0.0.0.0" })
     app.log.info(`[BIFFCO API] Corriendo en puerto ${port}`)
+
+    // Arrancar cronjobs asincrónicos integrados
+    await scheduleExpirationCron()
   } catch (err) {
     app.log.error(err)
     process.exit(1)
   }
 }
 
-start()
+void start()

@@ -13,6 +13,12 @@ const zones_1 = require("./zones");
 const pens_1 = require("./pens");
 const assets_1 = require("./assets");
 const events_1 = require("./events");
+const assetGroups_1 = require("./assetGroups");
+const split_1 = require("./split");
+const merge_1 = require("./merge");
+const holds_1 = require("./holds");
+const upload_1 = require("./upload");
+const verify_1 = require("./verify");
 exports.appRouter = (0, trpc_1.router)({
     auth: auth_1.authRouter,
     workspaces: workspaces_1.workspacesRouter,
@@ -23,6 +29,12 @@ exports.appRouter = (0, trpc_1.router)({
     zones: zones_1.zonesRouter,
     pens: pens_1.pensRouter,
     assets: assets_1.assetsRouter,
+    assetGroups: assetGroups_1.assetGroupsRouter,
+    split: split_1.splitRouter,
+    merge: merge_1.mergeRouter,
+    holds: holds_1.holdsRouter,
+    upload: upload_1.uploadRouter,
+    verify: verify_1.verifyRouter,
     events: events_1.eventsRouter,
     verticals: verticals_1.verticalsRouter,
 });

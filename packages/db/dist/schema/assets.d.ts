@@ -298,6 +298,25 @@ export declare const assets: import("drizzle-orm/pg-core").PgTableWithColumns<{
             identity: undefined;
             generated: undefined;
         }, {}, {}>;
+        parentIds: import("drizzle-orm/pg-core").PgColumn<{
+            name: "parent_ids";
+            tableName: "assets";
+            dataType: "json";
+            columnType: "PgJsonb";
+            data: string[];
+            driverParam: unknown;
+            notNull: true;
+            hasDefault: true;
+            isPrimaryKey: false;
+            isAutoincrement: false;
+            hasRuntimeDefault: false;
+            enumValues: undefined;
+            baseColumn: never;
+            identity: undefined;
+            generated: undefined;
+        }, {}, {
+            $type: string[];
+        }>;
         createdAt: import("drizzle-orm/pg-core").PgColumn<{
             name: "created_at";
             tableName: "assets";

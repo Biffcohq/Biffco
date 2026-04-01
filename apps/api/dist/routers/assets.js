@@ -7,6 +7,7 @@ const trpc_1 = require("../trpc");
 const schema_1 = require("@biffco/db/schema");
 const db_1 = require("@biffco/db");
 const rbac_1 = require("@biffco/core/rbac");
+const schema_2 = require("@biffco/db/schema");
 exports.assetsRouter = (0, trpc_1.router)({
     // Endpoint clave para el Dashboard: Listado de Activos
     list: trpc_1.protectedProcedure
@@ -47,9 +48,14 @@ exports.assetsRouter = (0, trpc_1.router)({
             orderBy: (domainEvents, { desc }) => [desc(domainEvents.createdAt)],
             limit: 10
         });
+        // Traer los holds activos del activo (útil para Worst-case compliance warning)
+        const assetHolds = await ctx.db.query.holds.findMany({
+            where: (0, db_1.and)((0, db_1.eq)(schema_2.holds.assetId, asset.id), (0, db_1.eq)(schema_2.holds.isActive, true))
+        });
         return {
             ...asset,
-            events: assetEvents
+            events: assetEvents,
+            holds: assetHolds
         };
     }),
     // Creación de un Asset puro inicial

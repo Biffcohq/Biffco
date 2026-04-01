@@ -34,4 +34,23 @@ export const workspacesRouter = router({
       
       return updated
     }),
+    
+  search: protectedProcedure
+    .input(z.object({
+      query: z.string().min(2),
+      limit: z.number().min(1).max(20).default(5)
+    }))
+    .query(async ({ input, ctx }) => {
+       const lowerQuery = input.query.toLowerCase();
+       // Drizzle ilike no siempre está expuesto directo en el core si no se importa bien, usaremos select
+       // Pero asumiendo DB sqlite/pg podemos usar like o un select general filtrado
+       const allWorkspaces = await ctx.db.query.workspaces.findMany({
+         limit: 100 // Busqueda simple en memoria para esta prueba PoC
+       });
+       
+       return allWorkspaces
+         .filter(w => w.id !== ctx.workspaceId && (w.name.toLowerCase().includes(lowerQuery) || (w.slug && w.slug.toLowerCase().includes(lowerQuery))))
+         .slice(0, input.limit)
+         .map(w => ({ id: w.id, name: w.name, slug: w.slug }));
+    })
 })

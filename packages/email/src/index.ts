@@ -1,5 +1,4 @@
 /* global console */
-/* eslint-disable no-undef, no-console */
 import React from 'react';
 import { Resend } from 'resend';
 import { env } from '@biffco/config';
@@ -11,6 +10,7 @@ export * from './templates/InvitationEmail';
 export * from './templates/WelcomeEmail';
 export * from './templates/HoldAlertEmail';
 export * from './templates/DTEExpiryEmail';
+export * from './templates/TransferOfferEmail';
 
 export async function sendEmail<T>({
   to, subject, component, props

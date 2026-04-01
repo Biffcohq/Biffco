@@ -22,6 +22,7 @@ export declare const assetsRouter: import("@trpc/server").TRPCBuiltRouter<{
             groupId: string | null;
             type: string;
             locationId: string | null;
+            parentIds: string[];
         }[];
         meta: object;
     }>;
@@ -35,14 +36,24 @@ export declare const assetsRouter: import("@trpc/server").TRPCBuiltRouter<{
                 data: unknown;
                 createdAt: Date;
                 workspaceId: string;
+                hash: string;
                 globalId: number;
                 streamId: string;
                 streamType: string;
                 eventType: string;
-                hash: string;
                 previousHash: string | null;
                 signature: string | null;
                 signerId: string | null;
+            }[];
+            holds: {
+                id: string;
+                createdAt: Date;
+                isActive: boolean;
+                workspaceId: string;
+                assetId: string;
+                reason: string;
+                issuerId: string;
+                releasedAt: Date | null;
             }[];
             id: string;
             createdAt: Date;
@@ -54,6 +65,7 @@ export declare const assetsRouter: import("@trpc/server").TRPCBuiltRouter<{
             groupId: string | null;
             type: string;
             locationId: string | null;
+            parentIds: string[];
         };
         meta: object;
     }>;
@@ -76,6 +88,7 @@ export declare const assetsRouter: import("@trpc/server").TRPCBuiltRouter<{
             groupId: string | null;
             type: string;
             locationId: string | null;
+            parentIds: string[];
         } | undefined;
         meta: object;
     }>;

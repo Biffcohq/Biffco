@@ -27,6 +27,7 @@ exports.assets = (0, pg_core_1.pgTable)("assets", {
     status: (0, pg_core_1.text)('status').notNull().default('active'),
     locationId: (0, pg_core_1.text)('location_id'), // FK a locations
     metadata: (0, pg_core_1.jsonb)('metadata').notNull().default({}),
+    parentIds: (0, pg_core_1.jsonb)('parent_ids').$type().notNull().default([]),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at', { withTimezone: true }).notNull().defaultNow()
 }, (table) => [
@@ -34,6 +35,7 @@ exports.assets = (0, pg_core_1.pgTable)("assets", {
     (0, pg_core_1.index)('idx_assets_group_id').on(table.groupId),
     (0, pg_core_1.index)('idx_assets_vertical_id').on(table.verticalId),
     (0, pg_core_1.index)('idx_assets_status').on(table.status),
-    (0, pg_core_1.index)('idx_assets_location_id').on(table.locationId)
+    (0, pg_core_1.index)('idx_assets_location_id').on(table.locationId),
+    (0, pg_core_1.index)('idx_assets_parent_ids').using('gin', table.parentIds)
 ]);
 //# sourceMappingURL=assets.js.map

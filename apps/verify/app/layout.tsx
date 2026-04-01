@@ -1,3 +1,4 @@
+import React, { type ReactNode } from 'react';
 import './globals.css';
 import { Inter } from 'next/font/google';
 
@@ -8,7 +9,7 @@ export const metadata = {
   description: 'Public Asset Verification Portal',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: ReactNode }): ReactNode {
   return (
     <html lang="en" className={`${inter.variable} antialiased font-sans`}>
       <body className="min-h-screen bg-[#F9FAFB] dark:bg-[#0C111D]">

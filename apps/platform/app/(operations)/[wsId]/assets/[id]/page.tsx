@@ -15,10 +15,17 @@ import {
 import Link from 'next/link'
 import { format } from 'date-fns'
 
+import { EvidenceUploader } from '@biffco/ui'
+
 type TabType = 'info' | 'timeline' | 'map' | 'documents'
 
 export default function AssetDetailPage({ params }: { params: { wsId: string, id: string } }) {
   const [activeTab, setActiveTab] = useState<TabType>('info')
+  const utils = trpc.useUtils()
+
+  const getSignedUrl = trpc.upload.getSignedUrl.useMutation()
+  const confirmUpload = trpc.upload.confirmUpload.useMutation()
+  const appendEvent = trpc.events.append.useMutation()
 
   const { data: asset, isLoading } = trpc.assets.getById.useQuery({ 
     id: params.id 
@@ -207,27 +214,58 @@ export default function AssetDetailPage({ params }: { params: { wsId: string, id
           )}
 
           {activeTab === 'documents' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-               <div className="p-8 border-2 border-dashed border-border rounded-xl flex flex-col items-center justify-center gap-3 hover:bg-surface hover:border-primary/50 cursor-pointer transition-colors group">
-                 <div className="size-12 rounded-full bg-surface-raised border border-border flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-transform">
-                   <IconPlus size={24} className="text-text-muted group-hover:text-primary transition-colors" />
-                 </div>
-                 <span className="text-sm font-medium text-text-secondary group-hover:text-primary">Vincular Documento</span>
-               </div>
-               
-               {/* Mock documents */}
-               {[1,2].map(i => (
-                 <div key={i} className="p-5 border border-border rounded-xl bg-surface flex flex-col gap-3">
-                    <div className="flex items-start justify-between">
-                       <IconFiles size={32} stroke={1.5} className="text-primary/70" />
-                       <span className="text-[10px] uppercase font-bold text-success bg-success/10 px-2 py-0.5 rounded">Verificado</span>
+            <div className="flex flex-col gap-8">
+              <EvidenceUploader 
+                 className="shadow-sm bg-surface w-full max-w-full"
+                 onRequestSignedUrl={async (filename, contentType) => {
+                    return await getSignedUrl.mutateAsync({ filename, contentType });
+                 }}
+                 onConfirmUpload={async (key) => {
+                    const result = await confirmUpload.mutateAsync({ key });
+                    return { status: result.status, message: result.message };
+                 }}
+                 onUploadSuccess={(data) => {
+                    appendEvent.mutate({
+                      streamId: asset.id,
+                      eventType: 'DOCUMENT_ATTACHED',
+                      hash: data.sha256,
+                      payload: {
+                         evidenceKey: data.key,
+                         filename: data.filename,
+                         sha256: data.sha256
+                      }
+                    }, {
+                      onSuccess: () => {
+                         utils.assets.getById.invalidate({ id: asset.id });
+                      }
+                    });
+                 }}
+              />
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                 {/* Evidencias reales extraídas del historial */}
+                 {asset.events?.filter((e: any) => e.data?.evidenceKey).map((ev: any) => (
+                   <div key={ev.id} className="p-5 border border-border rounded-xl bg-surface flex flex-col gap-3">
+                      <div className="flex items-start justify-between">
+                         <IconFiles size={32} stroke={1.5} className="text-primary/70" />
+                         <span className="text-[10px] uppercase font-bold text-success bg-success/10 px-2 py-0.5 rounded">Verificado SHA-256</span>
+                      </div>
+                      <div className="flex flex-col overflow-hidden">
+                        <h4 className="font-bold text-sm text-text-primary truncate" title={ev.data.filename}>{ev.data.filename || 'Evidencia Criptográfica'}</h4>
+                        <p className="text-xs text-text-muted mt-1">{format(new Date(ev.createdAt), "dd MMM yyyy")}</p>
+                        <p className="text-[10px] font-mono text-text-secondary mt-2 truncate max-w-full" title={ev.data.sha256}>{ev.data.sha256}</p>
+                      </div>
+                   </div>
+                 ))}
+                 
+                 {(!asset.events || asset.events.filter((e: any) => e.data?.evidenceKey).length === 0) && (
+                    <div className="col-span-full py-12 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-xl">
+                       <IconFiles size={40} className="text-text-muted mb-3" />
+                       <h4 className="text-sm font-bold text-text-primary">No hay documentos anexados</h4>
+                       <p className="text-xs text-text-muted mt-1">Utiliza la caja superior para hashear y subir una evidencia.</p>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-text-primary">Certificado_Senasa_2024.pdf</h4>
-                      <p className="text-xs text-text-muted mt-1">Vinculado hace 2 días</p>
-                    </div>
-                 </div>
-               ))}
+                 )}
+              </div>
             </div>
           )}
 
