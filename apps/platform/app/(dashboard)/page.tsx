@@ -89,9 +89,15 @@ export default function PlatformRoot() {
               <h2 className="text-xl font-bold text-primary mb-1">Motor de Trazabilidad Ganadera</h2>
               <p className="text-sm text-text-secondary">Accede directamente al panel operativo de ganadería para registrar hacienda, faenas y cortes.</p>
             </div>
-            <Link href={`/${workspace?.id}/assets`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
-               Ir a Ganadería <IconPackage size={18}/>
-            </Link>
+            {isLoading || !workspace?.id ? (
+              <div className="flex items-center justify-center w-48 h-11 bg-primary/50 text-white rounded-full font-bold cursor-not-allowed">
+                 Cargando...
+              </div>
+            ) : (
+              <Link href={`/${workspace.id}/assets`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
+                 Ir a Ganadería <IconPackage size={18}/>
+              </Link>
+            )}
         </div>
 
       </div>
