@@ -196,11 +196,11 @@ export function Sidebar() {
             </div>
             {/* @ts-ignore */}
             <DropdownMenuSeparator className="bg-border" />
-            <Link href="/settings">
+            <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}/settings` : "/settings"}>
               {/* @ts-ignore */}
               <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
                 <IconSettings className="mr-2 h-4 w-4 opacity-70" />
-                <span>Configuración</span>
+                <span>Configuración {isWorkspaceContext ? 'de Cadena' : 'Global'}</span>
               </DropdownMenuItem>
             </Link>
             {/* @ts-ignore */}
