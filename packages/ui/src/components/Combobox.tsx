@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { IconCheck, IconChevronsUpDown } from '@tabler/icons-react'
 import { Command as CommandPrimitive } from "cmdk"
 
 import { cn } from "../lib/utils"
@@ -49,7 +49,7 @@ export function Combobox({
           {value
             ? options.find((option) => option.value === value)?.label
             : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <IconChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </button>
       </PopoverTrigger>
       <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
@@ -77,7 +77,7 @@ export function Combobox({
                     "relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none aria-selected:bg-[var(--color-neutral-100)] aria-selected:text-text-primary] data-[disabled]:pointer-events-none data-[disabled]:opacity-50"
                   )}
                 >
-                  <Check
+                  <IconCheck
                     className={cn(
                       "mr-2 h-4 w-4",
                       value === option.value ? "opacity-100" : "opacity-0"

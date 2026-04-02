@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
 // @ts-ignore: Next.js internal workspace resolution
 import { Skeleton, Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Button, Badge } from '@biffco/ui'
-import { MapView } from '../../components/MapView'
+import { MapView } from '@/app/components/MapView'
 
 export default function FacilitiesPage() {
   const [activeTab, setActiveTab] = useState<'list' | 'map'>('list')
@@ -159,7 +159,7 @@ export default function FacilitiesPage() {
                             <h4 className="font-bold text-text-primary">{zone.name}</h4>
                             <p className="text-xs font-mono text-text-secondary">{zone.type}</p>
                           </div>
-                          <Badge variant={zone.gfwStatus === 'compliant' ? 'default' : 'secondary'}>{zone.gfwStatus}</Badge>
+                          <Badge variant={zone.gfwStatus === 'compliant' ? 'green' : 'gray'}>{zone.gfwStatus}</Badge>
                        </div>
                        
                        <div className="flex flex-col gap-2 border-t border-border pt-3 mt-1">

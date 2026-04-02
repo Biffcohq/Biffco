@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { FileUp, ShieldCheck, ShieldAlert, Loader2, File, CheckCircle2 } from 'lucide-react';
+import { IconFileUp, IconShieldCheck, IconShieldExclamation, IconLoader2, IconFile, IconCheckCircle2 } from '@tabler/icons-react';
 import { Button } from './Button';
 
 // Utility para hashear en el Edge/Browser de manera nativa sin dependencias pesadas
@@ -117,7 +117,7 @@ export function EvidenceUploader({
         <div {...getRootProps()} className="flex flex-col items-center justify-center cursor-pointer text-center space-y-3">
           <input {...getInputProps()} />
           <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full">
-            <FileUp className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+            <IconFileUp className="w-8 h-8 text-gray-500 dark:text-gray-400" />
           </div>
           <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {isDragActive ? "Suelta la evidencia aquí..." : "Arrastra tu Evidencia, o haz click"}
@@ -128,7 +128,7 @@ export function EvidenceUploader({
           
           {state === 'error' && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg flex items-start text-left gap-2 w-full">
-              <ShieldAlert className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <IconShieldExclamation className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -138,7 +138,7 @@ export function EvidenceUploader({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
                <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                 <File className="w-6 h-6 text-blue-500" />
+                 <IconFile className="w-6 h-6 text-blue-500" />
                </div>
                <div className="flex flex-col">
                   <span className="text-sm font-semibold truncate max-w-[200px] text-gray-800 dark:text-gray-200">
@@ -151,9 +151,9 @@ export function EvidenceUploader({
             </div>
             
             {state === 'success' ? (
-               <CheckCircle2 className="w-6 h-6 text-green-500" />
+               <IconCheckCircle2 className="w-6 h-6 text-green-500" />
             ) : (
-               <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+               <IconLoader2 className="w-5 h-5 text-gray-400 animate-spin" />
             )}
           </div>
 
@@ -169,7 +169,7 @@ export function EvidenceUploader({
                 <span className="flex items-center gap-1.5">
                   {state === 'hashing' && <>Calculando Hash SHA-256 (WebCrypto)...</>}
                   {state === 'uploading' && <>Transferencia Segura S3 WORM...</>}
-                  {state === 'scanning' && <><ShieldCheck className="w-3.5 h-3.5" /> Motor Biffco ClamAV Analizando...</>}
+                  {state === 'scanning' && <><IconShieldCheck className="w-3.5 h-3.5" /> Motor Biffco ClamAV Analizando...</>}
                   {state === 'success' && <strong className="text-green-600 dark:text-green-400">Certificación y WORM Bloqueo con Éxito</strong>}
                 </span>
                 <span>{Math.round(progress)}%</span>

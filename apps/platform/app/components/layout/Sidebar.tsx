@@ -15,7 +15,10 @@ import {
   IconShieldCheck,
   IconAlertTriangle,
   IconSettings,
-  IconLogout
+  IconLogout,
+  IconBox,
+  IconShape,
+  IconChartDonut
 } from '@tabler/icons-react'
 import {
   DropdownMenu,
@@ -38,27 +41,49 @@ interface NavGroup {
   }[]
 }
 
-const navGroups: NavGroup[] = [
+// Generador dinámico de navegación para un workspace específico
+const getWorkspaceNavGroups = (workspaceId: string): NavGroup[] => [
   {
     label: "Gestión",
     items: [
-      { label: "Mi Workspace", href: "/", icon: IconBuilding },
-      { label: "Equipo y Roles", href: "/members", icon: IconUsers },
+      { label: "Dashboard Cadena", href: `/w/${workspaceId}`, icon: IconBuilding },
+      { label: "Personal y Roles", href: `/w/${workspaceId}/members`, icon: IconUsers },
     ]
   },
   {
     label: "Operaciones",
     items: [
-      { label: "Facilities", href: "/facilities", icon: IconPackage },
-      { label: "Eventos", href: "/events", icon: IconFileCheck },
+      { label: "Activos (Assets)", href: `/w/${workspaceId}/assets`, icon: IconBox },
+      { label: "Agrupaciones (Lotes)", href: `/w/${workspaceId}/groups`, icon: IconShape },
+      { label: "Facilities", href: `/w/${workspaceId}/facilities`, icon: IconPackage },
+      { label: "Eventos", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
     ]
   },
   {
     label: "Compliance",
     items: [
-      { label: "Cuarentenas", href: "/holds", icon: IconAlertTriangle },
-      { label: "EUDR", href: "/eudr", icon: IconLeaf },
-      { label: "Analytics", href: "/analytics", icon: IconChartBar },
+      { label: "Auditorías", href: `/w/${workspaceId}/audits`, icon: IconFileCheck },
+      { label: "Reportes", href: `/w/${workspaceId}/reports`, icon: IconChartDonut },
+      { label: "Cuarentenas", href: `/w/${workspaceId}/holds`, icon: IconAlertTriangle },
+      { label: "EUDR", href: `/w/${workspaceId}/eudr`, icon: IconLeaf },
+      { label: "Analytics", href: `/w/${workspaceId}/analytics`, icon: IconChartBar },
+    ]
+  }
+]
+
+// Navegación Global (Nivel Cuenta Administradora)
+const globalNavGroups: NavGroup[] = [
+  {
+    label: "Hub",
+    items: [
+      { label: "Mis Cadenas (Workspaces)", href: "/", icon: IconBuilding },
+    ]
+  },
+  {
+    label: "Configuración Global",
+    items: [
+      { label: "Cuenta Mestra", href: "/settings", icon: IconSettings },
+      { label: "Facturación", href: "/settings/billing", icon: IconFileCheck },
     ]
   }
 ]
@@ -68,6 +93,13 @@ export function Sidebar() {
   const toggle = useUIStore(s => s.toggleSidebar)
   const pathname = usePathname()
   const { data: profile } = trpc.workspaces.getProfile.useQuery()
+
+  const isWorkspaceContext = pathname.startsWith('/w/')
+  const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
+  
+  const currentNavGroups = isWorkspaceContext && workspaceId 
+    ? getWorkspaceNavGroups(workspaceId) 
+    : globalNavGroups;
 
   return (
     <aside 
@@ -99,7 +131,7 @@ export function Sidebar() {
 
       {/* Navigation Groups */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-6 scrollbar-hide">
-        {navGroups.map((group, idx) => (
+        {currentNavGroups.map((group, idx) => (
           <div key={idx} className="flex flex-col gap-1">
             {!isCollapsed && (
               <h3 className="text-[11px] font-semibold text-text-muted uppercase tracking-widest px-3 mb-1">

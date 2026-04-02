@@ -18,8 +18,9 @@ const labelVariants = cva(
   }
 )
 
+/* global HTMLLabelElement */
 export interface LabelProps 
-  extends React.LabelHTMLAttributes<HTMLLabelElement>, 
+  extends Omit<React.LabelHTMLAttributes<HTMLLabelElement>, 'color'>, 
     VariantProps<typeof labelVariants> {}
 
 export const Label = React.forwardRef<HTMLLabelElement, LabelProps>(

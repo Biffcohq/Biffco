@@ -1,6 +1,6 @@
 "use client"
 import React from 'react'
-import { ShieldCheck, ExternalLink } from 'lucide-react'
+import { IconShieldCheck, IconExternalLink } from '@tabler/icons-react'
 
 interface BlockchainAnchorBadgeProps {
   txHash: string
@@ -17,7 +17,7 @@ export function BlockchainAnchorBadge({ txHash, network = "Polygon Amoy", timest
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-50 dark:bg-green-500/10">
-            <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-500" />
+            <IconShieldCheck className="h-4 w-4 text-green-600 dark:text-green-500" />
           </div>
           <div>
             <h4 className="text-sm font-semibold text-[#101828] dark:text-[#F2F4F7]">Anclaje Criptográfico</h4>
@@ -45,7 +45,7 @@ export function BlockchainAnchorBadge({ txHash, network = "Polygon Amoy", timest
             rel="noopener noreferrer"
             className="flex items-center gap-1 font-mono text-blue-600 hover:underline dark:text-blue-400"
           >
-            {shortHash} <ExternalLink className="h-3 w-3" />
+            {shortHash} <IconExternalLink className="h-3 w-3" />
           </a>
         </div>
       </div>

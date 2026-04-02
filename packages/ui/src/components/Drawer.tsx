@@ -1,8 +1,8 @@
 "use client"
-
+/* global HTMLDivElement, HTMLHeadingElement, HTMLParagraphElement */
 import * as React from "react"
 import { Drawer as DrawerPrimitive } from "vaul"
-import { X } from "lucide-react"
+import { IconX } from '@tabler/icons-react'
 
 import { cn } from "../lib/utils"
 
@@ -25,9 +25,10 @@ const DrawerPortal = DrawerPrimitive.Portal
 const DrawerClose = DrawerPrimitive.Close
 
 const DrawerOverlay = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Overlay>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
+  // @ts-expect-error React 19 incompatibility
   <DrawerPrimitive.Overlay
     ref={ref}
     className={cn(
@@ -37,14 +38,15 @@ const DrawerOverlay = React.forwardRef<
     {...props}
   />
 ))
-DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+DrawerOverlay.displayName = "DrawerOverlay"
 
 const DrawerContent = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
 >(({ className, children, ...props }, ref) => (
   <DrawerPortal>
     <DrawerOverlay />
+    {/* @ts-expect-error React 19 incompatibility */}
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
@@ -54,8 +56,9 @@ const DrawerContent = React.forwardRef<
       {...props}
     >
       <div className="absolute right-4 top-4 z-50 sm:right-6 sm:top-6">
+        {/* @ts-expect-error React 19 incompatibility */}
         <DrawerClose className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-secondary">
-          <X className="h-4 w-4 text-text-primary]" />
+          <IconX className="h-4 w-4 text-text-primary]" />
           <span className="sr-only">Close</span>
         </DrawerClose>
       </div>
@@ -88,9 +91,10 @@ const DrawerFooter = ({
 DrawerFooter.displayName = "DrawerFooter"
 
 const DrawerTitle = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Title>
+  HTMLHeadingElement,
+  React.HTMLAttributes<HTMLHeadingElement>
 >(({ className, ...props }, ref) => (
+  // @ts-expect-error React 19 incompatibility
   <DrawerPrimitive.Title
     ref={ref}
     className={cn(
@@ -100,19 +104,20 @@ const DrawerTitle = React.forwardRef<
     {...props}
   />
 ))
-DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+DrawerTitle.displayName = "DrawerTitle"
 
 const DrawerDescription = React.forwardRef<
-  React.ElementRef<typeof DrawerPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
+  // @ts-expect-error React 19 incompatibility
   <DrawerPrimitive.Description
     ref={ref}
     className={cn("text-sm text-[var(--color-text-secondary)]", className)}
     {...props}
   />
 ))
-DrawerDescription.displayName = DrawerPrimitive.Description.displayName
+DrawerDescription.displayName = "DrawerDescription"
 
 export {
   Drawer,

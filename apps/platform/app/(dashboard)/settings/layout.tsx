@@ -17,10 +17,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   const pathname = usePathname()
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 w-full max-w-[1200px] mx-auto min-h-[80vh] animate-in fade-in duration-300">
-      <aside className="w-full md:w-56 shrink-0 md:border-r border-border min-h-full pr-4">
-        <h2 className="text-lg font-semibold mb-6 text-text-primary px-2">Configuración</h2>
-        <nav className="flex flex-col gap-1">
+    <div className="flex flex-col md:flex-row gap-8 w-full max-w-[1000px] mx-auto min-h-[80vh] animate-in fade-in duration-300 mt-6">
+      <aside className="w-full md:w-56 shrink-0 min-h-full pr-4">
+        <h2 className="text-sm font-semibold mb-3 text-text-primary px-3 uppercase tracking-wider text-text-secondary">Configuración</h2>
+        <nav className="flex flex-col gap-[2px]">
           {settingsNav.map((item) => {
             const isActive = pathname === item.href || (pathname === '/settings' && item.href === '/settings/general')
             return (
@@ -28,10 +28,10 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                 key={item.href}
                 href={item.href}
                 className={`
-                  px-3 py-2 rounded-md text-sm transition-colors font-medium
+                  px-3 py-2 rounded-md text-[14px] transition-all font-medium flex items-center gap-2
                   ${isActive 
-                    ? 'bg-surface-raised text-primary' 
-                    : 'text-text-secondary hover:bg-surface hover:text-text-primary'
+                    ? 'bg-primary/10 text-primary font-semibold' 
+                    : 'text-text-secondary hover:bg-surface-raised hover:text-text-primary'
                   }
                 `}
               >
@@ -42,7 +42,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </nav>
       </aside>
       
-      <main className="flex-1 pb-12">
+      <main className="flex-1 pb-16 flex flex-col gap-10">
         {children}
       </main>
     </div>
