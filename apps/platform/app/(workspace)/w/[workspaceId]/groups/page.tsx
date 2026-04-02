@@ -2,7 +2,7 @@
 
 import { IconShape, IconPlus, IconBox, IconUsersGroup } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
-import { Skeleton, Button, Badge } from '@biffco/ui'
+import { Skeleton, Button, Badge, toast } from '@biffco/ui'
 
 export default function GroupsPage() {
   const { data: groupsList, isLoading } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' })
@@ -19,7 +19,7 @@ export default function GroupsPage() {
           <p className="text-text-secondary text-sm">Gestiona colecciones lógicas de activos físicos operando conjuntamente como tropas, silos o embarques.</p>
         </div>
         <Button 
-          onClick={() => window.alert("Modal de conformación de Lote pendiente.")}
+          onClick={() => toast.info("Modal de conformación de Lote pendiente.")}
           className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
         >
           <IconPlus size={18} />
@@ -74,7 +74,7 @@ export default function GroupsPage() {
                 La trazabilidad a nivel de rebaño o embarque se logra agrupando activos sueltos en Lotes Lógicos.
              </p>
              <Button 
-                onClick={() => window.alert("Modal de conformación de Lote pendiente.")}
+                onClick={() => toast.info("Modal de conformación de Lote pendiente.")}
                 variant="outline"
                 className="mt-6"
              >

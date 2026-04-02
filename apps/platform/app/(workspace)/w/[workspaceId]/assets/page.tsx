@@ -2,7 +2,7 @@
 
 import { IconBox, IconPlus, IconActivity, IconAlertCircle } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
-import { Skeleton, Button, Badge } from '@biffco/ui'
+import { Skeleton, Button, Badge, toast } from '@biffco/ui'
 import { useState } from 'react'
 
 export default function AssetsPage() {
@@ -25,7 +25,7 @@ export default function AssetsPage() {
           <p className="text-text-secondary text-sm">Registro inmutable de unidades trazables físicas o lógicas dentro de tu cadena de suministro.</p>
         </div>
         <Button 
-          onClick={() => window.alert("Modal de originación de Activos dependiente del Vertical Pack instalado en este Workspace.")}
+          onClick={() => toast.info("Modal de originación de Activos dependiente del Vertical Pack instalado en este Workspace.")}
           className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
         >
           <IconPlus size={18} />
