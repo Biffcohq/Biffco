@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { IconFileUp, IconShieldCheck, IconShieldExclamation, IconLoader2, IconFile, IconCheckCircle2 } from '@tabler/icons-react';
+import { IconUpload, IconShieldCheck, IconAlertTriangle, IconLoader2, IconFile, IconCircleCheck } from '@tabler/icons-react';
 import { Button } from './Button';
 
 // Utility para hashear en el Edge/Browser de manera nativa sin dependencias pesadas
@@ -117,7 +117,7 @@ export function EvidenceUploader({
         <div {...getRootProps()} className="flex flex-col items-center justify-center cursor-pointer text-center space-y-3">
           <input {...getInputProps()} />
           <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full">
-            <IconFileUp className="w-8 h-8 text-gray-500 dark:text-gray-400" />
+            <IconUpload className="w-8 h-8 text-gray-500 dark:text-gray-400" />
           </div>
           <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
             {isDragActive ? "Suelta la evidencia aquí..." : "Arrastra tu Evidencia, o haz click"}
@@ -128,7 +128,7 @@ export function EvidenceUploader({
           
           {state === 'error' && (
             <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-xs font-semibold rounded-lg flex items-start text-left gap-2 w-full">
-              <IconShieldExclamation className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <IconAlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <span>{errorMessage}</span>
             </div>
           )}
@@ -151,7 +151,7 @@ export function EvidenceUploader({
             </div>
             
             {state === 'success' ? (
-               <IconCheckCircle2 className="w-6 h-6 text-green-500" />
+               <IconCircleCheck className="w-6 h-6 text-green-500" />
             ) : (
                <IconLoader2 className="w-5 h-5 text-gray-400 animate-spin" />
             )}
