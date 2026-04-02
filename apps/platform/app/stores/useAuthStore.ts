@@ -6,10 +6,12 @@ export interface AuthState {
   personName: string | null
   isAuthenticated: boolean
   hasRefreshToken: boolean
+  isHydrated: boolean
   // eslint-disable-next-line no-unused-vars
   setSession: (data: { workspaceId: string, memberId: string, personName: string }) => void
   // eslint-disable-next-line no-unused-vars
   setHasRefreshToken: (val: boolean) => void
+  setHydrated: () => void
   clearSession: () => void
 }
 
@@ -19,6 +21,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   personName: null,
   isAuthenticated: false,
   hasRefreshToken: false,
+  isHydrated: false,
   setSession: (data) => set({
     workspaceId: data.workspaceId,
     memberId: data.memberId,
@@ -26,11 +29,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     isAuthenticated: true,
   }),
   setHasRefreshToken: (val) => set({ hasRefreshToken: val }),
+  setHydrated: () => set({ isHydrated: true }),
   clearSession: () => set({
     workspaceId: null,
     memberId: null,
     personName: null,
     isAuthenticated: false,
     hasRefreshToken: false,
+    isHydrated: true,
   }),
 }))

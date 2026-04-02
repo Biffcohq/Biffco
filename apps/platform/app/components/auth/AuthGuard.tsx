@@ -7,13 +7,15 @@ import { trpc } from '../../../lib/trpc'
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { isAuthenticated, hasRefreshToken, setSession, clearSession } = useAuthStore()
+  const { isAuthenticated, hasRefreshToken, isHydrated, setSession, clearSession } = useAuthStore()
   const [isClient, setIsClient] = useState(false)
   const [isRefreshing, setIsRefreshing] = useState(false)
   const refreshMutation = trpc.auth.refresh.useMutation()
 
   useEffect(() => {
     setIsClient(true)
+    if (!isHydrated) return; // Esperar a que SessionHydrator haya establecido el estado
+    
     if (!isAuthenticated && !isRefreshing) {
       if (hasRefreshToken) {
         setIsRefreshing(true)
@@ -41,10 +43,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         router.push('/login')
       }
     }
-  }, [isAuthenticated, hasRefreshToken, router, isRefreshing])
+  }, [isHydrated, isAuthenticated, hasRefreshToken, router, isRefreshing, refreshMutation, setSession, clearSession])
 
   // Prevenir un "flash" de contenido no autenticado durante hidratación o refresh
-  if (!isClient || !isAuthenticated || isRefreshing) {
+  if (!isClient || !isHydrated || (!isAuthenticated && isRefreshing)) {
     // Retornamos un div vacío con el background para que la transición sea suave
     return <div className="h-screen w-screen bg-bg"></div>
   }
