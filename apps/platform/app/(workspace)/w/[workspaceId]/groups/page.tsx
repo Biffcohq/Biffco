@@ -52,7 +52,7 @@ export default function GroupsPage() {
                    </Badge>
                 </div>
 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border mt-2 text-sm text-text-secondary">
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-border text-sm text-text-secondary">
                    <div className="flex items-center gap-1.5 font-medium text-text-primary">
                       <IconBox size={16} className="text-text-muted" stroke={1.5} />
                       {group.totalActive} Activos Reales

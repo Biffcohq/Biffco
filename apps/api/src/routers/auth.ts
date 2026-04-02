@@ -102,7 +102,8 @@ export const authRouter = router({
             acceptedAt: new Date(),
           })
         })
-      } catch (err: any) {
+      } catch (unknownErr) {
+        const err = unknownErr as Error & { code?: string, routine?: string, detail?: string }
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: `DB_ERR: ${err?.message || 'unknown'} | Code: ${err?.code || err?.routine} | Detail: ${err?.detail}`
