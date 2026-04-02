@@ -251,9 +251,10 @@ export const authRouter = router({
       if (ctx.jti) {
         await redis.set(`revoked:${ctx.jti}`, "1", "EX", 900)
       }
-      // Invalidar cookies client-side (C-05)
-      ctx.reply.clearCookie('accessToken');
-      ctx.reply.clearCookie('refreshToken');
+      const isProd = process.env.NODE_ENV === 'production';
+      const cookieOpts = { path: '/', ...(isProd ? { domain: '.biffco.co' } : {}) }
+      ctx.reply.clearCookie('accessToken', cookieOpts);
+      ctx.reply.clearCookie('refreshToken', cookieOpts);
       return { ok: true }
     }),
 
@@ -333,8 +334,9 @@ export const authRouter = router({
         return { success: true, workspaceId, memberId: payload.memberId, personName }
       } catch (err: unknown) {
         console.error(err);
-        ctx.reply.clearCookie('accessToken');
-        ctx.reply.clearCookie('refreshToken');
+        const cookieOpts = { path: '/', ...(process.env.NODE_ENV === 'production' ? { domain: '.biffco.co' } : {}) }
+        ctx.reply.clearCookie('accessToken', cookieOpts);
+        ctx.reply.clearCookie('refreshToken', cookieOpts);
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid refresh payload" });
       }
     }),
