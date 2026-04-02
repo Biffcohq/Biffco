@@ -1,18 +1,21 @@
 "use client"
 
 import { useState } from 'react'
+import { trpc } from '@/lib/trpc'
 import { IconShieldCheck, IconKey, IconLoader2, IconEye, IconAlertTriangle } from '@tabler/icons-react'
 import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Input, toast } from '@biffco/ui'
 
 export default function WalletSettingsPage() {
-  const isLoading = false
-  const publicKey = "0xMockKeyWithoutTRPC"
+  const { data: userProfile, isLoading } = trpc.auth.me.useQuery()
+  const publicKey = userProfile?.publicKey
 
   const [isRevealOpen, setIsRevealOpen] = useState(false)
   const [password, setPassword] = useState('')
   const [isRevealed, setIsRevealed] = useState(false)
   const [isDecrypting, setIsDecrypting] = useState(false)
 
+  // Esta función es un mockup. En el mundo real, aquí se abriría un input seguro,
+  // y en caso de semi-custodial se desencriptaría el blob con el password.
   const handleReveal = () => {
     if (!password) {
       toast.error('Por favor ingresa tu contraseña')
@@ -21,7 +24,7 @@ export default function WalletSettingsPage() {
     setIsDecrypting(true)
     setTimeout(() => {
       setIsDecrypting(false)
-      if (password === 'admin123') { 
+      if (password === 'admin123') { // Mockup check
         setIsRevealed(true)
         toast.success('Bóveda desencriptada')
       } else {
@@ -38,6 +41,8 @@ export default function WalletSettingsPage() {
 
   return (
     <div className="w-full flex flex-col gap-8 animate-in fade-in duration-300">
+      
+      {/* Header */}
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-bold text-text-primary">Billetera Criptográfica</h1>
         <p className="text-text-secondary text-base">
@@ -45,6 +50,7 @@ export default function WalletSettingsPage() {
         </p>
       </div>
 
+      {/* Network Anchor Card */}
       <div className="bg-surface border border-border rounded-xl p-6 shadow-sm flex flex-col items-start gap-4">
         <div className="flex flex-col gap-1 w-full">
           <h2 className="text-lg font-bold text-text-primary">Estado de tu Billetera (Network Anchor)</h2>
@@ -79,6 +85,7 @@ export default function WalletSettingsPage() {
         </div>
       </div>
 
+      {/* Key Rotation Card */}
       <div className="bg-surface border border-border rounded-xl shadow-sm flex flex-col items-start overflow-hidden">
         <div className="p-6 flex flex-col gap-1 w-full">
            <h2 className="text-lg font-bold text-text-primary">Rotación de Claves (Key Rotation)</h2>
@@ -108,6 +115,7 @@ export default function WalletSettingsPage() {
         </div>
       </div>
 
+      {/* REVEAL MODAL */}
       <Dialog open={isRevealOpen} onOpenChange={setIsRevealOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

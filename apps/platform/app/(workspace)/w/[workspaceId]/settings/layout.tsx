@@ -9,7 +9,6 @@ export default function SettingsLayout({ children, params }: { children: ReactNo
     { name: 'Perfil', path: `${wPath}/profile` },
     { name: 'Facturación', path: `${wPath}/billing` },
     { name: 'Preferencias', path: `${wPath}/preferences` },
-    { name: 'Claves Encriptadas', path: `${wPath}/wallet`, active: true },
   ]
 
   return (
