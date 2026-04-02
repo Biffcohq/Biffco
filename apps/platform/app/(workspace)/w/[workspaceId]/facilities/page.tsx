@@ -5,7 +5,7 @@ import { IconPlus, IconMapPin, IconBuildingStore } from '@tabler/icons-react'
 import { useState } from 'react'
 import { trpc } from '@/lib/trpc'
 // @ts-ignore: Next.js internal workspace resolution
-import { Skeleton, Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Button, Badge } from '@biffco/ui'
+import { Skeleton, Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerDescription, Button, Badge, toast } from '@biffco/ui'
 import { MapView } from '@/app/components/MapView'
 
 export default function FacilitiesPage() {
@@ -40,7 +40,7 @@ export default function FacilitiesPage() {
           <p className="text-text-secondary text-sm">Gestiona tus áreas operativas geolocalizadas según el cumplimiento EUDR.</p>
         </div>
         <Button 
-          onClick={() => window.alert("Modal de registro de Facility pendiente de conexión (Día 7)")}
+          onClick={() => toast.info("Modal de registro de Facility pendiente de conexión (Día 7)")}
           className="whitespace-nowrap w-fit"
         >
           <IconPlus size={18} />
@@ -103,7 +103,7 @@ export default function FacilitiesPage() {
            )}
 
            <button 
-             onClick={() => window.alert("Modal de registro de Facility pendiente de conexión (Día 7)")}
+             onClick={() => toast.info("Modal de registro de Facility pendiente de conexión (Día 7)")}
              className="bg-surface-raised border-2 border-dashed border-border rounded-xl shadow-sm hover:bg-surface hover:border-primary/50 hover:text-primary transition-all flex flex-col items-center justify-center p-8 gap-3 min-h-[280px] text-text-secondary group"
            >
               <div className="size-12 rounded-full bg-surface border border-border flex items-center justify-center group-hover:scale-110 group-hover:bg-primary/10 transition-transform">
