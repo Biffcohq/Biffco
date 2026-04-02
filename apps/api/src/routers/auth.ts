@@ -164,6 +164,7 @@ export const authRouter = router({
       const accessToken = await ctx.request.server.jwt.sign({
         workspaceId,
         memberId,
+        personName: input.personName,
         permissions: Array.from(finalPerms),
         wsIdx: input.wsIdx,
         jti: createId(),
@@ -224,6 +225,7 @@ export const authRouter = router({
       const accessToken = await ctx.request.server.jwt.sign({
         workspaceId,
         memberId,
+        personName: person.name,
         permissions: Array.from(finalPerms),
         wsIdx: 0,
         jti: createId(),
@@ -297,6 +299,7 @@ export const authRouter = router({
         if (!member) throw new TRPCError({ code: "UNAUTHORIZED", message: "Member invalid" });
 
         const workspaceId = member.workspaceId;
+        const personArr = await db.select().from(persons).where(eq(persons.id, member.personId)).limit(1)
         const finalPerms = new Set<string>(["events.read", "assets.read"])
         if (member.roles.includes("admin")) {
           Object.values(Permission).forEach(p => finalPerms.add(p))
@@ -305,6 +308,7 @@ export const authRouter = router({
         const accessToken = await ctx.request.server.jwt.sign({
           workspaceId,
           memberId: payload.memberId,
+          personName: personArr[0]?.name || "Usuario",
           permissions: Array.from(finalPerms),
           wsIdx: 0,
           jti: createId(),

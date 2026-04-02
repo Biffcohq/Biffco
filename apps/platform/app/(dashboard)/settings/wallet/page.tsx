@@ -29,7 +29,7 @@ export default function GlobalWalletPage() {
         <div className="flex flex-col gap-1 w-full">
           <h2 className="text-lg font-bold text-text-primary">Estado de la Billetera (Network Anchor)</h2>
           <p className="text-text-secondary text-sm">
-            La frase semilla original que obtuviste durante el Onboarding se requiere para firmar las operaciones o recuperar acceso. **Biffco no almacena tu frase semilla.**
+            La frase semilla original que obtuviste durante el Onboarding es tu respaldo maestro. Sólo se requiere en casos de extrema necesidad (ej. si olvidas tu contraseña o cambias de computadora). Para tus operaciones del día a día, usamos una bóveda encriptada (con tu contraseña) para que firmes con un solo clic. **Biffco no almacena tu frase semilla ni tu clave privada.**
           </p>
         </div>
 

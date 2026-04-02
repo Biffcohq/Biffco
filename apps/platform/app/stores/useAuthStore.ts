@@ -1,7 +1,6 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
 
-interface AuthState {
+export interface AuthState {
   workspaceId: string | null
   memberId: string | null
   personName: string | null
@@ -11,28 +10,21 @@ interface AuthState {
   clearSession: () => void
 }
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set) => ({
-      workspaceId: null,
-      memberId: null,
-      personName: null,
-      isAuthenticated: false,
-      setSession: (data) => set({
-        workspaceId: data.workspaceId,
-        memberId: data.memberId,
-        personName: data.personName,
-        isAuthenticated: true,
-      }),
-      clearSession: () => set({
-        workspaceId: null,
-        memberId: null,
-        personName: null,
-        isAuthenticated: false,
-      }),
-    }),
-    {
-      name: 'biffco-auth-storage',
-    }
-  )
-)
+export const useAuthStore = create<AuthState>((set) => ({
+  workspaceId: null,
+  memberId: null,
+  personName: null,
+  isAuthenticated: false,
+  setSession: (data) => set({
+    workspaceId: data.workspaceId,
+    memberId: data.memberId,
+    personName: data.personName,
+    isAuthenticated: true,
+  }),
+  clearSession: () => set({
+    workspaceId: null,
+    memberId: null,
+    personName: null,
+    isAuthenticated: false,
+  }),
+}))
