@@ -38,15 +38,17 @@ const setAuthCookies = (reply: FastifyReply, accessToken: string, refreshToken: 
   reply.setCookie('accessToken', accessToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
     maxAge: 15 * 60 // 15 minutos
   })
   reply.setCookie('refreshToken', refreshToken, {
     httpOnly: true,
     secure: process.env.NODE_ENV !== 'development',
-    sameSite: 'strict',
+    sameSite: 'lax',
     path: '/',
+    domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
     maxAge: 30 * 24 * 60 * 60 // 30 dias
   })
 }
@@ -320,8 +322,9 @@ export const authRouter = router({
         ctx.reply.setCookie('accessToken', accessToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV !== 'development',
-          sameSite: 'strict',
+          sameSite: 'lax',
           path: '/',
+          domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
           maxAge: 15 * 60
         })
 

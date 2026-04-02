@@ -1,4 +1,4 @@
-/* global atob */
+/* global Buffer, console */
 import './globals.css'
 import React from 'react'
 import { Providers } from './providers'
@@ -33,12 +33,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     try {
       const payloadBase64 = token.split('.')[1]
       if (payloadBase64) {
-        // Corrección: Soporte para base64url que emite JWT sin caer en runtime Node
-        let base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
-        const pad = base64.length % 4;
-        if (pad) base64 += '='.repeat(4 - pad);
-        
-        const payload = JSON.parse(atob(base64));
+        const payloadStr = Buffer.from(payloadBase64, 'base64').toString('utf8');
+        const payload = JSON.parse(payloadStr);
         if (payload.exp * 1000 > Date.now()) {
           initialSession = {
             workspaceId: payload.workspaceId,
@@ -47,8 +43,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           }
         }
       }
-    } catch {
-      // ignore parse errors
+    } catch (err: unknown) {
+      console.error("[AUTH] Error decodificando JWT SSR:", err)
     }
   }
 
