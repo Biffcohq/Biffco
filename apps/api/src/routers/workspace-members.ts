@@ -140,7 +140,10 @@ export const workspaceMembersRouter = router({
       }
       const [revoked] = await ctx.db.update(workspaceMembers)
         .set({ status: "revoked", revokedAt: new Date() })
-        .where(eq(workspaceMembers.id, input.memberId))
+        .where(and(
+          eq(workspaceMembers.id, input.memberId),
+          eq(workspaceMembers.workspaceId, ctx.workspaceId!)
+        ))
         .returning()
       
       return revoked

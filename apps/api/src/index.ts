@@ -44,19 +44,22 @@ const buildServer = async () => {
   })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
 
-  // Registrar fastify-cookie (C-05)
-  await app.register(fastifyCookie, {
-    secret: env.JWT_SECRET || "biffco_cookie_secret_fallback", // for signed cookies
-  })
-
-  // JWT Setup.
-  if (!env.JWT_SECRET) {
+  // Secret Setup & Guard.
+  const coreSecret = env.JWT_SECRET
+  if (!coreSecret) {
     if (process.env.NODE_ENV !== "development") {
-       throw new Error('FATAL: JWT_SECRET is required in non-development environments');
+       throw new Error('FATAL: JWT_SECRET is required in non-development environments for cookie and token signing');
     }
     app.log.warn("JWT_SECRET no encontrada, usando secreto fallback para entorno local.")
   }
-  await app.register(jwt, { secret: env.JWT_SECRET || "biffco_local_dev_secret_fallback_12345" })
+
+  // Registrar fastify-cookie (C-05)
+  await app.register(fastifyCookie, {
+    secret: coreSecret || "biffco_cookie_secret_fallback", // for signed cookies
+  })
+
+  // JWT Setup.
+  await app.register(jwt, { secret: coreSecret || "biffco_local_dev_secret_fallback_12345" })
 
   // ─── tRPC ─────────────────────────────────────────────────────────
   await app.register(fastifyTRPCPlugin, {

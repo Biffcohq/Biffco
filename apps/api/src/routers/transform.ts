@@ -25,12 +25,12 @@ const slaughterValidators: Record<string, (_animal: any, _tx: any) => Promise<{ 
   VALID_DTE: async (animal, tx) => {
     const lastDteEvent = await tx.query.domainEvents.findFirst({
       where: and(eq(domainEvents.streamId, animal.id), eq(domainEvents.eventType, 'HEALTH_CERT_ISSUED')),
-      orderBy: (domainEvents: any, { desc }: any) => [desc(domainEvents.occurredAt)]
+      orderBy: (domainEvents: any, { desc }: any) => [desc(domainEvents.createdAt)]
     })
-    if (!lastDteEvent || !lastDteEvent.payload?.expiresAt) {
+    if (!lastDteEvent || !lastDteEvent.data?.expiresAt) {
       return { ok: false, error: "El DTE del animal vence o está ausente. Requerí un DTE actualizado al Inspector SENASA." }
     }
-    const expiresAt = new Date(lastDteEvent.payload.expiresAt as string)
+    const expiresAt = new Date(lastDteEvent.data.expiresAt as string)
     if (expiresAt < new Date()) {
       return { ok: false, error: `El DTE del animal vence o está ausente. Requerí un DTE actualizado al Inspector SENASA.` }
     }

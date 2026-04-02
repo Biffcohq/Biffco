@@ -9,6 +9,8 @@ import { AssetPassport } from '@biffco/pdf';
 export async function setupPdfRoutes(app: FastifyInstance) {
   app.get('/api/assets/:id/passport', async (request, reply) => {
     try {
+      await request.jwtVerify();
+      const user = request.user as { workspaceId: string };
       const { id } = request.params as { id: string };
 
       // 1. Fetch Asset Data
@@ -18,6 +20,10 @@ export async function setupPdfRoutes(app: FastifyInstance) {
 
       if (!asset) {
         return reply.status(404).send({ error: "Asset no encontrado" });
+      }
+
+      if (asset.workspaceId !== user.workspaceId) {
+        return reply.status(403).send({ error: "Acceso denegado a este activo." });
       }
 
       // 2. Fetch Chain of Custody (Events)

@@ -79,7 +79,7 @@ export function Step1Credentials() {
     store.setAdmin({
       adminName: name,
       adminEmail: email.toLowerCase(),
-      passwordHash: password, // Mantengo la prop en el estado interno por retrocompatibilidad temporal, pero envío raw pass
+      password: password, 
       termsAccepted
     })
     

@@ -4,7 +4,7 @@ export interface SignupState {
   step: number
   adminName: string
   adminEmail: string
-  passwordHash: string
+  password: string
   publicKey: string
   termsAccepted: boolean
   
@@ -21,7 +21,7 @@ export interface SignupState {
   setStep: (step: number) => void
   nextStep: () => void
   prevStep: () => void
-  setAdmin: (data: { adminName: string, adminEmail: string, passwordHash: string, termsAccepted: boolean }) => void
+  setAdmin: (data: { adminName: string, adminEmail: string, password: string, termsAccepted: boolean }) => void
   setWorkspace: (data: { workspaceName: string, workspaceSlug: string, country: string }) => void
   setVertical: (id: string) => void
   setRoles: (roles: string[]) => void
@@ -33,7 +33,7 @@ const initialState = {
   
   adminName: '',
   adminEmail: '',
-  passwordHash: '',
+  password: '',
   publicKey: '',
   termsAccepted: false,
   

@@ -17,6 +17,9 @@ export function Step5Roles() {
 
   const registerMutation = trpc.auth.register.useMutation({
     onSuccess: (data: any) => {
+      // Clear plain text password from memory immediately!
+      useSignupStore.setState({ password: '' })
+      
       // Login with session
       setSession({
         workspaceId: data.workspaceId,
@@ -50,7 +53,7 @@ export function Step5Roles() {
       initialRoles: store.initialRoles,
       personName: store.adminName,
       email: store.adminEmail,
-      password: store.passwordHash, // Mapeado a la key que la API espera tras remover hasheo client-side
+      password: store.password, // Mapeado a la key que la API espera tras remover hasheo client-side
       publicKey: store.publicKey,
       wsIdx: 0
     })
