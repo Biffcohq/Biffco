@@ -1,3 +1,4 @@
+/* global Buffer, process, console */
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { createId } from '@paralleldrive/cuid2'
@@ -6,6 +7,49 @@ import { workspaces, workspaceMembers, persons, credentials } from '@biffco/db/s
 import { eq } from '@biffco/db'
 import { redis } from '../redis'
 import { Permission } from '@biffco/core/rbac'
+import crypto from 'crypto'
+
+// Utilidades criptográficas nativas para prevenir el uso de BLAKE2b (Crítico C-03)
+const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, maxmem: 32000000 };
+const KEY_LEN = 32;
+
+function hashPassword(password: string): string {
+  const salt = crypto.randomBytes(16);
+  const hash = crypto.scryptSync(password, salt, KEY_LEN, SCRYPT_PARAMS);
+  return `${salt.toString('hex')}:${hash.toString('hex')}`;
+}
+
+function verifyPassword(password: string, storedHashAndSalt: string): boolean {
+  try {
+    const [saltHex, hashHex] = storedHashAndSalt.split(':');
+    if (!saltHex || !hashHex) return false;
+    const salt = Buffer.from(saltHex, 'hex');
+    const storedHash = Buffer.from(hashHex, 'hex');
+    const computedHash = crypto.scryptSync(password, salt, KEY_LEN, SCRYPT_PARAMS);
+    return crypto.timingSafeEqual(storedHash, computedHash);
+  } catch {
+    return false;
+  }
+}
+
+// Función helper para inyectar Cookies seguras (Crítico C-05)
+import type { FastifyReply } from 'fastify'
+const setAuthCookies = (reply: FastifyReply, accessToken: string, refreshToken: string) => {
+  reply.setCookie('accessToken', accessToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 15 * 60 // 15 minutos
+  })
+  reply.setCookie('refreshToken', refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV !== 'development',
+    sameSite: 'strict',
+    path: '/',
+    maxAge: 30 * 24 * 60 * 60 // 30 dias
+  })
+}
 
 export const authRouter = router({
   checkEmail: publicProcedure
@@ -33,14 +77,13 @@ export const authRouter = router({
       initialRoles: z.array(z.string()).min(1),
       personName: z.string().min(2).max(100),
       email: z.string().email().toLowerCase(),
-      passwordHash: z.string().min(64), // Hash Argon2id del password
+      password: z.string().min(8), // Recibe texto plano sobre HTTPS seguro (C-03)
       publicKey: z.string().min(64).max(130), // Ed25519 public key hex
       wsIdx: z.number().int().min(0),          
     }))
     .mutation(async ({ input, ctx }) => {
-      const { db } = ctx
+      const { db, reply } = ctx
       
-      // 3. Verificar que el slug no está tomado
       const existing = await db.select()
         .from(workspaces)
         .where(eq(workspaces.slug, input.workspaceSlug))
@@ -50,7 +93,6 @@ export const authRouter = router({
         throw new TRPCError({ code: "CONFLICT", message: "El slug ya está en uso" })
       }
 
-      // Check if person email already exists
       const existingPerson = await db.select()
         .from(persons)
         .where(eq(persons.email, input.email))
@@ -65,23 +107,22 @@ export const authRouter = router({
       const memberId = createId()
       const credentialId = createId()
 
+      const securePasswordHash = hashPassword(input.password); // Aplicando Scrypt (C-03)
+
       try {
         await db.transaction(async (tx) => {
-          // 4. Create Person
           await tx.insert(persons).values({
             id: personId,
             name: input.personName,
             email: input.email,
           })
           
-          // 5. Create Credentials
           await tx.insert(credentials).values({
             id: credentialId,
             personId,
-            passwordHash: input.passwordHash,
+            passwordHash: securePasswordHash,
           })
 
-          // 6. Create Workspace
           await tx.insert(workspaces).values({
             id: workspaceId,
             name: input.workspaceName,
@@ -91,7 +132,6 @@ export const authRouter = router({
             settings: { country: input.country },
           })
 
-          // 7. Create WorkspaceMember
           await tx.insert(workspaceMembers).values({
             id: memberId,
             workspaceId,
@@ -102,20 +142,18 @@ export const authRouter = router({
             acceptedAt: new Date(),
           })
         })
-      } catch (unknownErr) {
-        const err = unknownErr as Error & { code?: string, routine?: string, detail?: string }
+      } catch (unknownErr: unknown) {
+        // Enmascaramiento de errores reales de base de datos SQL (A-08)
+        console.error(unknownErr);
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: `DB_ERR: ${err?.message || 'unknown'} | Code: ${err?.code || err?.routine} | Detail: ${err?.detail}`
+          message: `Error interno de escritura en base de datos. Por favor reintente.`
         })
       }
 
-      // 6. Generar el JWT con permisos
       const pack = ctx.verticalRegistry.get(input.verticalId)
-      // Base permissions any member has
       const finalPerms = new Set<string>(["events.read", "assets.read"])
       
-      // If admin, grant all standard perms
       if (input.initialRoles.includes("admin")) {
         Object.values(Permission).forEach(p => finalPerms.add(p))
         if (pack) {
@@ -137,49 +175,45 @@ export const authRouter = router({
         jti: createId(),
       }, { expiresIn: "30d" })
 
-      return { accessToken, refreshToken, workspaceId, memberId }
+      setAuthCookies(reply, accessToken, refreshToken); // C-05
+
+      return { success: true, workspaceId, memberId } // Ya no enviamos JWT en el body
     }),
 
-  // ─── LOGIN & LOGOUT ───────────────────────────────────────────
   login: publicProcedure
     .input(z.object({
       email: z.string().email().toLowerCase(),
-      passwordHash: z.string().min(64),
+      password: z.string().min(1),
     }))
     .mutation(async ({ input, ctx }) => {
-      const { db } = ctx
+      const { db, reply } = ctx
 
-      // 1. Encontrar la persona
       const personArr = await db.select().from(persons).where(eq(persons.email, input.email)).limit(1)
       const person = personArr[0]
       if (!person) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" })
       }
 
-      // 2. Verificar el hash del password
       const credArr = await db.select().from(credentials).where(eq(credentials.personId, person.id)).limit(1)
       const cred = credArr[0]
-      if (!cred || cred.passwordHash !== input.passwordHash) {
-        // Zero-Knowledge Proof: Comprobamos el hash enviado cliente vs hash guardado servidor
+      
+      // Validación real usando SCrypt en lugar de chequeo directo string != string (C-03)
+      if (!cred || !verifyPassword(input.password, cred.passwordHash)) {
         throw new TRPCError({ code: "UNAUTHORIZED", message: "Credenciales inválidas" })
       }
 
-      // 3. Obtener el workspace primario del usuario
       const memberArr = await db.select().from(workspaceMembers).where(eq(workspaceMembers.personId, person.id)).limit(1)
       const member = memberArr[0]
       if (!member) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Usuario sin espacios de trabajo activos" })
       }
 
-      // 4. Generar Tokens
       const workspaceId = member.workspaceId
       const memberId = member.id
       
-      // Construir permisos reales
       const finalPerms = new Set<string>(["events.read", "assets.read"])
       if (member.roles.includes("admin")) {
         Object.values(Permission).forEach(p => finalPerms.add(p))
-        // Asumiendo que obtenemos el pack del workspace
         const wsArr = await db.select().from(workspaces).where(eq(workspaces.id, member.workspaceId)).limit(1)
         if (wsArr[0]) {
            const pack = ctx.verticalRegistry.get(wsArr[0].verticalId)
@@ -201,15 +235,19 @@ export const authRouter = router({
         jti: createId(),
       }, { expiresIn: "30d" })
 
-      return { accessToken, refreshToken, workspaceId, memberId, personName: person.name }
+      setAuthCookies(reply, accessToken, refreshToken); // C-05
+
+      return { success: true, workspaceId, memberId, personName: person.name }
     }),
 
   logout: protectedProcedure
     .mutation(async ({ ctx }) => {
-      // Guardar el jti en redis (15 min expire)
       if (ctx.jti) {
         await redis.set(`revoked:${ctx.jti}`, "1", "EX", 900)
       }
+      // Invalidar cookies client-side (C-05)
+      ctx.reply.clearCookie('accessToken');
+      ctx.reply.clearCookie('refreshToken');
       return { ok: true }
     }),
 
@@ -230,8 +268,63 @@ export const authRouter = router({
     }),
 
   refresh: publicProcedure
-    .input(z.object({ refreshToken: z.string() }))
-    .mutation(async () => {
-      return { accessToken: "refreshed_mock" }
+    .mutation(async ({ ctx }) => {
+      // Implementación Real de Refresh Token (Crítico C-06)
+      const token = ctx.request.cookies?.refreshToken;
+      if (!token) throw new TRPCError({ code: "UNAUTHORIZED", message: "No refresh token" });
+      
+      try {
+        const payload = await ctx.request.server.jwt.verify<{
+          memberId: string
+          type: string
+          jti?: string
+        }>(token)
+
+        if (payload.type !== "refresh") {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid token type" });
+        }
+
+        // Revisar revocación
+        if (payload.jti) {
+           const isRevoked = await redis.get(`revoked:${payload.jti}`)
+           if (isRevoked) throw new TRPCError({ code: "UNAUTHORIZED", message: "Token revoked" });
+        }
+
+        const { db } = ctx;
+        // Regenerar el contexto
+        const memberArr = await db.select().from(workspaceMembers).where(eq(workspaceMembers.id, payload.memberId)).limit(1)
+        const member = memberArr[0]
+        if (!member) throw new TRPCError({ code: "UNAUTHORIZED", message: "Member invalid" });
+
+        const workspaceId = member.workspaceId;
+        const finalPerms = new Set<string>(["events.read", "assets.read"])
+        if (member.roles.includes("admin")) {
+          Object.values(Permission).forEach(p => finalPerms.add(p))
+        }
+
+        const accessToken = await ctx.request.server.jwt.sign({
+          workspaceId,
+          memberId: payload.memberId,
+          permissions: Array.from(finalPerms),
+          wsIdx: 0,
+          jti: createId(),
+        }, { expiresIn: "15m" })
+
+        // Secreto extendido
+        ctx.reply.setCookie('accessToken', accessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV !== 'development',
+          sameSite: 'strict',
+          path: '/',
+          maxAge: 15 * 60
+        })
+
+        return { success: true }
+      } catch (err: unknown) {
+        console.error(err);
+        ctx.reply.clearCookie('accessToken');
+        ctx.reply.clearCookie('refreshToken');
+        throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid refresh payload" });
+      }
     }),
 })

@@ -11,6 +11,7 @@ import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 import rateLimit from '@fastify/rate-limit'
 import jwt from '@fastify/jwt'
+import fastifyCookie from '@fastify/cookie'
 import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify'
 import { createContext } from './trpc'
 import { appRouter } from './routers/index'
@@ -31,7 +32,10 @@ const buildServer = async () => {
   // ─── Plugins ─────────────────────────────────────────────────────
   // Register the main web, platform, verify URLs for CORS from config 
   const allowedOrigins = [env.PLATFORM_URL, env.VERIFY_URL, env.WEB_URL].filter(Boolean) as string[]
-  await app.register(cors, { origin: allowedOrigins.length > 0 ? allowedOrigins : "*" })
+  await app.register(cors, { 
+    origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
+    credentials: true // Necesario para cookies HttpOnly (C-05)
+  })
 
   await app.register(helmet, { 
     contentSecurityPolicy: false,
@@ -40,8 +44,16 @@ const buildServer = async () => {
   })
   await app.register(rateLimit, { max: 100, timeWindow: '1 minute' })
 
+  // Registrar fastify-cookie (C-05)
+  await app.register(fastifyCookie, {
+    secret: env.JWT_SECRET || "biffco_cookie_secret_fallback", // for signed cookies
+  })
+
   // JWT Setup.
   if (!env.JWT_SECRET) {
+    if (process.env.NODE_ENV !== "development") {
+       throw new Error('FATAL: JWT_SECRET is required in non-development environments');
+    }
     app.log.warn("JWT_SECRET no encontrada, usando secreto fallback para entorno local.")
   }
   await app.register(jwt, { secret: env.JWT_SECRET || "biffco_local_dev_secret_fallback_12345" })

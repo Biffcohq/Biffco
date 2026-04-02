@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+/* global setTimeout, clearTimeout */
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import React, { useState, useEffect } from 'react'
 import { useSignupStore } from '../../stores/useSignupStore'
 import { IconArrowRight, IconEye, IconEyeOff, IconAlertCircle, IconLoader2, IconCheck } from '@tabler/icons-react'
 import { trpc } from '../../../lib/trpc'
@@ -38,7 +40,7 @@ export function Step1Credentials() {
         } else {
           setEmailError('')
         }
-      } catch (e) {
+      } catch {
         setEmailError('') // ignore network errors
       } finally {
         setIsValidatingEmail(false)
@@ -73,28 +75,15 @@ export function Step1Credentials() {
     setIsHashing(true)
 
     // Generate local hash of the password
-    try {
-      const sodiumModule = await import('libsodium-wrappers')
-      await sodiumModule.default.ready
-      const sodium = sodiumModule.default
-
-      const passwordBytes = new TextEncoder().encode(password)
-      const hashBytes = sodium.crypto_generichash(64, passwordBytes, null)
-      const passwordHash = sodium.to_hex(hashBytes)
-
-      store.setAdmin({
-        adminName: name,
-        adminEmail: email.toLowerCase(),
-        passwordHash,
-        termsAccepted
-      })
-      
-      store.nextStep()
-    } catch (err) {
-      setPassError('Failed to initialize local cryptography.')
-    } finally {
-      setIsHashing(false)
-    }
+    // Pass raw password to store (C-03 Remediado, backend handles Scrypt)
+    store.setAdmin({
+      adminName: name,
+      adminEmail: email.toLowerCase(),
+      passwordHash: password, // Mantengo la prop en el estado interno por retrocompatibilidad temporal, pero envío raw pass
+      termsAccepted
+    })
+    
+    store.nextStep()
   }
 
   return (

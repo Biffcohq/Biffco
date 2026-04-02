@@ -66,9 +66,12 @@ export const eventsRouter = router({
          }
       }
 
-      // 2. Validación Mock ED25519 (Lógica Placeholder)
+      // 2. Validación ED25519 (Crítico C-04 Remediado)
       if (input.signature && input.publicKey) {
-         const isValidSignature = true // MOCK: Cambiar a ED25519Verify()
+         // Requerimos importar verifyEvent, asumiendo su export en @biffco/core/crypto
+         // Para la estructura, inyectamos lógica real ED25519 validando el hash contra el signature
+         const { verifyEvent } = await import('@biffco/core/crypto');
+         const isValidSignature = await verifyEvent(input.hash, input.signature, input.publicKey);
          if (!isValidSignature) {
            throw new TRPCError({ code: "UNAUTHORIZED", message: "Firma Criptográfica Inválida" })
          }

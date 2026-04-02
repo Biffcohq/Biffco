@@ -1,6 +1,7 @@
 import { initTRPC, TRPCError } from '@trpc/server'
-import type { FastifyRequest } from 'fastify'
+import type { FastifyRequest, FastifyReply } from 'fastify'
 import { db } from '@biffco/db'
+import { sql } from 'drizzle-orm'
 import { verticalRegistry } from '@biffco/core/vertical-engine'
 import type { WorkspaceId, WorkspaceMemberId } from '@biffco/shared'
 import { redis } from './redis'
@@ -13,17 +14,17 @@ export interface TRPCContext {
   readonly db: typeof db
   readonly verticalRegistry: typeof verticalRegistry
   readonly request: FastifyRequest
+  readonly reply: FastifyReply
 }
 
 // ─── Crear el contexto desde el request de Fastify ──────────────
-export async function createContext({ req }: { req: FastifyRequest }): Promise<TRPCContext> {
-  const authHeader = req.headers.authorization
+export async function createContext({ req, res }: { req: FastifyRequest; res: FastifyReply }): Promise<TRPCContext> {
+  // C-05: Leer el JWT de la cookie HttpOnly instead of Header
+  const token = req.cookies?.accessToken
 
-  if (!authHeader?.startsWith("Bearer ")) {
-    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req }
+  if (!token) {
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req, reply: res }
   }
-
-  const token = authHeader.slice(7)
 
   try {
     const payload = await req.server.jwt.verify<{
@@ -40,10 +41,8 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
       }
     }
 
-    // Activar RLS para este request
-    // Usamos execute() para inyectar este local session parameter.
-    // Esto es vital para el aislamiento multi-tenant a nivel de PostgreSQL.
-    await db.execute(`SET app.current_workspace = '${payload.workspaceId}'`)
+    // C-01: Activar RLS con mitigación de inyección SQL usando consulta tipada a set_config
+    await db.execute(sql`SELECT set_config('app.current_workspace', ${payload.workspaceId}, true)`)
 
     return {
       workspaceId: payload.workspaceId as WorkspaceId,
@@ -52,10 +51,11 @@ export async function createContext({ req }: { req: FastifyRequest }): Promise<T
       jti: payload.jti || null,
       db,
       verticalRegistry,
-      request: req
+      request: req,
+      reply: res
     }
   } catch {
-    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req }
+    return { workspaceId: null, memberId: null, memberPermissions: [], jti: null, db, verticalRegistry, request: req, reply: res }
   }
 }
 

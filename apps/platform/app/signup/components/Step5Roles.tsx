@@ -1,6 +1,8 @@
+/* global alert */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSignupStore } from '../../stores/useSignupStore'
 import { trpc } from '../../../lib/trpc'
-import { IconArrowLeft, IconUserCheck, IconCheckbox, IconSquare, IconLoader2, IconShieldLock } from '@tabler/icons-react'
+import { IconArrowLeft, IconCheckbox, IconSquare, IconLoader2, IconShieldLock } from '@tabler/icons-react'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { useRouter } from 'next/navigation'
 
@@ -16,8 +18,6 @@ export function Step5Roles() {
     onSuccess: (data: any) => {
       // Login with session
       setSession({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
         workspaceId: data.workspaceId,
         memberId: data.memberId,
         personName: store.adminName,
@@ -49,7 +49,7 @@ export function Step5Roles() {
       initialRoles: store.initialRoles,
       personName: store.adminName,
       email: store.adminEmail,
-      passwordHash: store.passwordHash,
+      password: store.passwordHash, // Mapeado a la key que la API espera tras remover hasheo client-side
       publicKey: store.publicKey,
       wsIdx: 0
     })

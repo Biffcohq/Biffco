@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-undef, @typescript-eslint/no-misused-promises, no-empty */
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-misused-promises, no-empty */
 "use client"
 import React from 'react'
 
@@ -27,8 +27,6 @@ export default function LoginPage() {
   const loginMutation = trpc.auth.login.useMutation({
     onSuccess: (data: any) => {
       setSession({
-        accessToken: data.accessToken,
-        refreshToken: data.refreshToken,
         workspaceId: data.workspaceId,
         memberId: data.memberId,
         personName: data.personName,
@@ -70,23 +68,10 @@ export default function LoginPage() {
     setErrorMsg('')
     setIsHashing(true)
 
-    try {
-      const sodiumModule = await import('libsodium-wrappers')
-      await sodiumModule.default.ready
-      const sodium = sodiumModule.default
-
-      const passwordBytes = new TextEncoder().encode(password)
-      const hashBytes = sodium.crypto_generichash(64, passwordBytes, null)
-      const passwordHash = sodium.to_hex(hashBytes)
-
       loginMutation.mutate({
         email,
-        passwordHash,
+        password,
       })
-    } catch {
-      setErrorMsg('Error processing cryptographic proof.')
-      setIsHashing(false)
-    }
   }
 
   const isLoading = isHashing || loginMutation.isPending
