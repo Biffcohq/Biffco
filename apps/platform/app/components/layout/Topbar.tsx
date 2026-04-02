@@ -13,22 +13,25 @@ import Link from 'next/link'
 export function Topbar() {
   const pathname = usePathname()
   
+  const isWorkspaceContext = pathname.startsWith('/w/')
+  const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
+
   // Smart breadcrumbs that hide ugly IDs
-  let title = 'Workspaces Hub';
+  let title = 'Workspace';
   if (pathname !== '/') {
     const segments = pathname.split('/').filter(Boolean);
     const cleanSegments = segments.filter(s => {
       if (s.toLowerCase() === 'w') return false;
+      if (s === workspaceId) return false; // Hide the workspace ID / slug
       if (s.length > 18) return false; // Oculta IDs largos poco amigables
       return true;
     });
     title = cleanSegments.length > 0 
       ? cleanSegments.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' / ')
-      : 'Workspace';
+      : '';
   }
 
-  const isWorkspaceContext = pathname.startsWith('/w/')
-  const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
+
 
   return (
     <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0 shadow-xs z-10 w-full">
@@ -41,10 +44,10 @@ export function Topbar() {
         
         {isWorkspaceContext && workspaceId ? (
           <>
-            <Link href={`/w/${workspaceId}`} className={`font-medium transition-colors ${title === 'Workspace' ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}>
+            <Link href={`/w/${workspaceId}`} className={`font-medium transition-colors ${!title ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}>
               Vertical Operacional
             </Link>
-            {title !== 'Workspace' && (
+            {title && (
               <>
                 <IconChevronRight size={14} className="text-text-muted" stroke={2} />
                 <span className="text-text-primary font-semibold">
