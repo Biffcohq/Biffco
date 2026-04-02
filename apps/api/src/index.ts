@@ -17,7 +17,7 @@ import { createContext } from './trpc'
 import { appRouter } from './routers/index'
 import { setupPdfRoutes } from './routers/pdf-route'
 import { env } from '@biffco/config'
-import { db } from '@biffco/db'
+import { db, sql } from '@biffco/db'
 import { verticalRegistry } from '@biffco/core/vertical-engine'
 import { livestockVerticalPack } from '@biffco/livestock'
 
@@ -71,7 +71,7 @@ const buildServer = async () => {
   app.get('/health', async () => {
     try {
       // Verificar DB Connection.
-      await db.execute(`SELECT 1`)
+      await db.execute(sql`SELECT 1`)
       return { status: "ok", db: "connected", api_version: "v0.1.0-A.3" }
     } catch (error) {
       app.log.error(error, "Error conectando a db en /health:")
