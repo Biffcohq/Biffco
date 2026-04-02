@@ -31,7 +31,7 @@ export function Topbar() {
       {/* Left Menu - Breadcrumbs */}
       <div className="flex items-center gap-2 text-sm">
         <span className="text-text-secondary font-medium hover:text-text-primary cursor-pointer transition-colors">
-          Biffco Corp
+          Biffco
         </span>
         <IconChevronRight size={14} className="text-text-muted" stroke={2} />
         <span className="text-text-primary font-semibold">

@@ -123,7 +123,7 @@ export function Sidebar() {
       </div>
 
       {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-6 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-5 scrollbar-hide">
         {currentNavGroups.map((group, idx) => (
           <div key={idx} className="flex flex-col gap-1">
             {!isCollapsed && (
@@ -142,9 +142,9 @@ export function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 h-10 rounded-lg transition-colors overflow-hidden shrink-0 ${
+                  className={`flex items-center gap-3 h-9 rounded-lg transition-colors overflow-hidden shrink-0 ${
                     isCollapsed 
-                       ? 'justify-center mx-auto w-10 px-0' 
+                       ? 'justify-center mx-auto w-9 px-0' 
                        : 'px-3'
                   } ${
                     isActive 
@@ -173,7 +173,7 @@ export function Sidebar() {
           {/* @ts-ignore */}
           <DropdownMenuTrigger asChild>
             <button className={`w-full flex items-center gap-3 rounded-lg hover:bg-surface-raised transition-colors overflow-hidden group outline-none ${
-              isCollapsed ? 'justify-center p-0 mx-auto w-10 h-10' : 'p-2'
+              isCollapsed ? 'justify-center p-0 mx-auto w-9 h-9' : 'p-2'
             }`}>
               <div className="shrink-0 rounded-full bg-primary size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
                 {profile?.name ? profile.name.substring(0,2) : "WK"}
