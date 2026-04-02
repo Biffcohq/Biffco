@@ -305,10 +305,12 @@ export const authRouter = router({
           Object.values(Permission).forEach(p => finalPerms.add(p))
         }
 
+        const personName = personArr[0]?.name || "Usuario";
+
         const accessToken = await ctx.request.server.jwt.sign({
           workspaceId,
           memberId: payload.memberId,
-          personName: personArr[0]?.name || "Usuario",
+          personName,
           permissions: Array.from(finalPerms),
           wsIdx: 0,
           jti: createId(),
@@ -323,7 +325,7 @@ export const authRouter = router({
           maxAge: 15 * 60
         })
 
-        return { success: true }
+        return { success: true, workspaceId, memberId: payload.memberId, personName }
       } catch (err: unknown) {
         console.error(err);
         ctx.reply.clearCookie('accessToken');

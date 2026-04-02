@@ -13,7 +13,7 @@ import crypto from 'crypto';
 export const TRANSFER_EXPIRATION_HOURS = 72;
 
 export const transfersRouter = router({
-  createOffer: requirePermission(Permission.ASSETS_TRANSFER)
+  createOffer: requirePermission(Permission.TRANSFERS_INITIATE)
     .input(z.object({
       assetId: z.string().min(1),
       toWorkspaceId: z.string().min(1),
@@ -143,7 +143,7 @@ export const transfersRouter = router({
        });
     }),
 
-  acceptOffer: requirePermission(Permission.ASSETS_TRANSFER)
+  acceptOffer: requirePermission(Permission.TRANSFERS_ACCEPT)
     .input(z.object({
        offerId: z.string().min(1),
        signature: z.string().optional() // Mock Ed25519 payload
@@ -208,7 +208,7 @@ export const transfersRouter = router({
        });
     }),
 
-  rejectOffer: requirePermission(Permission.ASSETS_TRANSFER)
+  rejectOffer: requirePermission(Permission.TRANSFERS_REJECT)
     .input(z.object({
        offerId: z.string().min(1),
        reason: z.string().optional()

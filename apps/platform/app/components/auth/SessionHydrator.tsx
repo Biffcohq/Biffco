@@ -8,13 +8,15 @@ interface SessionData {
   personName: string
 }
 
-export function SessionHydrator({ session }: { session: SessionData | null }) {
+export function SessionHydrator({ session, hasRefreshToken }: { session: SessionData | null, hasRefreshToken?: boolean }) {
   const initialized = useRef(false)
   if (!initialized.current) {
     if (session) {
       useAuthStore.getState().setSession(session)
-    } else {
+    } else if (!hasRefreshToken) {
       useAuthStore.getState().clearSession()
+    } else {
+      useAuthStore.getState().setHasRefreshToken(true)
     }
     initialized.current = true
   }

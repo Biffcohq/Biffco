@@ -26,13 +26,19 @@ import { Toaster } from '@biffco/ui'
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
   const token = cookieStore.get('accessToken')?.value
+  const hasRefreshToken = cookieStore.get('refreshToken')?.value !== undefined
   
   let initialSession = null
   if (token) {
     try {
       const payloadBase64 = token.split('.')[1]
       if (payloadBase64) {
-        const payload = JSON.parse(atob(payloadBase64))
+        // Corrección: Soporte para base64url que emite JWT sin caer en runtime Node
+        let base64 = payloadBase64.replace(/-/g, '+').replace(/_/g, '/');
+        const pad = base64.length % 4;
+        if (pad) base64 += '='.repeat(4 - pad);
+        
+        const payload = JSON.parse(atob(base64));
         if (payload.exp * 1000 > Date.now()) {
           initialSession = {
             workspaceId: payload.workspaceId,
@@ -49,7 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body className="font-sans font-normal antialiased min-h-screen flex flex-col bg-[var(--color-bg-primary)] text-[var(--color-text-primary)]">
-        <SessionHydrator session={initialSession} />
+        <SessionHydrator session={initialSession} hasRefreshToken={hasRefreshToken} />
         <Providers>
           {children}
           <Toaster position="top-right" />
