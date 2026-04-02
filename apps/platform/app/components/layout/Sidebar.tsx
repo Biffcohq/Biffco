@@ -17,7 +17,14 @@ import {
   IconLogout,
   IconBox,
   IconShape,
-  IconChartDonut
+  IconChartDonut,
+  IconMoodSmile,
+  IconSun,
+  IconMoon,
+  IconHome,
+  IconPencil,
+  IconHelp,
+  IconBook
 } from '@tabler/icons-react'
 import {
   DropdownMenu,
@@ -189,25 +196,63 @@ export function Sidebar() {
               )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[240px] bg-surface border border-border shadow-md rounded-xl p-1">
-            <div className="flex flex-col space-y-1 p-3">
-              <p className="text-sm font-medium leading-none text-text-primary">{profile?.name || "Workspace"}</p>
-              <p className="text-xs leading-none text-text-secondary">Admin</p>
+          <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[260px] bg-surface border border-border shadow-md rounded-xl p-1.5 flex flex-col gap-[2px]">
+            <div className="flex flex-col space-y-1 p-2 mb-1">
+              <p className="text-[13px] font-medium leading-none text-text-primary">{profile?.name || "BiffcoHQ"}</p>
+              <p className="text-[12px] leading-none text-text-secondary">{profile?.email || "admin@biffco.com"}</p>
             </div>
             {/* @ts-ignore */}
-            <DropdownMenuSeparator className="bg-border" />
+            <DropdownMenuSeparator className="bg-border mb-1" />
+            
+            {/* @ts-ignore */}
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
+               <IconMoodSmile className="mr-2 h-4 w-4 opacity-70" />
+               <span>Feedback</span>
+            </DropdownMenuItem>
+            {/* @ts-ignore */}
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px] flex justify-between items-center group/theme">
+               <div className="flex items-center">
+                 <IconSun className="mr-2 h-4 w-4 opacity-70" />
+                 <span>Theme</span>
+               </div>
+               <div className="flex gap-1 opacity-0 group-hover/theme:opacity-100 transition-opacity">
+                  <div className="p-0.5 rounded-sm hover:bg-border"><IconSun size={12}/></div>
+                  <div className="p-0.5 rounded-sm hover:bg-border"><IconMoon size={12}/></div>
+               </div>
+            </DropdownMenuItem>
+            
             <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}/settings` : "/settings"}>
               {/* @ts-ignore */}
-              <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
+              <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
                 <IconSettings className="mr-2 h-4 w-4 opacity-70" />
                 <span>Configuración {isWorkspaceContext ? 'de Cadena' : 'Global'}</span>
               </DropdownMenuItem>
             </Link>
+
             {/* @ts-ignore */}
-            <DropdownMenuSeparator className="bg-border" />
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
+               <IconHome className="mr-2 h-4 w-4 opacity-70" />
+               <span>Home Page</span>
+            </DropdownMenuItem>
+            {/* @ts-ignore */}
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
+               <IconPencil className="mr-2 h-4 w-4 opacity-70" />
+               <span>Changelog</span>
+            </DropdownMenuItem>
+            {/* @ts-ignore */}
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
+               <IconHelp className="mr-2 h-4 w-4 opacity-70" />
+               <span>Help</span>
+            </DropdownMenuItem>
+            {/* @ts-ignore */}
+            <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]">
+               <IconBook className="mr-2 h-4 w-4 opacity-70" />
+               <span>Docs</span>
+            </DropdownMenuItem>
+            
             {/* @ts-ignore */}
             <DropdownMenuItem 
-              className="cursor-pointer text-error focus:bg-error/10 focus:text-error rounded-md m-1" 
+              className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md py-1.5 px-2 text-[13px]" 
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onSelect={(e: any) => {
                  e.preventDefault();
@@ -218,9 +263,32 @@ export function Sidebar() {
                  }
               }}
             >
-              <IconLogout className="mr-2 h-4 w-4" />
-              <span>Cerrar sesión</span>
+              <IconLogout className="mr-2 h-4 w-4 opacity-70" />
+              <span>Log Out</span>
             </DropdownMenuItem>
+
+            {/* @ts-ignore */}
+            <DropdownMenuSeparator className="bg-border my-1" />
+
+            {/* Upgrade to Pro Button */}
+            <div className="px-1 py-1">
+               <button className="w-full bg-[#0F1623] hover:bg-[#000000] text-white rounded-md py-1.5 text-[13px] font-medium transition-colors">
+                 Upgrade to Pro
+               </button>
+            </div>
+
+            {/* @ts-ignore */}
+            <DropdownMenuSeparator className="bg-transparent my-0.5" />
+
+            {/* Platform Status */}
+            <div className="flex items-center justify-between px-2 py-1.5 mb-1 group cursor-pointer hover:bg-surface-raised rounded-md transition-colors">
+               <div className="flex flex-col">
+                  <span className="text-[11px] text-text-secondary group-hover:text-text-primary transition-colors">Platform Status</span>
+                  <span className="text-[12px] text-text-primary mt-0.5">All systems normal.</span>
+               </div>
+               <div className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]"></div>
+            </div>
+
           </DropdownMenuContent>
         </DropdownMenu>
 
