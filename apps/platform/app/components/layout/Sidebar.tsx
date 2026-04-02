@@ -157,7 +157,7 @@ export function Sidebar() {
                     <Icon size={20} stroke={isActive ? 2 : 1.5} />
                   </div>
                   {!isCollapsed && (
-                    <span className="text-base whitespace-nowrap transition-opacity duration-200">{item.label}</span>
+                    <span className="text-sm whitespace-nowrap transition-opacity duration-200">{item.label}</span>
                   )}
                 </Link>
               )
@@ -180,7 +180,7 @@ export function Sidebar() {
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col min-w-0 flex-1 text-left">
-                  <span className="text-base font-medium text-text-primary truncate">{profile?.name || "Cargando..."}</span>
+                  <span className="text-sm font-medium text-text-primary truncate">{profile?.name || "Cargando..."}</span>
                   <span className="text-xs text-text-secondary truncate">Ajustes de cuenta</span>
                 </div>
               )}
@@ -191,8 +191,8 @@ export function Sidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[240px] bg-surface border border-border shadow-md rounded-xl p-1">
             <div className="flex flex-col space-y-1 p-3">
-              <p className="text-base font-medium leading-none text-text-primary">{profile?.name || "Workspace"}</p>
-              <p className="text-sm leading-none text-text-secondary">Admin</p>
+              <p className="text-sm font-medium leading-none text-text-primary">{profile?.name || "Workspace"}</p>
+              <p className="text-xs leading-none text-text-secondary">Admin</p>
             </div>
             {/* @ts-ignore */}
             <DropdownMenuSeparator className="bg-border" />
