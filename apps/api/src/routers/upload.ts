@@ -16,7 +16,7 @@ export const uploadRouter = router({
     .input(
       z.object({
         filename: z.string(),
-        contentType: z.string(),
+        contentType: z.enum(['image/jpeg', 'image/png', 'application/pdf', 'text/csv']),
         assetId: z.string().optional(), // Metadata opcional si la evidencia se liga al activo de inmediato
       })
     )

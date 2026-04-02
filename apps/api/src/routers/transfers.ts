@@ -1,14 +1,19 @@
 /* global console */
 /* eslint-env node */
 import { z } from 'zod';
-import { router, protectedProcedure } from '../trpc';
+import { router, protectedProcedure, requirePermission } from '../trpc';
 import { assets, transferOffers, domainEvents, workspaces } from '@biffco/db/schema';
 import { TRPCError } from '@trpc/server';
 import { and, eq } from '@biffco/db';
 import { sendEmail, TransferOfferEmail } from '@biffco/email';
+import { Permission } from '@biffco/core/rbac';
+
+import crypto from 'crypto';
+
+export const TRANSFER_EXPIRATION_HOURS = 72;
 
 export const transfersRouter = router({
-  createOffer: protectedProcedure
+  createOffer: requirePermission(Permission.ASSETS_TRANSFER)
     .input(z.object({
       assetId: z.string().min(1),
       toWorkspaceId: z.string().min(1),
@@ -69,19 +74,22 @@ export const transfersRouter = router({
           })
           .where(eq(assets.id, input.assetId));
 
+        const eventData = {
+          offerId: offer.id,
+          toWorkspaceId: input.toWorkspaceId,
+          message: 'Iniciada transferencia criptográfica de custodia',
+        };
+        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
         // C. Generar la Evidencia de Transferencia
         await tx.insert(domainEvents).values({
           workspaceId: workspaceId,
           streamId: input.assetId,
           streamType: 'asset',
           eventType: 'TRANSFER_OFFER_CREATED',
-          hash: 'TBD-Hash', // Se deberá computar en cliente normalmente
+          hash: hashDigest, // (A-05 Remediado)
           previousHash: null,
-          data: {
-            offerId: offer.id,
-            toWorkspaceId: input.toWorkspaceId,
-            message: 'Iniciada transferencia criptográfica de custodia',
-          },
+          data: eventData,
           signerId: memberId || 'system',
           signature: input.signature,
         });
@@ -102,7 +110,7 @@ export const transfersRouter = router({
                targetWorkspaceName: targetWs.name || 'Receptor',
                assetCount: 1, // Por ahora createOffer acepta 1 activo
                offerId: offer.id,
-               expiresAt: '24 horas'
+               expiresAt: `${TRANSFER_EXPIRATION_HOURS} horas`
              }
            }).catch(err => {
              console.error("[Email SDK Failed]", err);
@@ -135,7 +143,7 @@ export const transfersRouter = router({
        });
     }),
 
-  acceptOffer: protectedProcedure
+  acceptOffer: requirePermission(Permission.ASSETS_TRANSFER)
     .input(z.object({
        offerId: z.string().min(1),
        signature: z.string().optional() // Mock Ed25519 payload
@@ -176,19 +184,22 @@ export const transfersRouter = router({
             })
             .where(eq(assets.id, offer.assetId));
 
+          const eventData = {
+            offerId: offer.id,
+            fromWorkspaceId: offer.fromWorkspaceId,
+            message: 'Propiedad y custodia criptográfica transferida exitosamente',
+          };
+          const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
           // C. Sellar el Historial (Event Sourcing)
           await tx.insert(domainEvents).values({
             workspaceId: workspaceId,
             streamId: offer.assetId,
             streamType: 'asset',
             eventType: 'TRANSFER_ACCEPTED',
-            hash: 'TBD-Hash-Accept', 
+            hash: hashDigest, // (A-05 Remediado)
             previousHash: null,
-            data: {
-              offerId: offer.id,
-              fromWorkspaceId: offer.fromWorkspaceId,
-              message: 'Propiedad y custodia criptográfica transferida exitosamente',
-            },
+            data: eventData,
             signerId: memberId || 'system',
             signature: input.signature,
           });
@@ -197,7 +208,7 @@ export const transfersRouter = router({
        });
     }),
 
-  rejectOffer: protectedProcedure
+  rejectOffer: requirePermission(Permission.ASSETS_TRANSFER)
     .input(z.object({
        offerId: z.string().min(1),
        reason: z.string().optional()
@@ -228,13 +239,16 @@ export const transfersRouter = router({
             .set({ status: 'active', updatedAt: new Date() })
             .where(eq(assets.id, offer.assetId));
 
+          const eventData = { offerId: offer.id, reason: input.reason };
+          const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
           await tx.insert(domainEvents).values({
             workspaceId: offer.fromWorkspaceId,
             streamId: offer.assetId,
             streamType: 'asset',
             eventType: 'TRANSFER_REJECTED',
-            hash: 'TBD-Hash-Reject', 
-            data: { offerId: offer.id, reason: input.reason },
+            hash: hashDigest, // (A-05 Remediado)
+            data: eventData,
             signerId: memberId || 'system',
           });
 
@@ -250,14 +264,14 @@ export const transfersRouter = router({
     .mutation(async ({ ctx }) => {
        const { db } = ctx;
        
-       // Buscar ofertas pending mayores a 72hs
-       const threeDaysAgo = new Date(Date.now() - 72 * 60 * 60 * 1000);
+       // Buscar ofertas pending mayores al TTL
+       const expirationLimit = new Date(Date.now() - TRANSFER_EXPIRATION_HOURS * 60 * 60 * 1000);
        // Fetch first for SQLite/PG compatibility without complex Drizzle operators here
        const pendingOffers = await db.query.transferOffers.findMany({
          where: eq(transferOffers.status, 'pending')
        });
 
-       const expired = pendingOffers.filter(o => new Date(o.createdAt) < threeDaysAgo);
+       const expired = pendingOffers.filter(o => new Date(o.createdAt) < expirationLimit);
        if (expired.length === 0) return { expiredCount: 0 };
 
        await db.transaction(async (tx) => {
@@ -270,17 +284,19 @@ export const transfersRouter = router({
              .set({ status: 'active', updatedAt: new Date() })
              .where(eq(assets.id, offer.assetId));
 
+           const eventData = { offerId: offer.id, message: `La oferta excedió el TTL de ${TRANSFER_EXPIRATION_HOURS} horas.` };
+           const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+           
            await tx.insert(domainEvents).values({
              workspaceId: offer.fromWorkspaceId,
              streamId: offer.assetId,
              streamType: 'asset',
              eventType: 'TRANSFER_EXPIRED',
-             hash: 'TBD-Hash-Expire',
-             data: { offerId: offer.id, message: 'La oferta excedió el TTL de 72 horas.' },
+             hash: hashDigest,
+             data: eventData,
              signerId: 'system-cron',
            });
            
-           // eslint-disable-next-line no-undef
            console.log(`[EMAIL DISPATCH MOCK] -> Expired offer notify to ${offer.fromWorkspaceId}`);
          }
        });

@@ -32,6 +32,10 @@ const buildServer = async () => {
   // ─── Plugins ─────────────────────────────────────────────────────
   // Register the main web, platform, verify URLs for CORS from config 
   const allowedOrigins = [env.PLATFORM_URL, env.VERIFY_URL, env.WEB_URL].filter(Boolean) as string[]
+  if (allowedOrigins.length === 0 && process.env.NODE_ENV !== "development") {
+    throw new Error('FATAL: CORS allowedOrigins is empty. Cannot start with wildcard in production.');
+  }
+
   await app.register(cors, { 
     origin: allowedOrigins.length > 0 ? allowedOrigins : "*",
     credentials: true // Necesario para cookies HttpOnly (C-05)

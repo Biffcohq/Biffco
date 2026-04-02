@@ -5,6 +5,7 @@ import { redis } from '../redis';
 import { db } from '@biffco/db';
 import { transferOffers, assets } from '@biffco/db/schema';
 import { lt, eq, and, inArray } from '@biffco/db';
+import { TRANSFER_EXPIRATION_HOURS } from '../routers/transfers';
 
 const EXPIRATION_QUEUE_NAME = 'expire-offers-queue';
 
@@ -18,7 +19,7 @@ export const expirationWorker = new Worker(
     console.log(`[BullMQ] Procesando job ${job.id} - Expiración de Transferencias`);
 
     const now = new Date();
-    const expirationLimit = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 horas
+    const expirationLimit = new Date(now.getTime() - TRANSFER_EXPIRATION_HOURS * 60 * 60 * 1000); // 72 horas
 
     // Transacción atómica directa para mutar offers 
     await db.transaction(async (tx) => {
@@ -30,7 +31,7 @@ export const expirationWorker = new Worker(
             .where(
               and(
                 eq(transferOffers.status, 'pending'),
-                lt(transferOffers.createdAt, expirationLimit) // expiradas por regla de 24h
+                lt(transferOffers.createdAt, expirationLimit) // expiradas por regla de TTL
               )
             )
             .returning({ id: transferOffers.id, assetId: transferOffers.assetId });

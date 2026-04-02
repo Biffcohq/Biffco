@@ -10,7 +10,7 @@ import { Permission } from '@biffco/core/rbac'
 import crypto from 'crypto'
 
 // Utilidades criptográficas nativas para prevenir el uso de BLAKE2b (Crítico C-03)
-const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, maxmem: 32000000 };
+const SCRYPT_PARAMS = { N: 32768, r: 8, p: 1, maxmem: 34000000 };
 const KEY_LEN = 32;
 
 function hashPassword(password: string): string {

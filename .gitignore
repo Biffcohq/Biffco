@@ -11,3 +11,5 @@ storybook-static
 
 .next
 .next/
+dist
+dist/

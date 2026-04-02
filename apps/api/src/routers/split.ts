@@ -4,6 +4,7 @@ import { router, requirePermission } from '../trpc'
 import { assets, holds, domainEvents } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
+import crypto from 'crypto'
 
 export const splitRouter = router({
   
@@ -45,14 +46,17 @@ export const splitRouter = router({
           .set({ status: 'CLOSED_BY_SPLIT' })
           .where(eq(assets.id, parentAsset.id))
 
+        const eventData = { outputCount: input.outputAllocations.length };
+        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
         // 3. Registrar Evento de Cierre en el Padre (Proof of Closure)
         await tx.insert(domainEvents).values({
           workspaceId: workspaceId,
           streamId: parentAsset.id,
           streamType: 'asset',
           eventType: 'SPLIT_EXECUTED',
-          data: { outputCount: input.outputAllocations.length },
-          hash: `0xSPLIT_${parentAsset.id}_${Date.now()}`, // Dummy hash, en prod va sha-256
+          data: eventData,
+          hash: hashDigest,
           signerId: memberId || "system"
         })
 
@@ -101,14 +105,17 @@ export const splitRouter = router({
             }
           }
 
+          const childEventData = { parentId: parentAsset.id };
+          const childHashDigest = crypto.createHash('sha256').update(JSON.stringify(childEventData)).digest('hex');
+
           // 7. Evento de Origen en el Hijo
           await tx.insert(domainEvents).values({
             workspaceId: workspaceId,
             streamId: child.id,
             streamType: 'asset',
             eventType: 'ASSET_BORN_FROM_SPLIT',
-            data: { parentId: parentAsset.id },
-            hash: `0xCHILD_${child.id}_${Date.now()}`,
+            data: childEventData,
+            hash: childHashDigest,
             signerId: memberId || "system"
           })
         }

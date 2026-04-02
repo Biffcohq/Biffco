@@ -4,6 +4,7 @@ import { router, requirePermission } from '../trpc'
 import { assets, holds, domainEvents } from '@biffco/db/schema'
 import { eq, inArray, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
+import crypto from 'crypto'
 
 export const mergeRouter = router({
   
@@ -95,16 +96,22 @@ export const mergeRouter = router({
              .set({ status: 'CLOSED_BY_MERGE' })
              .where(eq(assets.id, parent.id))
 
+            const eventData = { outputChildId: child.id };
+            const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
            await tx.insert(domainEvents).values({
              workspaceId: workspaceId,
              streamId: parent.id,
              streamType: 'asset',
              eventType: 'MERGE_INPUT_CONSUMED',
-             data: { outputChildId: child.id },
-             hash: `0xMERGE_IN_${parent.id}_${Date.now()}`,
+             data: eventData,
+             hash: hashDigest,
              signerId: memberId || "system"
            })
         }
+
+        const finalEventData = { parentIds: uniqueInputIds };
+        const finalHashDigest = crypto.createHash('sha256').update(JSON.stringify(finalEventData)).digest('hex');
 
         // Evento Biológico Final del Hijo
         await tx.insert(domainEvents).values({
@@ -112,8 +119,8 @@ export const mergeRouter = router({
            streamId: child.id,
            streamType: 'asset',
            eventType: 'ASSET_BORN_FROM_MERGE',
-           data: { parentIds: uniqueInputIds },
-           hash: `0xCHILD_MERGE_${child.id}_${Date.now()}`,
+           data: finalEventData,
+           hash: finalHashDigest,
            signerId: memberId || "system"
         })
 

@@ -4,6 +4,7 @@ import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, holds, domainEvents } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
+import crypto from 'crypto'
 
 export const holdsRouter = router({
   
@@ -60,14 +61,17 @@ export const holdsRouter = router({
           .set({ status: 'QUARANTINE' })
           .where(eq(assets.id, targetAsset.id))
 
+        const eventData = { holdId: newHold.id, reason: input.reason };
+        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+
         // Inmutabilidad (Hash Log)
         await tx.insert(domainEvents).values({
           workspaceId: workspaceId!,
           streamId: targetAsset.id,
           streamType: 'asset',
           eventType: 'HOLD_IMPOSED',
-          data: { holdId: newHold.id, reason: input.reason },
-          hash: `0xIMPOSE_${newHold.id}_${Date.now()}`,
+          data: eventData,
+          hash: hashDigest,
           signerId: memberId || "system"
         })
 
@@ -116,14 +120,17 @@ export const holdsRouter = router({
             .where(eq(assets.id, targetHold.assetId))
         }
 
+        const liftEventData = { holdId: targetHold.id, resolutionDetails: input.reason };
+        const liftHashDigest = crypto.createHash('sha256').update(JSON.stringify(liftEventData)).digest('hex');
+
         // Inmutabilidad
         await tx.insert(domainEvents).values({
           workspaceId: workspaceId!,
           streamId: targetHold.assetId,
           streamType: 'asset',
           eventType: 'HOLD_LIFTED',
-          data: { holdId: targetHold.id, resolutionDetails: input.reason },
-          hash: `0xLIFT_${targetHold.id}_${Date.now()}`,
+          data: liftEventData,
+          hash: liftHashDigest,
           signerId: memberId || "system"
         })
 
