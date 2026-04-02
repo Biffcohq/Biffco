@@ -1,4 +1,5 @@
 "use client"
+/* global document */
 import React from 'react'
 
 import { useUIStore } from '../../stores/useUIStore'
@@ -21,9 +22,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  BiffcoLogo,
-  BiffcoIso
+  DropdownMenuTrigger
 } from '@biffco/ui'
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
@@ -77,12 +76,12 @@ export function Sidebar() {
       }`}
     >
       {/* Header */}
-      <div className="h-16 flex items-center px-4 shrink-0 mt-2 mb-2">
+      <div className={`h-16 flex items-center shrink-0 mt-2 mb-2 ${isCollapsed ? 'justify-center' : 'px-4'}`}>
         <Link href="/" className="flex items-center overflow-hidden h-full">
           {isCollapsed ? (
-             <BiffcoIso className="w-6 h-6 shrink-0 transition-all text-primary" />
+             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-8 h-8 object-contain transition-all drop-shadow-sm" />
           ) : (
-             <BiffcoLogo className="h-6 w-auto transition-all text-primary" />
+             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-7 w-auto object-contain transition-all" />
           )}
         </Link>
       </div>
@@ -118,7 +117,11 @@ export function Sidebar() {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-colors overflow-hidden shrink-0 ${
+                  className={`flex items-center gap-3 h-10 rounded-lg transition-colors overflow-hidden shrink-0 ${
+                    isCollapsed 
+                       ? 'justify-center mx-auto w-10 px-0' 
+                       : 'px-3'
+                  } ${
                     isActive 
                       ? 'bg-primary/10 text-primary font-medium' 
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
@@ -144,7 +147,9 @@ export function Sidebar() {
         <DropdownMenu>
           {/* @ts-ignore */}
           <DropdownMenuTrigger asChild>
-            <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-raised transition-colors overflow-hidden group outline-none">
+            <button className={`w-full flex items-center gap-3 rounded-lg hover:bg-surface-raised transition-colors overflow-hidden group outline-none ${
+              isCollapsed ? 'justify-center p-0 mx-auto w-10 h-10' : 'p-2'
+            }`}>
               <div className="shrink-0 rounded-full bg-primary size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
                 {profile?.name ? profile.name.substring(0,2) : "WK"}
               </div>
@@ -185,6 +190,7 @@ export function Sidebar() {
             {/* @ts-ignore */}
             <DropdownMenuItem 
               className="cursor-pointer text-error focus:bg-error/10 focus:text-error rounded-md m-1" 
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onSelect={(e: any) => {
                  e.preventDefault();
                  const wrapper = document.getElementById('hidden-logout-wrapper');
