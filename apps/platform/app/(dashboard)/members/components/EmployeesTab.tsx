@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-undef */
 "use client"
 
 import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
 import { IconIdBadge2, IconPlus, IconUserOff } from '@tabler/icons-react'
-// @ts-ignore
-import { Skeleton, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Badge } from '@biffco/ui'
+import { Skeleton } from '@/app/components/ui/Skeleton'
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Badge } from '@biffco/ui'
 
-export default function EmployeesPage() {
+export function EmployeesTab() {
   const trpcUtils = trpc.useUtils()
   const { data: employees, isLoading } = trpc.employees.list.useQuery()
 
@@ -46,12 +45,9 @@ export default function EmployeesPage() {
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex items-center justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-bold flex items-center gap-2 text-slate-900">
-            <IconIdBadge2 size={24} className="text-primary" />
-            Personal
-          </h1>
-          <p className="text-slate-500 text-sm">Gestiona el personal operativo y en terreno de tu organización.</p>
+        <div>
+          <h2 className="text-lg font-bold text-text-primary">Personal de Terreno</h2>
+          <p className="text-text-secondary text-sm">Gestiona el personal sin cuenta que interviene en tus operaciones.</p>
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
@@ -116,10 +112,10 @@ export default function EmployeesPage() {
         </Dialog>
       </div>
 
-      <div className="border border-slate-200 rounded-xl overflow-hidden shadow-sm bg-white">
+      <div className="border border-border rounded-xl overflow-hidden shadow-sm bg-surface">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs uppercase bg-slate-50 text-slate-500 border-b border-slate-200 font-semibold">
+            <thead className="text-xs uppercase bg-surface-raised text-text-secondary border-b border-border font-semibold tracking-wider">
               <tr>
                 <th scope="col" className="px-6 py-4 font-semibold">Nombre</th>
                 <th scope="col" className="px-6 py-4 font-semibold">Cargo</th>
@@ -131,30 +127,30 @@ export default function EmployeesPage() {
             <tbody className="divide-y divide-border">
               {isLoading ? (
                 Array(3).fill(0).map((_, i) => (
-                  <tr key={i} className="hover:bg-slate-100 transition-colors">
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 bg-slate-50" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 bg-slate-50" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-4 w-20 bg-slate-50" /></td>
-                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full bg-slate-50" /></td>
-                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto bg-slate-50" /></td>
+                  <tr key={i} className="hover:bg-surface-raised/30 transition-colors">
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-32 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-24 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-4 w-20 bg-surface-raised" /></td>
+                    <td className="px-6 py-4"><Skeleton className="h-6 w-16 rounded-full bg-surface-raised" /></td>
+                    <td className="px-6 py-4 text-right"><Skeleton className="h-8 w-8 rounded-md ml-auto bg-surface-raised" /></td>
                   </tr>
                 ))
               ) : employees?.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={5} className="px-6 py-12 text-center text-text-muted">
                     No hay personal registrado en este espacio de trabajo.
                   </td>
                 </tr>
               ) : (
                 employees?.map((emp: any) => (
-                  <tr key={emp.id} className="hover:bg-slate-100 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">
+                  <tr key={emp.id} className="hover:bg-surface-raised/30 transition-colors">
+                    <td className="px-6 py-4 font-medium text-text-primary">
                       {emp.name}
                     </td>
-                    <td className="px-6 py-4 text-slate-500">
+                    <td className="px-6 py-4 text-text-secondary">
                       {emp.role}
                     </td>
-                    <td className="px-6 py-4 text-slate-500 font-mono text-xs">
+                    <td className="px-6 py-4 text-text-secondary font-mono text-xs">
                       {emp.dni || "-"}
                     </td>
                     <td className="px-6 py-4">
@@ -172,7 +168,7 @@ export default function EmployeesPage() {
                               deactivateMutation.mutate({ id: emp.id })
                             }
                           }}
-                          className="text-slate-400 hover:text-warning transition-colors p-2 rounded-md hover:bg-slate-50"
+                          className="text-text-muted hover:text-warning transition-colors p-2 rounded-md hover:bg-surface-raised"
                           title="Desactivar personal"
                         >
                           <IconUserOff size={16} />

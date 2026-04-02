@@ -33,9 +33,7 @@ const navGroups: NavGroup[] = [
     label: "Gestión",
     items: [
       { label: "Mi Workspace", href: "/", icon: IconBuilding },
-      { label: "Equipo", href: "/members", icon: IconUsers },
-      { label: "Equipos/Roles", href: "/teams", icon: IconUsers },
-      { label: "Empleados", href: "/employees", icon: IconUsers },
+      { label: "Equipo y Roles", href: "/members", icon: IconUsers },
       { label: "Wallet (Claves)", href: "/settings/wallet", icon: IconShieldCheck },
     ]
   },
