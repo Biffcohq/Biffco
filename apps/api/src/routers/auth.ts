@@ -212,6 +212,21 @@ export const authRouter = router({
       return { ok: true }
     }),
 
+  me: protectedProcedure
+    .query(async ({ ctx }) => {
+      const { db } = ctx
+      const data = await db.select({
+        email: persons.email,
+        name: persons.name
+      })
+      .from(workspaceMembers)
+      .innerJoin(persons, eq(workspaceMembers.personId, persons.id))
+      .where(eq(workspaceMembers.id, ctx.memberId!))
+      .limit(1)
+
+      return data[0] || null
+    }),
+
   refresh: publicProcedure
     .input(z.object({ refreshToken: z.string() }))
     .mutation(async () => {

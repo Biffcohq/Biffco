@@ -93,6 +93,7 @@ export function Sidebar() {
   const toggle = useUIStore(s => s.toggleSidebar)
   const pathname = usePathname()
   const { data: profile } = trpc.workspaces.getProfile.useQuery()
+  const { data: userProfile } = trpc.auth.me.useQuery()
 
   const isWorkspaceContext = pathname.startsWith('/w/')
   const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
@@ -183,12 +184,12 @@ export function Sidebar() {
               isCollapsed ? 'justify-center p-0 mx-auto w-9 h-9' : 'p-2'
             }`}>
               <div className="shrink-0 rounded-full bg-primary size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
-                {profile?.name ? profile.name.substring(0,2) : "WK"}
+                {userProfile?.name ? userProfile.name.substring(0,2) : "WK"}
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col min-w-0 flex-1 text-left">
-                  <span className="text-sm font-medium text-text-primary truncate">{profile?.name || "Cargando..."}</span>
-                  <span className="text-xs text-text-secondary truncate">Ajustes de cuenta</span>
+                  <span className="text-sm font-medium text-text-primary truncate">{userProfile?.name || "Cargando..."}</span>
+                  <span className="text-xs text-text-secondary truncate">{profile?.name || "Workspace"}</span>
                 </div>
               )}
               {!isCollapsed && (
@@ -198,8 +199,8 @@ export function Sidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[260px] bg-surface border border-border shadow-md rounded-xl p-1.5 flex flex-col gap-[2px]">
             <div className="flex flex-col space-y-1 p-2 mb-1">
-              <p className="text-[13px] font-medium leading-none text-text-primary">{profile?.name || "BiffcoHQ"}</p>
-              <p className="text-[12px] leading-none text-text-secondary">{profile?.email || "admin@biffco.com"}</p>
+              <p className="text-[13px] font-medium leading-none text-text-primary">{userProfile?.name || "BiffcoHQ"}</p>
+              <p className="text-[12px] leading-none text-text-secondary">{userProfile?.email || "Cargando email..."}</p>
             </div>
             {/* @ts-ignore */}
             <DropdownMenuSeparator className="bg-border mb-1" />
