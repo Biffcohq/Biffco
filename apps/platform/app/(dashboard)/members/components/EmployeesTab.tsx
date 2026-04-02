@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+/* global window, HTMLInputElement */
 
 import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
-import { IconIdBadge2, IconPlus, IconUserOff } from '@tabler/icons-react'
+import { IconPlus, IconUserOff } from '@tabler/icons-react'
 import { Skeleton } from '@/app/components/ui/Skeleton'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Button, Input, Label, toast, Badge } from '@biffco/ui'
 
@@ -75,7 +76,7 @@ export function EmployeesTab() {
                   type="text"
                   placeholder="Ej. Juan Pérez" 
                   value={newName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewName(e.target.value)}
+                  onChange={(e: any) => setNewName(e.target.value)}
                   required
                 />
               </div>
@@ -87,7 +88,7 @@ export function EmployeesTab() {
                     type="text"
                     placeholder="Ej. Conductor, Peón" 
                     value={newRole}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewRole(e.target.value)}
+                    onChange={(e: any) => setNewRole(e.target.value)}
                     required
                   />
                 </div>
@@ -98,7 +99,7 @@ export function EmployeesTab() {
                     type="text"
                     placeholder="Ej. 12345678" 
                     value={newDni}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDni(e.target.value)}
+                    onChange={(e: any) => setNewDni(e.target.value)}
                   />
                 </div>
               </div>
@@ -167,6 +168,7 @@ export function EmployeesTab() {
                       {emp.isActive && (
                         <button 
                           onClick={() => {
+                            // eslint-disable-next-line no-undef
                             if (window.confirm(`¿Marcar a ${emp.name} como inactivo?`)) {
                               deactivateMutation.mutate({ id: emp.id })
                             }

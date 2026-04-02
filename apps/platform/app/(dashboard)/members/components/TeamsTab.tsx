@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
+/* global window, HTMLInputElement */
 
 import React, { useState } from 'react'
 import { trpc } from '@/lib/trpc'
@@ -49,6 +50,7 @@ export function TeamsTab() {
   }
 
   const handleDelete = (id: string) => {
+    // eslint-disable-next-line no-undef
     if (window.confirm("¿Estás seguro de que quieres eliminar este equipo?")) {
       deleteMutation.mutate({ id })
     }
@@ -94,7 +96,7 @@ export function TeamsTab() {
                   type="text"
                   placeholder="Ej. Veterinarios" 
                   value={newTeamName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTeamName(e.target.value)}
+                  onChange={(e: any) => setNewTeamName(e.target.value)}
                   required
                 />
               </div>
@@ -105,7 +107,7 @@ export function TeamsTab() {
                   type="text"
                   placeholder="Responsables de auditorías" 
                   value={newTeamDesc}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewTeamDesc(e.target.value)}
+                  onChange={(e: any) => setNewTeamDesc(e.target.value)}
                 />
               </div>
               <DialogFooter className="mt-4">

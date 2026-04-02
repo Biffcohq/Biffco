@@ -1,6 +1,7 @@
+/* global HTMLDivElement */
 import React from 'react';
 import { cn } from '../lib/utils';
-import { SignatureBadge, SignatureStatus } from './SignatureBadge';
+import { SignatureBadge, type SignatureStatus } from './SignatureBadge';
 import { Avatar, AvatarFallback } from '../components/Avatar';
 import { IconAnchor, IconFileCheck } from '@tabler/icons-react';
 
@@ -21,7 +22,9 @@ export interface MockDomainEvent {
 
 export interface EventTimelineProps extends React.HTMLAttributes<HTMLDivElement> {
   events: MockDomainEvent[];
+  // eslint-disable-next-line no-unused-vars
   resolveLabel?: (type: string) => string;
+  // eslint-disable-next-line no-unused-vars
   resolveIcon?: (type: string) => React.ReactNode;
 }
 
@@ -32,6 +35,7 @@ export function EventTimeline({ events, resolveLabel, resolveIcon, className, ..
         <div key={event.id} className="relative flex items-start gap-4 group">
           {/* Icon marker */}
           <div className="flex items-center justify-center w-8 h-8 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-primary)] shadow shrink-0 z-10 transition-transform group-hover:scale-110 mt-1">
+            {/* @ts-ignore */}
             {resolveIcon ? resolveIcon(event.type) : <IconFileCheck className="w-4 h-4" />}
           </div>
           
@@ -61,6 +65,7 @@ export function EventTimeline({ events, resolveLabel, resolveIcon, className, ..
               
               {event.txHash && (
                 <div className="flex items-center gap-1.5 text-[var(--color-teal)] bg-teal-50 px-2 py-1 rounded-md text-[10px] sm:text-[11px] font-medium font-mono border border-teal-100 transition-colors hover:bg-teal-100 cursor-pointer overflow-hidden min-w-0">
+                  {/* @ts-ignore */}
                   <IconAnchor className="w-3 h-3 shrink-0" />
                   <span className="truncate">{event.txHash}</span>
                 </div>

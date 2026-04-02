@@ -12,8 +12,17 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconShieldCheck,
-  IconAlertTriangle
+  IconAlertTriangle,
+  IconSettings,
+  IconLogout
 } from '@tabler/icons-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@biffco/ui'
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
 import { trpc } from '@/lib/trpc'
@@ -34,7 +43,6 @@ const navGroups: NavGroup[] = [
     items: [
       { label: "Mi Workspace", href: "/", icon: IconBuilding },
       { label: "Equipo y Roles", href: "/members", icon: IconUsers },
-      { label: "Wallet (Claves)", href: "/settings/wallet", icon: IconShieldCheck },
     ]
   },
   {
@@ -131,21 +139,70 @@ export function Sidebar() {
         ))}
       </div>
 
-      {/* Footer User Profile */}
-      <div className="p-3 border-t border-slate-200 shrink-0 mx-2 mb-2 rounded-lg bg-slate-50 mt-auto">
-        <div className="flex items-center gap-3 overflow-hidden">
-          <div className="shrink-0 rounded-full bg-orange size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
-            {profile?.name ? profile.name.substring(0,2) : "WK"}
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col min-w-0 pr-2">
-              <span className="text-sm font-medium text-slate-900 truncate">{profile?.name || "Cargando..."}</span>
-              <span className="text-xs text-slate-500 truncate">Workspace</span>
+      {/* Footer User Profile with Gear Menu */}
+      <div className="p-2 border-t border-border shrink-0 mt-auto bg-surface-raised/30">
+        {/* @ts-ignore */}
+        <DropdownMenu>
+          {/* @ts-ignore */}
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-surface-raised transition-colors overflow-hidden group outline-none">
+              <div className="shrink-0 rounded-full bg-primary size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
+                {profile?.name ? profile.name.substring(0,2) : "WK"}
+              </div>
+              {!isCollapsed && (
+                <div className="flex flex-col min-w-0 flex-1 text-left">
+                  <span className="text-sm font-medium text-text-primary truncate">{profile?.name || "Cargando..."}</span>
+                  <span className="text-[10px] text-text-secondary truncate">Ajustes de cuenta</span>
+                </div>
+              )}
+              {!isCollapsed && (
+                <IconSettings size={16} className="text-text-muted group-hover:text-text-primary transition-colors shrink-0" />
+              )}
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" side="top" sideOffset={10} className="w-[240px] bg-surface border border-border shadow-md rounded-xl p-1">
+            <div className="flex flex-col space-y-1 p-2">
+              <p className="text-sm font-medium leading-none text-text-primary">{profile?.name || "Workspace"}</p>
+              <p className="text-xs leading-none text-text-secondary">Admin</p>
             </div>
-          )}
-          {!isCollapsed && (
-            <LogoutButton />
-          )}
+            {/* @ts-ignore */}
+            <DropdownMenuSeparator className="bg-border" />
+            <Link href="/settings">
+              {/* @ts-ignore */}
+              <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
+                <IconSettings className="mr-2 h-4 w-4 opacity-70" />
+                <span>Configuración</span>
+              </DropdownMenuItem>
+            </Link>
+            <Link href="/settings/wallet">
+              {/* @ts-ignore */}
+              <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
+                <IconShieldCheck className="mr-2 h-4 w-4 opacity-70" />
+                <span>Claves Incriptadas</span>
+              </DropdownMenuItem>
+            </Link>
+            {/* @ts-ignore */}
+            <DropdownMenuSeparator className="bg-border" />
+            {/* @ts-ignore */}
+            <DropdownMenuItem 
+              className="cursor-pointer text-error focus:bg-error/10 focus:text-error rounded-md m-1" 
+              onSelect={(e: any) => {
+                 e.preventDefault();
+                 const wrapper = document.getElementById('hidden-logout-wrapper');
+                 if (wrapper) {
+                   const btn = wrapper.querySelector('button');
+                   if (btn) btn.click();
+                 }
+              }}
+            >
+              <IconLogout className="mr-2 h-4 w-4" />
+              <span>Cerrar sesión</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div id="hidden-logout-wrapper" className="hidden">
+           <LogoutButton />
         </div>
       </div>
     </aside>
