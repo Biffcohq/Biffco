@@ -19,7 +19,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <div className="flex flex-col md:flex-row gap-8 w-full max-w-[1000px] mx-auto min-h-[80vh] animate-in fade-in duration-300 mt-6">
       <aside className="w-full md:w-56 shrink-0 min-h-full pr-4">
-        <h2 className="text-sm font-semibold mb-3 text-text-primary px-3 uppercase tracking-wider text-text-secondary">Configuración</h2>
+        <h2 className="text-sm font-semibold mb-3 px-3 uppercase tracking-wider text-text-muted">Configuración</h2>
         <nav className="flex flex-col gap-[2px]">
           {settingsNav.map((item) => {
             const isActive = pathname === item.href || (pathname === '/settings' && item.href === '/settings/general')

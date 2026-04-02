@@ -83,23 +83,6 @@ export default function PlatformRoot() {
           </div>
         </div>
 
-        {/* Access to Vertical Engine (Agnostic Launcher) */}
-        <div className="lg:col-span-3 bg-primary/5 border border-primary/20 rounded-xl shadow-sm p-6 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-bold text-primary mb-1">Entorno de Producción Vertical</h2>
-              <p className="text-sm text-text-secondary">Accede a la aplicación específica de tu industria para registrar procesos, despachos y transformaciones.</p>
-            </div>
-            {isLoading || !workspace?.id ? (
-              <div className="flex items-center justify-center w-48 h-11 bg-primary/50 text-white rounded-full font-bold cursor-not-allowed">
-                 Cargando...
-              </div>
-            ) : (
-              <a href={`//verticals.biffco.co/${workspace.id}`} className="flex items-center justify-center gap-2 w-48 h-11 bg-primary text-white hover:bg-primary-hover active:scale-95 rounded-full font-bold transition-all duration-200">
-                 Abrir Operativa Especializada <IconPackage size={18}/>
-              </a>
-            )}
-        </div>
-
       </div>
     </div>
   );

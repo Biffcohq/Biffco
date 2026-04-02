@@ -12,7 +12,6 @@ import {
   IconChartBar,
   IconChevronLeft,
   IconChevronRight,
-  IconShieldCheck,
   IconAlertTriangle,
   IconSettings,
   IconLogout,
@@ -102,12 +101,12 @@ export function Sidebar() {
       }`}
     >
       {/* Header */}
-      <div className={`h-16 flex items-center shrink-0 mt-2 mb-2 ${isCollapsed ? 'justify-center' : 'px-4'}`}>
+      <div className={`h-14 flex items-center shrink-0 ${isCollapsed ? 'justify-center' : 'px-6'}`}>
         <Link href="/" className="flex items-center overflow-hidden h-full">
           {isCollapsed ? (
-             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-8 h-8 object-contain transition-all drop-shadow-sm" />
+             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-[18px] h-[18px] object-contain transition-all drop-shadow-sm" />
           ) : (
-             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-7 w-auto object-contain transition-all" />
+             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-[18px] w-auto object-contain transition-all" />
           )}
         </Link>
       </div>
