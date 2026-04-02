@@ -76,14 +76,8 @@ const globalNavGroups: NavGroup[] = [
   {
     label: "Hub",
     items: [
-      { label: "Mis Cadenas (Workspaces)", href: "/", icon: IconBuilding },
-    ]
-  },
-  {
-    label: "Configuración Global",
-    items: [
-      { label: "Cuenta Mestra", href: "/settings", icon: IconSettings },
-      { label: "Facturación", href: "/settings/billing", icon: IconFileCheck },
+      { label: "Workspaces", href: "/", icon: IconBuilding },
+      { label: "Estadísticas Globales", href: "/analytics", icon: IconChartBar },
     ]
   }
 ]
@@ -208,13 +202,6 @@ export function Sidebar() {
               <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
                 <IconSettings className="mr-2 h-4 w-4 opacity-70" />
                 <span>Configuración</span>
-              </DropdownMenuItem>
-            </Link>
-            <Link href="/settings/wallet">
-              {/* @ts-ignore */}
-              <DropdownMenuItem className="cursor-pointer text-text-primary focus:bg-surface-raised rounded-md m-1">
-                <IconShieldCheck className="mr-2 h-4 w-4 opacity-70" />
-                <span>Claves Incriptadas</span>
               </DropdownMenuItem>
             </Link>
             {/* @ts-ignore */}

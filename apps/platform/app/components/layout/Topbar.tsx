@@ -12,10 +12,19 @@ import { usePathname } from 'next/navigation'
 export function Topbar() {
   const pathname = usePathname()
   
-  // Mock breadcrumbs for now
-  const title = pathname === '/' 
-    ? 'Dashboard'
-    : pathname.split('/').filter(Boolean).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' > ')
+  // Smart breadcrumbs that hide ugly IDs
+  let title = 'Workspaces Hub';
+  if (pathname !== '/') {
+    const segments = pathname.split('/').filter(Boolean);
+    const cleanSegments = segments.filter(s => {
+      if (s.toLowerCase() === 'w') return false;
+      if (s.length > 18) return false; // Oculta IDs largos poco amigables
+      return true;
+    });
+    title = cleanSegments.length > 0 
+      ? cleanSegments.map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(' / ')
+      : 'Workspace';
+  }
 
   return (
     <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0 shadow-xs z-10 w-full">

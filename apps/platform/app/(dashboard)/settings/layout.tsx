@@ -10,7 +10,7 @@ const settingsNav = [
   { name: 'Perfil', href: '/settings/profile' },
   { name: 'Facturación', href: '/settings/billing' },
   { name: 'Preferencias', href: '/settings/preferences' },
-  { name: 'Claves Incriptadas', href: '/settings/wallet' },
+  { name: 'Claves Encriptadas', href: '/settings/wallet' },
 ]
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
