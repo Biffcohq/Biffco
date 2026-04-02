@@ -1,7 +1,8 @@
+/* global navigator */
 "use client"
 
 import { trpc } from '@/lib/trpc'
-import { IconShieldCheck, IconKey, IconAlertTriangle } from '@tabler/icons-react'
+import { IconShieldCheck, IconKey, IconAlertTriangle, IconCopy } from '@tabler/icons-react'
 import { Button, toast } from '@biffco/ui'
 
 export default function GlobalWalletPage() {
@@ -42,8 +43,22 @@ export default function GlobalWalletPage() {
                 <span className="font-bold text-text-primary">Clave Pública Principal</span>
                 <span className="bg-success text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider shrink-0">Vinculada</span>
               </div>
-              <div className="text-text-secondary font-mono text-sm mt-0.5 max-w-[200px] sm:max-w-md truncate">
-                {isLoading ? 'Cargando llave...' : publicKey || 'Sin llave vinculada'}
+              <div className="flex items-center gap-2 mt-0.5">
+                <div className="text-text-secondary font-mono text-sm break-all font-medium">
+                  {isLoading ? 'Cargando llave...' : publicKey || 'Sin llave vinculada'}
+                </div>
+                {publicKey && (
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(publicKey)
+                      toast.success('Clave copiada al portapapeles')
+                    }}
+                    className="p-1.5 text-text-muted hover:text-primary hover:bg-primary/10 rounded-md transition-colors"
+                    title="Copiar Clave Pública"
+                  >
+                    <IconCopy size={16} />
+                  </button>
+                )}
               </div>
             </div>
           </div>

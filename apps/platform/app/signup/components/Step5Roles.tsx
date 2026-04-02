@@ -1,9 +1,10 @@
-/* global alert */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useSignupStore } from '../../stores/useSignupStore'
 import { trpc } from '../../../lib/trpc'
 import { IconArrowLeft, IconCheckbox, IconSquare, IconLoader2, IconShieldLock } from '@tabler/icons-react'
 import { useAuthStore } from '../../stores/useAuthStore'
+import { toast } from '@biffco/ui'
 import { useRouter } from 'next/navigation'
 
 export function Step5Roles() {
@@ -22,11 +23,11 @@ export function Step5Roles() {
         memberId: data.memberId,
         personName: store.adminName,
       })
-      alert(`Workspace Created successfully!\nWelcome to BIFFCO.\nYour Member ID is: ${data.memberId}`)
+      toast.success(`Workspace Created successfully! Tu ID es: ${data.memberId}`)
       router.push('/')
     },
     onError: (error: any) => {
-      alert("Registration failed: " + error.message)
+      toast.error("Registration failed: " + error.message)
     }
   })
 
