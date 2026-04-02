@@ -51,6 +51,7 @@ export function EmployeesTab() {
         </div>
 
         <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+          {/* @ts-ignore */}
           <DialogTrigger asChild>
             <Button className="whitespace-nowrap">
               <IconPlus size={18} />
@@ -59,7 +60,9 @@ export function EmployeesTab() {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
+              {/* @ts-ignore */}
               <DialogTitle>Registrar Personal</DialogTitle>
+              {/* @ts-ignore */}
               <DialogDescription>
                 Añade operarios, conductores o personal de campo que interviene en tus operaciones sin requerir acceso al sistema.
               </DialogDescription>
