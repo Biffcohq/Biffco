@@ -6,6 +6,7 @@ interface AuthState {
   memberId: string | null
   personName: string | null
   isAuthenticated: boolean
+  // eslint-disable-next-line no-unused-vars
   setSession: (data: { workspaceId: string, memberId: string, personName: string }) => void
   clearSession: () => void
 }

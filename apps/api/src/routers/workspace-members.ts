@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, publicProcedure, requirePermission } from '../trpc'
 import { workspaceMembers, workspaces } from '@biffco/db/schema'
-import { eq } from '@biffco/db'
+import { eq, and } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 import { createId } from '@paralleldrive/cuid2'
 import { redis } from '../redis'
@@ -20,7 +20,10 @@ export const workspaceMembersRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       const member = await ctx.db.query.workspaceMembers.findFirst({
-        where: eq(workspaceMembers.id, input.id),
+        where: and(
+          eq(workspaceMembers.id, input.id),
+          eq(workspaceMembers.workspaceId, ctx.workspaceId!)
+        ),
       })
       if (!member) throw new TRPCError({ code: "NOT_FOUND" })
       return member

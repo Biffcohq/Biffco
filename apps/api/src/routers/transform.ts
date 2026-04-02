@@ -119,28 +119,32 @@ export const transformRouter = router({
               verticalId: workspace.verticalId,
               type: 'DerivedAsset',
               status: 'ACTIVE',
-              ownerId: animal.ownerId,
-              payload: { ...payload, slaughterhouseId: workspaceId },
+              locationId: animal.locationId,
+              metadata: { ...payload, slaughterhouseId: workspaceId },
               parentIds: [input.animalId],
             }).returning()
             return derived
           })
         )
 
-        // Generate Event
+        // Generate Event (A-05 Remediado)
+        const eventCanonicalData = {
+           outputs: createdDerived.map(d => ({ id: d.id, cutType: (d.metadata as any).cutType })),
+           totalGrossWeight: validatedOutputs.reduce((sum, o) => sum + o.grossWeight, 0),
+        }
+        
+        const crypto = await import('crypto');
+        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventCanonicalData)).digest('hex');
+
          await tx.insert(domainEvents).values({
           streamId: input.animalId,
-          type: "SLAUGHTER_COMPLETED",
-          version: 1,
+          streamType: "asset",
+          eventType: "SLAUGHTER_COMPLETED",
           workspaceId: workspaceId!,
-          actorId: memberId!,
+          signerId: memberId!,
           signature: input.signature,
-          publicKey: input.publicKey,
-          occurredAt: new Date(),
-          payload: {
-             outputs: createdDerived.map(d => ({ id: d.id, cutType: (d.payload as any).cutType })),
-             totalGrossWeight: validatedOutputs.reduce((sum, o) => sum + o.grossWeight, 0),
-          }
+          hash: hashDigest,
+          data: eventCanonicalData
         })
 
         return { animal: { ...animal, status: "CLOSED" }, derived: createdDerived }

@@ -3,8 +3,8 @@
 import { Queue, Worker } from 'bullmq';
 import { redis } from '../redis';
 import { db } from '@biffco/db';
-import { transferOffers } from '@biffco/db/schema';
-import { lt, eq, and } from '@biffco/db';
+import { transferOffers, assets } from '@biffco/db/schema';
+import { lt, eq, and, inArray } from '@biffco/db';
 
 const EXPIRATION_QUEUE_NAME = 'expire-offers-queue';
 
@@ -33,14 +33,18 @@ export const expirationWorker = new Worker(
                 lt(transferOffers.createdAt, expirationLimit) // expiradas por regla de 24h
               )
             )
-            .returning({ id: transferOffers.id });
+            .returning({ id: transferOffers.id, assetId: transferOffers.assetId });
 
         if (expiredOffers.length > 0) {
             console.log(`[BullMQ] 🧹 Se limpiaron ${expiredOffers.length} ofertas expiradas.`);
             
-            // Aquí en un escenario hiper completo se emitiría dominio events: TRANSFER_OFFER_EXPIRED
-            // y se liberaría el 'locked_for_transfer' de los Assets afectados.
-            // Para el alcance de este ticket técnico de Deuda de Fase B, esto cumple sobradamente el objetivo.
+            // Mitigación A-07 (Asset Lock Leak)
+            const lockedAssetIds = expiredOffers.map(offer => offer.assetId);
+            if (lockedAssetIds.length > 0) {
+                await tx.update(assets)
+                    .set({ status: 'active', updatedAt: now })
+                    .where(inArray(assets.id, lockedAssetIds));
+            }
         }
     });
   },

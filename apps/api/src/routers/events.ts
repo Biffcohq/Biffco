@@ -69,9 +69,9 @@ export const eventsRouter = router({
       // 2. Validación ED25519 (Crítico C-04 Remediado)
       if (input.signature && input.publicKey) {
          // Requerimos importar verifyEvent, asumiendo su export en @biffco/core/crypto
-         // Para la estructura, inyectamos lógica real ED25519 validando el hash contra el signature
          const { verifyEvent } = await import('@biffco/core/crypto');
-         const isValidSignature = await verifyEvent(input.hash, input.signature, input.publicKey);
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const isValidSignature = await verifyEvent(input.payload as any, input.signature, input.publicKey);
          if (!isValidSignature) {
            throw new TRPCError({ code: "UNAUTHORIZED", message: "Firma Criptográfica Inválida" })
          }
@@ -102,10 +102,13 @@ export const eventsRouter = router({
          streamIds: z.array(z.string()).min(1),
          eventType: z.string(),
          payload: z.record(z.unknown()),
-         correlationId: z.string().optional() // ID para tracking del batch completo
+         correlationId: z.string().optional()
       }))
-      .mutation(async ({ input }) => {
-         // Lógica para Batch Events a desarrollar en el siguiente paso logístico
-         return { success: true, processed: input.streamIds.length }
+      .mutation(async () => {
+         // Lógica para Batch Events a desarrollar (Bloqueado por Diseño Criptográfico de Firmas Individuales)
+         throw new TRPCError({ 
+           code: "NOT_IMPLEMENTED", 
+           message: "Batch logging requires grouping assets first to respect unique Signature hashes. Re-route to single append." 
+         });
       })
 })

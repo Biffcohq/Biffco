@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { workspaces } from '@biffco/db/schema'
-import { eq } from '@biffco/db'
+import { eq, and, or, ilike, ne } from '@biffco/db'
 import { Permission } from '@biffco/core/rbac'
 
 export const workspacesRouter = router({
@@ -41,16 +41,17 @@ export const workspacesRouter = router({
       limit: z.number().min(1).max(20).default(5)
     }))
     .query(async ({ input, ctx }) => {
-       const lowerQuery = input.query.toLowerCase();
-       // Drizzle ilike no siempre está expuesto directo en el core si no se importa bien, usaremos select
-       // Pero asumiendo DB sqlite/pg podemos usar like o un select general filtrado
-       const allWorkspaces = await ctx.db.query.workspaces.findMany({
-         limit: 100 // Busqueda simple en memoria para esta prueba PoC
+       const items = await ctx.db.query.workspaces.findMany({
+         where: and(
+           ne(workspaces.id, ctx.workspaceId!),
+           or(
+             ilike(workspaces.name, `%${input.query}%`),
+             ilike(workspaces.slug, `%${input.query}%`)
+           )
+         ),
+         limit: input.limit
        });
        
-       return allWorkspaces
-         .filter(w => w.id !== ctx.workspaceId && (w.name.toLowerCase().includes(lowerQuery) || (w.slug && w.slug.toLowerCase().includes(lowerQuery))))
-         .slice(0, input.limit)
-         .map(w => ({ id: w.id, name: w.name, slug: w.slug }));
+       return items.map(w => ({ id: w.id, name: w.name, slug: w.slug }));
     })
 })

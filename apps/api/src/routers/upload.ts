@@ -1,13 +1,11 @@
 /* eslint-env node */
 import { z } from 'zod';
 import { protectedProcedure, router } from '../trpc';
-// eslint-disable-next-line no-undef
 import { S3Client, PutObjectCommand, DeleteObjectCommand, PutObjectRetentionCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomUUID } from 'crypto';
 
 // Requerimos AWS Credentials inyectadas por Doppler o Env global.
-// eslint-disable-next-line no-undef
 const s3Client = new S3Client({
   // eslint-disable-next-line no-undef
   region: process.env.NEXT_PUBLIC_S3_REGION || 'us-east-1',
@@ -74,9 +72,10 @@ export const uploadRouter = router({
        // 1. Simular la obtención y análisis por el worker en Railway
        // En prod, haríamos un GET a S3 y pasaríamos el buffer a ClamAV REST,
        // o enviaríamos un Presigned GET al engine de Railway.
-       const isInfected = input.key.toLowerCase().includes('eicar');
+       const dangerousExtensions = ['.exe', '.bat', '.sh', '.cmd', '.msi', '.vbs', '.scr'];
+       const isDangerous = dangerousExtensions.some(ext => input.key.toLowerCase().endsWith(ext));
 
-       if (isInfected) {
+       if (isDangerous) {
           // 2a. Si hay VIRUS: Eliminar archivo (Antes de poner Retention)
           await s3Client.send(new DeleteObjectCommand({
              Bucket: bucket,
