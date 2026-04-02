@@ -22,6 +22,8 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  BiffcoLogo,
+  BiffcoIso
 } from '@biffco/ui'
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
@@ -70,7 +72,7 @@ export function Sidebar() {
 
   return (
     <aside 
-      className={`group relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
+      className={`relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
         isCollapsed ? 'w-16' : 'w-[240px]'
       }`}
     >
@@ -78,21 +80,23 @@ export function Sidebar() {
       <div className="h-16 flex items-center px-4 shrink-0 mt-2 mb-2">
         <Link href="/" className="flex items-center overflow-hidden h-full">
           {isCollapsed ? (
-             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-8 h-8 object-contain transition-all" />
+             <BiffcoIso className="w-6 h-6 shrink-0 transition-all text-primary" />
           ) : (
-             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-8 object-contain transition-all" />
+             <BiffcoLogo className="h-6 w-auto transition-all text-primary" />
           )}
         </Link>
       </div>
 
-      {/* Toggle Button */}
-      <button 
-        onClick={toggle}
-        className="opacity-0 group-hover:opacity-100 absolute -right-3 top-1/2 -translate-y-1/2 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-        aria-label="Toggle sidebar"
-      >
-        {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
-      </button>
+      {/* Toggle Button Edge Hitbox */}
+      <div className="absolute right-[-12px] top-0 bottom-0 w-6 z-20 group/toggle flex items-center justify-center">
+        <button 
+          onClick={toggle}
+          className="opacity-0 group-hover/toggle:opacity-100 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          aria-label="Toggle sidebar"
+        >
+          {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
+        </button>
+      </div>
 
       {/* Navigation Groups */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-6 scrollbar-hide">

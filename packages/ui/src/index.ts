@@ -1,4 +1,6 @@
 export * from './components/Button'
+export * from './components/BiffcoLogo'
+export * from './components/BiffcoIso'
 export * from './components/Input'
 export * from './components/Card'
 export * from './components/Badge'
