@@ -218,7 +218,8 @@ export const authRouter = router({
       const { db } = ctx
       const data = await db.select({
         email: persons.email,
-        name: persons.name
+        name: persons.name,
+        publicKey: workspaceMembers.publicKey
       })
       .from(workspaceMembers)
       .innerJoin(persons, eq(workspaceMembers.personId, persons.id))

@@ -1,8 +1,8 @@
 import React from 'react'
 
-export default function WorkspaceSettingsPage({ params }: { params: { workspaceId: string } }) {
+export default function WorkspaceSettingsPage() {
   return (
-    <div className="w-full max-w-[1000px] mx-auto min-h-[80vh] flex flex-col gap-6 pt-6 px-4 animate-in fade-in duration-300">
+    <div className="w-full flex flex-col gap-6 animate-in fade-in duration-300">
       <div className="flex flex-col gap-2">
         <h1 className="text-xl font-semibold text-text-primary">Configuración de la Cadena / Vertical</h1>
         <p className="text-text-secondary text-sm">
