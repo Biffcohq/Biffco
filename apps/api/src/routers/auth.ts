@@ -35,20 +35,22 @@ function verifyPassword(password: string, storedHashAndSalt: string): boolean {
 // Función helper para inyectar Cookies seguras (Crítico C-05)
 import type { FastifyReply } from 'fastify'
 const setAuthCookies = (reply: FastifyReply, accessToken: string, refreshToken: string) => {
+  const isProd = process.env.NODE_ENV === 'production';
+
   reply.setCookie('accessToken', accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',
+    secure: !isProd ? false : true,
     sameSite: 'lax',
     path: '/',
-    domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
+    ...(isProd ? { domain: '.biffco.co' } : {}),
     maxAge: 15 * 60 // 15 minutos
   })
   reply.setCookie('refreshToken', refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV !== 'development',
+    secure: !isProd ? false : true,
     sameSite: 'lax',
     path: '/',
-    domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
+    ...(isProd ? { domain: '.biffco.co' } : {}),
     maxAge: 30 * 24 * 60 * 60 // 30 dias
   })
 }
@@ -318,13 +320,13 @@ export const authRouter = router({
           jti: createId(),
         }, { expiresIn: "15m" })
 
-        // Secreto extendido
+        const isProd = process.env.NODE_ENV === 'production';
         ctx.reply.setCookie('accessToken', accessToken, {
           httpOnly: true,
-          secure: process.env.NODE_ENV !== 'development',
+          secure: !isProd ? false : true,
           sameSite: 'lax',
           path: '/',
-          domain: process.env.NODE_ENV === 'production' ? '.biffco.co' : undefined,
+          ...(isProd ? { domain: '.biffco.co' } : {}),
           maxAge: 15 * 60
         })
 
