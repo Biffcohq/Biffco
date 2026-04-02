@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, no-undef */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { IconPlus, IconMapPin, IconBuildingStore } from '@tabler/icons-react'

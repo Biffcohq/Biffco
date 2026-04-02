@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { IconShape, IconPlus, IconBox, IconUsersGroup } from '@tabler/icons-react'
@@ -32,7 +33,7 @@ export default function GroupsPage() {
         {isLoading ? (
           Array(4).fill(0).map((_, i) => <Skeleton key={i} className="h-36 w-full rounded-xl" />)
         ) : groupsList && groupsList.length > 0 ? (
-          groupsList.map((group) => (
+          groupsList.map((group: any) => (
              <div 
                key={group.id}
                className="bg-surface border border-border rounded-xl p-5 flex flex-col gap-3 shadow-sm hover:shadow-md hover:border-primary/40 cursor-pointer transition-all group/card"
