@@ -8,6 +8,7 @@ import {
   IconChevronRight
 } from '@tabler/icons-react'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 
 export function Topbar() {
   const pathname = usePathname()
@@ -26,17 +27,37 @@ export function Topbar() {
       : 'Workspace';
   }
 
+  const isWorkspaceContext = pathname.startsWith('/w/')
+  const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
+
   return (
     <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0 shadow-xs z-10 w-full">
       {/* Left Menu - Breadcrumbs */}
-      <div className="flex items-center gap-2 text-sm">
-        <span className="text-text-secondary font-medium hover:text-text-primary cursor-pointer transition-colors">
-          Biffco
-        </span>
+      <div className="flex items-center gap-2 text-[13px]">
+        <Link href="/" className="text-text-secondary font-medium hover:text-text-primary transition-colors">
+          Biffco Corp
+        </Link>
         <IconChevronRight size={14} className="text-text-muted" stroke={2} />
-        <span className="text-text-primary font-semibold">
-          {title}
-        </span>
+        
+        {isWorkspaceContext && workspaceId ? (
+          <>
+            <Link href={`/w/${workspaceId}`} className={`font-medium transition-colors ${title === 'Workspace' ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'}`}>
+              Vertical Operacional
+            </Link>
+            {title !== 'Workspace' && (
+              <>
+                <IconChevronRight size={14} className="text-text-muted" stroke={2} />
+                <span className="text-text-primary font-semibold">
+                  {title}
+                </span>
+              </>
+            )}
+          </>
+        ) : (
+          <span className="text-text-primary font-semibold">
+            {title}
+          </span>
+        )}
       </div>
 
       {/* Center - SearchBar Placeholder */}
