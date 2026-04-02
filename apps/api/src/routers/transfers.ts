@@ -253,7 +253,6 @@ export const transfersRouter = router({
           });
 
           // Hack/Mock para el envío de Email
-          // eslint-disable-next-line no-undef
           console.log(`[EMAIL DISPATCH MOCK] -> Enviando Resend a ${offer.fromWorkspaceId}: "Tu transferencia ha sido rechazada por el receptor."`);
 
           return { success: true, message: 'Transferencia rechazada.' };

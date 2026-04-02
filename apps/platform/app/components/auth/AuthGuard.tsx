@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '../../stores/useAuthStore'
-import { trpc } from '@/app/lib/trpc'
+import { trpc } from '../../../lib/trpc'
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
@@ -18,7 +18,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       if (hasRefreshToken) {
         setIsRefreshing(true)
         refreshMutation.mutate(undefined, {
-          onSuccess: (data) => {
+          onSuccess: (data: { workspaceId?: string; memberId?: string; personName?: string }) => {
             if (data.workspaceId && data.memberId && data.personName) {
               setSession({
                 workspaceId: data.workspaceId,
