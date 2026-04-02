@@ -70,22 +70,17 @@ export function Sidebar() {
 
   return (
     <aside 
-      className={`relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
+      className={`group relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
         isCollapsed ? 'w-16' : 'w-[240px]'
       }`}
     >
       {/* Header */}
-      <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
-        <Link href="/" className="flex items-center gap-2 overflow-hidden h-full py-2">
-          {/* Logo / Isotipo */}
-          <div className="flex items-center justify-center bg-primary rounded-md w-8 h-8 shrink-0 shadow-sm text-white">
-            <IconShieldCheck size={20} stroke={2} />
-          </div>
-          {!isCollapsed && (
-            <div className="flex flex-col whitespace-nowrap">
-              <span className="font-bold text-sm leading-tight text-text-primary tracking-wide">Biffco Corp</span>
-              <span className="text-[10px] text-text-muted uppercase tracking-widest">Ganadería Bovina</span>
-            </div>
+      <div className="h-16 flex items-center px-4 shrink-0 mt-2 mb-2">
+        <Link href="/" className="flex items-center overflow-hidden h-full">
+          {isCollapsed ? (
+             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-8 h-8 object-contain transition-all" />
+          ) : (
+             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-8 object-contain transition-all" />
           )}
         </Link>
       </div>
@@ -93,7 +88,7 @@ export function Sidebar() {
       {/* Toggle Button */}
       <button 
         onClick={toggle}
-        className="absolute -right-3 top-16 bg-surface text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-transform hover:scale-110 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        className="opacity-0 group-hover:opacity-100 absolute -right-3 top-1/2 -translate-y-1/2 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         aria-label="Toggle sidebar"
       >
         {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
