@@ -47,13 +47,14 @@ export const anchorRouter = router({
         const provider = new ethers.JsonRpcProvider(env.POLYGON_RPC_URL)
         const wallet = new ethers.Wallet(env.POLYGON_PRIVATE_KEY, provider)
         
-        // ABI Mínimo para la función anchor
-        const abi = ["function anchor(bytes32 root) public"]
+        // ABI Exacto del Smart Contract
+        const abi = ["function anchor(bytes32 merkleRoot, string batchId) external"]
         const contract = new ethers.Contract(env.SIMPLE_ANCHOR_ADDRESS, abi, wallet)
 
-        // Enviar Transacción a la Blockchain Pública
+        // Enviar Transacción a la Blockchain Pública con un BatchId temporal (la fecha)
+        const batchId = new Date().toISOString()
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const tx = await (contract as any).anchor(rootBytes32)
+        const tx = await (contract as any).anchor(rootBytes32, batchId)
         
         // Esperamos 1 confirmación del nodo
         const receipt = await tx.wait(1)
