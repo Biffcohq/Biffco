@@ -3,9 +3,9 @@ import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, domainEvents, workspaces } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
-import { sql } from 'drizzle-orm'
+import { sql, inArray } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
-import { holds } from '@biffco/db/schema'
+import { holds, anchoredEvents, anchorsLog } from '@biffco/db/schema'
 
 export const assetsRouter = router({
   
@@ -55,12 +55,9 @@ export const assetsRouter = router({
 
       // Buscar si estos eventos están anclados
       const eventIds = assetEvents.map(e => e.id)
-      let eventsWithAnchors = assetEvents as (typeof assetEvents[0] & { polygonTxHash?: string })[]
+      let eventsWithAnchors = assetEvents as (typeof assetEvents[0] & { polygonTxHash?: string | undefined })[]
       
       if (eventIds.length > 0) {
-        const { anchoredEvents, anchorsLog } = await import('@biffco/db/schema')
-        const { inArray } = await import('drizzle-orm')
-        
         // Buscar vínculos de anclaje para estos ids
         const linkages = await ctx.db.select({
           eventId: anchoredEvents.eventId,
@@ -71,7 +68,11 @@ export const assetsRouter = router({
 
         eventsWithAnchors = assetEvents.map(e => {
           const link = linkages.find(l => l.eventId === e.id)
-          return { ...e, polygonTxHash: link?.txHash || undefined }
+          const newEvent = { ...e } as typeof assetEvents[0] & { polygonTxHash?: string }
+          if (link?.txHash) {
+            newEvent.polygonTxHash = link.txHash
+          }
+          return newEvent
         })
       }
 

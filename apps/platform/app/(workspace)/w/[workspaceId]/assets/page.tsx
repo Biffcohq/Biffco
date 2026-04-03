@@ -15,7 +15,8 @@ export default function AssetsPage() {
 
   const utils = trpc.useUtils()
   const anchorMutation = trpc.anchor.triggerBatch.useMutation({
-    onSuccess: (data) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSuccess: (data: any) => {
       const hash = data?.polygonTxHash;
       if (hash) {
         toast.success(`Anclaje Exitoso. TX: ${hash.slice(0, 10)}...`);
@@ -31,7 +32,8 @@ export default function AssetsPage() {
   })
 
   const filteredAssets = filter === 'active' 
-    ? assetsList?.filter(a => a.status === 'ACTIVE') 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ? assetsList?.filter((a: any) => a.status === 'ACTIVE') 
     : assetsList
 
   const verticalId = workspaceData?.verticalId || 'livestock'; // Fallback mientras impacta migracion
