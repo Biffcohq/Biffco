@@ -90,8 +90,8 @@ export const assetsRouter = router({
       if (!workspace) throw new TRPCError({ code: "NOT_FOUND" })
         
       // Delegar validación de tipo al VerticalPack activo
-      const pack = verticalRegistry.get(workspace.verticalId) as { assetTypes?: string[] } | undefined
-      if (pack && pack.assetTypes && !pack.assetTypes.includes(input.type)) {
+      const pack = verticalRegistry.get(workspace.verticalId) as any
+      if (pack && pack.assetTypes && !pack.assetTypes.some((a: any) => a.id === input.type)) {
         throw new TRPCError({ code: "BAD_REQUEST", message: `Tipo de activo "${input.type}" no válido para el vertical "${workspace.verticalId}"` })
       }
 

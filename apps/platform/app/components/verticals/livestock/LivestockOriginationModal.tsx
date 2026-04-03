@@ -5,8 +5,8 @@ import { Modal, ModalContent, ModalHeader, ModalTitle, Button, Input, toast } fr
 import { useForm } from 'react-hook-form'
 import { trpc } from '@/lib/trpc'
 import { IconBox, IconHash } from '@tabler/icons-react'
-import { useAuthStore } from '@/app/stores/useAuthStore'
-import { createHash } from 'crypto' // Para fallback SHA-256 en browser (pseudo o polyfill)
+// import { useAuthStore } from '@/app/stores/useAuthStore'
+// createHash removed
 
 type FormData = {
   breed: string;
@@ -17,7 +17,7 @@ type FormData = {
 export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const utils = trpc.useUtils()
-  const { publicKey } = useAuthStore() // Se usaría luego con KMS
+  // const { publicKey } = useAuthStore() // Se usaría luego con KMS
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const mutation = trpc.assets.create.useMutation({
@@ -35,11 +35,12 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
   })
 
   // Generador de Hash simple (SHA-256) del Payload del Evento
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const generatePayloadHash = async (payload: any) => {
     const text = JSON.stringify(payload, Object.keys(payload).sort())
-    const encoder = new TextEncoder()
+    const encoder = new window.TextEncoder()
     const data = encoder.encode(text)
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
   }
@@ -62,7 +63,7 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
 
       // Ejecutar la creación en el Core con la Transacción ACID
       mutation.mutate({
-        type: 'Bovine', // Identificador en db.assets
+        type: 'AnimalAsset', // Identificador validado por el Motor Vertical
         initialState: payload,
         externalId: data.rfid,
         genesisEvent: {
