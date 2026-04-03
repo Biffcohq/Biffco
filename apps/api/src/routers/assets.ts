@@ -121,6 +121,8 @@ export const assetsRouter = router({
           } as Record<string, unknown>
         }).returning()
 
+        if (!insertedAsset) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to insert asset" })
+
         if (input.genesisEvent) {
           await tx.insert(domainEvents).values({
             workspaceId: workspaceId!,
