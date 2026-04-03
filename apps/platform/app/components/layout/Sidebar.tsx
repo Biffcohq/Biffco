@@ -16,6 +16,7 @@ import {
   IconSettings,
   IconLogout,
   IconBox,
+  IconTruck,
   IconShape,
   IconChartDonut,
   IconMoodSmile,
@@ -61,6 +62,7 @@ const getWorkspaceNavGroups = (workspaceId: string): NavGroup[] => [
     items: [
       { label: "Activos (Assets)", href: `/w/${workspaceId}/assets`, icon: IconBox },
       { label: "Agrupaciones (Lotes)", href: `/w/${workspaceId}/groups`, icon: IconShape },
+      { label: "Logística B2B", href: `/w/${workspaceId}/logistics`, icon: IconTruck },
       { label: "Facilities", href: `/w/${workspaceId}/facilities`, icon: IconPackage },
       { label: "Eventos", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
     ]

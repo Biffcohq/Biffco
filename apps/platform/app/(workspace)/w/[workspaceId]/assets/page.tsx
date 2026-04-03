@@ -1,17 +1,19 @@
 "use client"
 
-import { IconBox, IconPlus, IconPolygon } from '@tabler/icons-react'
+import { IconBox, IconPlus, IconPolygon, IconTruck } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
 import { Button, toast } from '@biffco/ui'
 import { useState } from 'react'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetTable, VerticalAssetModal } from '../../../../lib/verticals/registry'
+import { TransferDraftModal } from './TransferDraftModal'
 
 export default function AssetsPage() {
   const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
   const { data: assetsList, isLoading } = trpc.assets.list.useQuery()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
 
   const utils = trpc.useUtils()
   const anchorMutation = trpc.anchor.triggerBatch.useMutation({
@@ -60,6 +62,13 @@ export default function AssetsPage() {
             {anchorMutation.isPending ? "Contactando SC..." : "Forzar Anclaje (Merkle)"}
           </Button>
           <Button 
+            onClick={() => setIsTransferModalOpen(true)}
+            className="whitespace-nowrap w-fit bg-[#0F1623] text-white hover:bg-black"
+          >
+            <IconTruck size={18} />
+            Despachar (DRAFT)
+          </Button>
+          <Button 
             onClick={() => setIsModalOpen(true)}
             className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
           >
@@ -105,6 +114,12 @@ export default function AssetsPage() {
         verticalId={verticalId}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+      />
+
+      <TransferDraftModal 
+        isOpen={isTransferModalOpen}
+        onClose={() => setIsTransferModalOpen(false)}
+        assetsList={assetsList || []}
       />
     </div>
   )
