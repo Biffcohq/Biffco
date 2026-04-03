@@ -15,8 +15,15 @@ export default function AssetsPage() {
 
   const utils = trpc.useUtils()
   const anchorMutation = trpc.anchor.triggerBatch.useMutation({
-    onSuccess: () => {
-      toast.success('Eventos empaquetados y anclados exitosamente en Polygon Amoy')
+    onSuccess: (data) => {
+      const hash = data?.polygonTxHash;
+      if (hash) {
+        toast.success(`Anclaje Exitoso. TX: ${hash.slice(0, 10)}...`);
+        // Abrimos automáticamente PolygonScan Amoy para probar la existencia Inmutable
+        window.open(`https://amoy.polygonscan.com/tx/${hash}`, '_blank');
+      } else {
+        toast.success('Eventos empaquetados y anclados exitosamente');
+      }
       utils.assets.list.invalidate()
     },
     onError: (err: unknown) => {
