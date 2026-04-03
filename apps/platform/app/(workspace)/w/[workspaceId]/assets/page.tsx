@@ -1,10 +1,11 @@
 "use client"
 
-import { IconBox, IconPlus, IconActivity, IconAlertCircle } from '@tabler/icons-react'
+import { IconBox, IconPlus } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
-import { Skeleton, Button, Badge, toast } from '@biffco/ui'
+import { Button, toast } from '@biffco/ui'
 import { useState } from 'react'
-import { VerticalAssetTable } from '../../../../../../lib/verticals/registry'
+// eslint-disable-next-line no-restricted-imports
+import { VerticalAssetTable } from '../../../../lib/verticals/registry'
 
 export default function AssetsPage() {
   const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
