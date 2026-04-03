@@ -27,7 +27,7 @@ export default function LivestockAssetTable({ assets, isLoading }: { assets: any
             const meta = asset.metadata?.initialState || asset.metadata || {};
             // El Core no sabe qué es "breed", pero este Inyector Frontend SÍ sabe
             const breedDisplay = meta.breed || meta.species || asset.type;
-            const idDisplay = meta.rfid || meta.headCount ? `${meta.headCount} Cabezas` : 'Sin Identificar';
+            const idDisplay = meta.rfid ? meta.rfid : (meta.headCount ? `${meta.headCount} Cabezas` : 'Sin Identificar');
             
             return (
               <tr key={asset.id} className="hover:bg-bg-subtle/50 transition-colors">
