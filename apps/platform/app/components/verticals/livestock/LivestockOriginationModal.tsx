@@ -30,9 +30,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
       onClose()
       setIsSubmitting(false)
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    onError: (err: any) => {
-      toast.error(err.message || 'Error al mintear el activo')
+    onError: (err: unknown) => {
+      const error = err as Error;
+      toast.error(error.message || 'Error al mintear el activo')
       setIsSubmitting(false)
     }
   })
@@ -84,8 +84,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
           publicKey: cryptoProof.publicKey,
         }
       })
-    } catch (e: any) {
-       toast.error("Error generando hash criptográfico: " + e.message)
+    } catch (e: unknown) {
+       const error = e as Error;
+       toast.error("Error generando hash criptográfico: " + error.message)
        setIsSubmitting(false)
     }
   }

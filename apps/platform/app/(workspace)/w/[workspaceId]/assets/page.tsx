@@ -19,8 +19,9 @@ export default function AssetsPage() {
       toast.success('Eventos empaquetados y anclados exitosamente en Polygon Amoy')
       utils.assets.list.invalidate()
     },
-    onError: (err: any) => {
-      toast.error(err.message || 'Error en Polygon Network')
+    onError: (err: unknown) => {
+      const error = err as Error;
+      toast.error(error.message || 'Error en Polygon Network')
     }
   })
 

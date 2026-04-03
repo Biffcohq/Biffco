@@ -1,9 +1,8 @@
-import { z } from 'zod'
 import { router, protectedProcedure } from '../trpc'
 import { domainEvents, anchorsLog, anchoredEvents } from '@biffco/db/schema'
-import { env } from '@biffco/config/env'
+import { env } from '@biffco/config'
 import { TRPCError } from '@trpc/server'
-import { sql, eq, notInArray } from 'drizzle-orm'
+import { sql, notInArray } from 'drizzle-orm'
 import { MerkleTree } from '@biffco/core/crypto'
 import { ethers } from 'ethers'
 
@@ -53,15 +52,17 @@ export const anchorRouter = router({
         const contract = new ethers.Contract(env.SIMPLE_ANCHOR_ADDRESS, abi, wallet)
 
         // Enviar Transacción a la Blockchain Pública
-        const tx = await contract.anchor(rootBytes32)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const tx = await (contract as any).anchor(rootBytes32)
         
         // Esperamos 1 confirmación del nodo
         const receipt = await tx.wait(1)
         txHash = receipt.hash
-      } catch (err: any) {
+      } catch (err: unknown) {
+        const error = err as Error
         throw new TRPCError({ 
           code: "INTERNAL_SERVER_ERROR", 
-          message: `Fallo al escribir en Polygon: ${err.message}` 
+          message: `Fallo al escribir en Polygon: ${error.message}` 
         })
       }
 
