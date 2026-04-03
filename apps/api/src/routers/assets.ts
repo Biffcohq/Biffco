@@ -3,6 +3,7 @@ import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, domainEvents, workspaces } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
+import { sql } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
 import { holds } from '@biffco/db/schema'
 
@@ -107,6 +108,9 @@ export const assetsRouter = router({
 
       // Transacción ACID para asegurar Minteo puro
       const [newAsset] = await db.transaction(async (tx) => {
+        // C-01: Configurar variable de RLS para el contexto de esta transacción (conexión asegurada)
+        await tx.execute(sql`SELECT set_config('app.current_workspace', ${workspaceId}, true)`)
+
         const [insertedAsset] = await tx.insert(assets).values({
           workspaceId: workspaceId!,
           verticalId: workspace.verticalId,
