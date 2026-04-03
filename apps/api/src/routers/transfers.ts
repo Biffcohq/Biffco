@@ -1,10 +1,12 @@
 import { z } from 'zod'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { assets, assetTransfers, domainEvents, workspaces } from '@biffco/db/schema'
+import { assets, assetTransfers, domainEvents } from '@biffco/db/schema'
 import { TRPCError } from '@trpc/server'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
 import crypto from 'crypto'
+
+export const TRANSFER_EXPIRATION_HOURS = 72;
 
 export const transfersRouter = router({
   
@@ -64,7 +66,6 @@ export const transfersRouter = router({
           receiver: input.receiverWorkspaceId,
           message: 'Lote despachado'
         }
-        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex')
 
         const eventsToInsert = input.assetIds.map(assetId => ({
           workspaceId: workspaceId,
