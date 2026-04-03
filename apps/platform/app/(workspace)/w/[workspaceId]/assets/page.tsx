@@ -19,8 +19,6 @@ export default function AssetsPage() {
       const hash = data?.polygonTxHash;
       if (hash) {
         toast.success(`Anclaje Exitoso. TX: ${hash.slice(0, 10)}...`);
-        // Abrimos automáticamente PolygonScan Amoy para probar la existencia Inmutable
-        window.open(`https://amoy.polygonscan.com/tx/${hash}`, '_blank');
       } else {
         toast.success('Eventos empaquetados y anclados exitosamente');
       }

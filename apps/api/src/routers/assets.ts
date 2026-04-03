@@ -53,6 +53,28 @@ export const assetsRouter = router({
         limit: 10
       })
 
+      // Buscar si estos eventos están anclados
+      const eventIds = assetEvents.map(e => e.id)
+      let eventsWithAnchors = assetEvents as (typeof assetEvents[0] & { polygonTxHash?: string })[]
+      
+      if (eventIds.length > 0) {
+        const { anchoredEvents, anchorsLog } = await import('@biffco/db/schema')
+        const { inArray } = await import('drizzle-orm')
+        
+        // Buscar vínculos de anclaje para estos ids
+        const linkages = await ctx.db.select({
+          eventId: anchoredEvents.eventId,
+          txHash: anchorsLog.polygonTxHash
+        }).from(anchoredEvents)
+        .leftJoin(anchorsLog, eq(anchoredEvents.anchorId, anchorsLog.id))
+        .where(inArray(anchoredEvents.eventId, eventIds))
+
+        eventsWithAnchors = assetEvents.map(e => {
+          const link = linkages.find(l => l.eventId === e.id)
+          return { ...e, polygonTxHash: link?.txHash || undefined }
+        })
+      }
+
       // Traer los holds activos del activo (útil para Worst-case compliance warning)
       const assetHolds = await ctx.db.query.holds.findMany({
         where: and(
@@ -63,7 +85,7 @@ export const assetsRouter = router({
 
       return {
         ...asset,
-        events: assetEvents,
+        events: eventsWithAnchors,
         holds: assetHolds
       }
     }),

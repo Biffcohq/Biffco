@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
@@ -37,9 +37,7 @@ export default function AssetPassportPage() {
       </div>
     )
   }
-
   const verifyUrl = `https://verify.biffco.co/assets/${asset.id}`
-  const genesisHash = asset.events && asset.events.length > 0 ? asset.events[asset.events.length - 1].hash : 'N/A'
 
   return (
     <div className="flex flex-col gap-8 pb-12 animate-in fade-in duration-300 max-w-5xl mx-auto w-full">
@@ -127,6 +125,16 @@ export default function AssetPassportPage() {
                             <h4 className="font-semibold text-text-primary text-sm flex items-center gap-2">
                               {event.eventType.replace(/_/g, ' ')}
                               {isGenesis && <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
+                              {event.polygonTxHash && (
+                                <a 
+                                  href={`https://amoy.polygonscan.com/tx/${event.polygonTxHash}`} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  title="Ver Registro Inmutable en Polygon Amoy"
+                                >
+                                  <IconPolygon size={14} className="text-[#8247E5] hover:opacity-80 transition-opacity" />
+                                </a>
+                              )}
                             </h4>
                             <span className="text-xs text-text-muted tabular-nums">
                               {new Date(event.createdAt).toLocaleString()}
