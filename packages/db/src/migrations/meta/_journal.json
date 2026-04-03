@@ -50,6 +50,13 @@
       "when": 1775181158716,
       "tag": "0006_naive_piledriver",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1775255636061,
+      "tag": "0007_panoramic_yellow_claw",
+      "breakpoints": true
     }
   ]
 }
