@@ -1,4 +1,5 @@
 /* eslint-env browser */
+/* global TextEncoder, crypto */
 'use client'
 
 import React, { useState } from 'react'
