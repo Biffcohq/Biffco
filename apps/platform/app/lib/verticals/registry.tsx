@@ -2,11 +2,12 @@ import React, { lazy, Suspense } from 'react';
 
 const LivestockAssetTable = lazy(() => import('../../components/verticals/livestock/LivestockAssetTable'));
 const LivestockOriginationModal = lazy(() => import('../../components/verticals/livestock/LivestockOriginationModal'));
+const LivestockAssetProfile = lazy(() => import('../../components/verticals/livestock/LivestockAssetProfile'));
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<string, any> = {
-  'livestock': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal },
-  'bif-bovine-ar': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal }
+  'livestock': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal, AssetProfile: LivestockAssetProfile },
+  'bif-bovine-ar': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal, AssetProfile: LivestockAssetProfile }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,6 +40,23 @@ export function VerticalAssetModal({ verticalId, isOpen, onClose }: { verticalId
   return (
     <Suspense fallback={null}>
       <Modal isOpen={isOpen} onClose={onClose} />
+    </Suspense>
+  )
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function VerticalAssetProfile({ verticalId, asset }: { verticalId: string, asset: any }) {
+  const VerticalComponents = registry[verticalId];
+  if (!VerticalComponents || !VerticalComponents.AssetProfile) return (
+     <div className="bg-surface border border-border p-4 rounded-lg text-text-muted text-sm text-center">
+       Perfil biológico no disponible para la vertical <code className="bg-bg-subtle px-1 py-0.5 rounded">{verticalId}</code>
+     </div>
+  );
+
+  const Profile = VerticalComponents.AssetProfile;
+  return (
+    <Suspense fallback={<div className="animate-pulse bg-surface-raised h-48 rounded-xl w-full"></div>}>
+      <Profile asset={asset} />
     </Suspense>
   )
 }

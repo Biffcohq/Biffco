@@ -1,7 +1,11 @@
+'use client'
 import React from 'react';
+import { useRouter, useParams } from 'next/navigation';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetTable({ assets, isLoading }: { assets: any[], isLoading?: boolean }) {
+  const router = useRouter();
+  const params = useParams();
   if (isLoading) return <div className="text-text-muted p-4">Cargando rodeo...</div>;
   if (!assets || assets.length === 0) return (
     <div className="text-text-muted p-8 text-center border border-dashed border-border rounded-lg bg-bg-subtle/30">
@@ -30,8 +34,12 @@ export default function LivestockAssetTable({ assets, isLoading }: { assets: any
             const idDisplay = meta.rfid ? meta.rfid : (meta.headCount ? `${meta.headCount} Cabezas` : 'Sin Identificar');
             
             return (
-              <tr key={asset.id} className="hover:bg-bg-subtle/50 transition-colors">
-                <td className="px-4 py-4 font-mono text-xs text-text-muted/70" title={asset.id}>
+              <tr 
+                key={asset.id} 
+                onClick={() => router.push(`/w/${params.workspaceId}/assets/${asset.id}`)}
+                className="hover:bg-[var(--color-primary-subtle)] hover:cursor-pointer transition-colors relative group"
+              >
+                <td className="px-4 py-4 font-mono text-xs text-text-muted/70 group-hover:text-[var(--color-primary)] transition-colors" title={asset.id}>
                   {asset.id.slice(0, 10)}...
                 </td>
                 <td className="px-4 py-4 capitalize">{breedDisplay}</td>
