@@ -43,6 +43,13 @@
       "when": 1774812061415,
       "tag": "0005_slippery_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1775181158716,
+      "tag": "0006_naive_piledriver",
+      "breakpoints": true
     }
   ]
 }

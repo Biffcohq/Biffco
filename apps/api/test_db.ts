@@ -1,47 +1,30 @@
 import { db } from '@biffco/db'
-import { workspaces, workspaceMembers, persons, credentials } from '@biffco/db/schema'
+import { assets } from '@biffco/db/schema'
 import { createId } from '@paralleldrive/cuid2'
+import { sql } from 'drizzle-orm'
 
-async function testInsert() {
-  const workspaceId = createId()
-  const personId = createId()
-  const memberId = createId()
-  const credentialId = createId()
-
+async function tryInsert() {
   try {
-    await db.transaction(async (tx) => {
-      await tx.insert(persons).values({
-        id: personId,
-        name: "Test Name",
-        email: `test_${Date.now()}@biffco.co`,
-      })
-      await tx.insert(credentials).values({
-        id: credentialId,
-        personId,
-        passwordHash: "dummyhash123",
-      })
-      await tx.insert(workspaces).values({
-        id: workspaceId,
-        name: "Test Workspace",
-        slug: `test-ws-${Date.now()}`,
-        verticalId: "livestock",
-        plan: "free",
-        settings: { country: "AR" },
-      })
-      await tx.insert(workspaceMembers).values({
-        id: memberId,
-        workspaceId,
-        personId,
-        publicKey: "dummypublickey1234567890abcdef",
-        roles: ["admin"],
-        status: "active",
-        acceptedAt: new Date(),
-      })
-    })
-    console.log("Success!")
-  } catch (e) {
-    console.error("DB Error:", e)
+     console.log("Attempting insert...");
+     await db.transaction(async (tx) => {
+        // Mock set_config to avoid RLS error
+        await tx.execute(sql`SELECT set_config('app.current_workspace', 'qo1ujapueumrdsja50xtak9u', true)`)
+        const [res] = await tx.insert(assets).values({
+          id: createId(),
+          workspaceId: 'qo1ujapueumrdsja50xtak9u',
+          verticalId: 'bif-bovine-ar',
+          type: 'AnimalAsset',
+          status: 'ACTIVE',
+          locationId: null,
+          metadata: { test: true }
+        }).returning()
+        console.log("INSERT SUCCESS", res);
+     })
+  } catch (err: any) {
+     console.error("EXACT DB ERROR:", err.message);
+  } finally {
+     process.exit(0);
   }
 }
 
-testInsert().then(() => process.exit(0))
+tryInsert();
