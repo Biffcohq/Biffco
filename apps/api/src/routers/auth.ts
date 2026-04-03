@@ -155,14 +155,23 @@ export const authRouter = router({
         })
       }
 
-      const pack = ctx.verticalRegistry.get(input.verticalId)
+      const pack = ctx.verticalRegistry.get(input.verticalId) as any
       const finalPerms = new Set<string>(["events.read", "assets.read"])
       
       if (input.initialRoles.includes("admin")) {
         Object.values(Permission).forEach(p => finalPerms.add(p))
-        if (pack) {
-          pack.customPermissions.forEach(p => finalPerms.add(p))
-        }
+      }
+
+      if (pack && pack.actorTypesMap) {
+         input.initialRoles.forEach(rId => {
+           const actor = pack.actorTypesMap.find((a: any) => a.id === rId);
+           if (actor && actor.permissions) {
+              actor.permissions.forEach((p: string) => finalPerms.add(p))
+           }
+         })
+         if (pack.customPermissions) {
+           pack.customPermissions.forEach((p: string) => finalPerms.add(p))
+         }
       }
 
       const accessToken = await ctx.request.server.jwt.sign({
@@ -216,14 +225,28 @@ export const authRouter = router({
       const workspaceId = member.workspaceId
       const memberId = member.id
       
+      const wsArr = await db.select().from(workspaces).where(eq(workspaces.id, member.workspaceId)).limit(1)
+      const workspace = wsArr[0]
+
       const finalPerms = new Set<string>(["events.read", "assets.read"])
+      const pack = workspace ? (ctx.verticalRegistry.get(workspace.verticalId) as any) : null
+
       if (member.roles.includes("admin")) {
         Object.values(Permission).forEach(p => finalPerms.add(p))
-        const wsArr = await db.select().from(workspaces).where(eq(workspaces.id, member.workspaceId)).limit(1)
-        if (wsArr[0]) {
-           const pack = ctx.verticalRegistry.get(wsArr[0].verticalId)
-           if (pack) pack.customPermissions.forEach(p => finalPerms.add(p))
-        }
+      }
+
+      if (pack) {
+         if (pack.actorTypesMap) {
+             member.roles.forEach(rId => {
+               const actor = pack.actorTypesMap.find((a: any) => a.id === rId);
+               if (actor && actor.permissions) {
+                  actor.permissions.forEach((p: string) => finalPerms.add(p))
+               }
+             })
+         }
+         if (pack.customPermissions) {
+             pack.customPermissions.forEach((p: string) => finalPerms.add(p))
+         }
       }
 
       const accessToken = await ctx.request.server.jwt.sign({
@@ -304,10 +327,30 @@ export const authRouter = router({
         if (!member) throw new TRPCError({ code: "UNAUTHORIZED", message: "Member invalid" });
 
         const workspaceId = member.workspaceId;
+        const wsArr = await db.select().from(workspaces).where(eq(workspaces.id, workspaceId)).limit(1)
+        const workspace = wsArr[0]
+
         const personArr = await db.select().from(persons).where(eq(persons.id, member.personId)).limit(1)
+        
         const finalPerms = new Set<string>(["events.read", "assets.read"])
+        const pack = workspace ? (ctx.verticalRegistry.get(workspace.verticalId) as any) : null
+
         if (member.roles.includes("admin")) {
           Object.values(Permission).forEach(p => finalPerms.add(p))
+        }
+
+        if (pack) {
+           if (pack.actorTypesMap) {
+               member.roles.forEach(rId => {
+                 const actor = pack.actorTypesMap.find((a: any) => a.id === rId);
+                 if (actor && actor.permissions) {
+                    actor.permissions.forEach((p: string) => finalPerms.add(p))
+                 }
+               })
+           }
+           if (pack.customPermissions) {
+               pack.customPermissions.forEach((p: string) => finalPerms.add(p))
+           }
         }
 
         const personName = personArr[0]?.name || "Usuario";
