@@ -1,305 +1,211 @@
-/* global console */
-/* eslint-env node */
-import { z } from 'zod';
-import { router, protectedProcedure, requirePermission } from '../trpc';
-import { assets, transferOffers, domainEvents, workspaces } from '@biffco/db/schema';
-import { TRPCError } from '@trpc/server';
-import { and, eq } from '@biffco/db';
-import { sendEmail, TransferOfferEmail } from '@biffco/email';
-import { Permission } from '@biffco/core/rbac';
-
-import crypto from 'crypto';
-
-export const TRANSFER_EXPIRATION_HOURS = 72;
+import { z } from 'zod'
+import { router, protectedProcedure, requirePermission } from '../trpc'
+import { assets, assetTransfers, domainEvents, workspaces } from '@biffco/db/schema'
+import { TRPCError } from '@trpc/server'
+import { and, eq, inArray } from 'drizzle-orm'
+import { Permission } from '@biffco/core/rbac'
+import crypto from 'crypto'
 
 export const transfersRouter = router({
-  createOffer: requirePermission(Permission.TRANSFERS_INITIATE)
+  
+  // 1. Productor inicia el documento de traslado (Carta de Porte)
+  createDraft: requirePermission(Permission.TRANSFERS_INITIATE)
     .input(z.object({
-      assetId: z.string().min(1),
-      toWorkspaceId: z.string().min(1),
-      groupId: z.string().optional(),
-      conditions: z.record(z.any()).default({}),
+      assetIds: z.array(z.string()).min(1),
+      carrierWorkspaceId: z.string().optional(),
+      receiverWorkspaceId: z.string().min(1),
       signature: z.string().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const { db, workspaceId, memberId } = ctx;
-
-      if (!workspaceId) {
-        throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Missing Workspace' });
-      }
-
-      // 1. Verificar tenencia del activo por el remitente
-      const asset = await db.query.assets.findFirst({
+      const { db, workspaceId, memberId } = ctx
+      
+      if (!workspaceId) throw new TRPCError({ code: 'UNAUTHORIZED' })
+      
+      // Controlar tenencia de todos los activos
+      const targetAssets = await db.query.assets.findMany({
         where: and(
-          eq(assets.id, input.assetId),
+          inArray(assets.id, input.assetIds),
           eq(assets.workspaceId, workspaceId)
         )
-      });
+      })
 
-      if (!asset) {
-        throw new TRPCError({
-          code: 'NOT_FOUND',
-          message: 'Activo no encontrado o no pertenece a tu espacio de trabajo.'
-        });
+      if (targetAssets.length !== input.assetIds.length) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "No posees algunos de los activos solicitados." })
       }
 
-      // 2. Comprobar que el activo no está bloqueado
-      if (asset.status !== 'active') {
-        throw new TRPCError({
-          code: 'PRECONDITION_FAILED',
-          message: `El activo no puede transferirse porque su estado actual es '${asset.status}'.`
-        });
+      // Validar que no estén bloqueados
+      const invalidAssets = targetAssets.filter(a => a.status !== 'active' && a.status !== 'ACTIVE')
+      if (invalidAssets.length > 0) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "Algunos activos están bloqueados o ya en tránsito." })
       }
 
-      // 3. Crear transacción atómica
       return await db.transaction(async (tx) => {
-        // A. Insertar la oferta pendiente
-        const [offer] = await tx.insert(transferOffers).values({
-          fromWorkspaceId: workspaceId,
-          toWorkspaceId: input.toWorkspaceId,
-          assetId: input.assetId,
-          status: 'pending',
-          conditions: input.conditions,
-        }).returning();
-
-        if (!offer) {
-          throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Fallo al generar la oferta en la base de datos.' });
-        }
-
-        // B. Bloquear el Activo
+        // Bloquear todos los activos
         await tx.update(assets)
-          .set({ 
-            status: 'locked_for_transfer', 
-            updatedAt: new Date() 
-          })
-          .where(eq(assets.id, input.assetId));
+          .set({ status: 'IN_TRANSIT', updatedAt: new Date() })
+          .where(inArray(assets.id, input.assetIds))
 
+        // Crear la transferencia trilateral
+        const [transfer] = await tx.insert(assetTransfers).values({
+          senderWorkspaceId: workspaceId,
+          carrierWorkspaceId: input.carrierWorkspaceId || null,
+          receiverWorkspaceId: input.receiverWorkspaceId,
+          assetIds: input.assetIds,
+          status: 'PENDING_CARRIER_ACCEPTANCE',
+          dispatchedAt: new Date()
+        }).returning()
+
+        if (!transfer) throw new Error("Falla al generar registro")
+
+        // Generar evento Criptográfico Inmutable
         const eventData = {
-          offerId: offer.id,
-          toWorkspaceId: input.toWorkspaceId,
-          message: 'Iniciada transferencia criptográfica de custodia',
-        };
-        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
+          transferId: transfer.id,
+          carrier: input.carrierWorkspaceId,
+          receiver: input.receiverWorkspaceId,
+          message: 'Lote despachado'
+        }
+        const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex')
 
-        // C. Generar la Evidencia de Transferencia
-        await tx.insert(domainEvents).values({
+        const eventsToInsert = input.assetIds.map(assetId => ({
           workspaceId: workspaceId,
-          streamId: input.assetId,
+          streamId: assetId,
           streamType: 'asset',
-          eventType: 'TRANSFER_OFFER_CREATED',
-          hash: hashDigest, // (A-05 Remediado)
-          previousHash: null,
+          eventType: 'ASSET_DISPATCHED',
+          hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventData, animal: assetId })).digest('hex'),
           data: eventData,
           signerId: memberId || 'system',
           signature: input.signature,
-        });
+        }))
 
-        // D. Preparar datos paralelos para el Email SDK
-        const [senderWs, targetWs] = await Promise.all([
-           db.query.workspaces.findFirst({ where: eq(workspaces.id, workspaceId) }),
-           db.query.workspaces.findFirst({ where: eq(workspaces.id, input.toWorkspaceId) })
-        ]);
+        await tx.insert(domainEvents).values(eventsToInsert)
 
-        if (senderWs && targetWs) {
-           sendEmail({
-             to: `admin@workspace-${targetWs.id}.biffco.co`, // Destino del Receiver Mock
-             subject: `Nueva oferta de transferencia B2B de ${senderWs.name}`,
-             component: TransferOfferEmail,
-             props: {
-               senderWorkspaceName: senderWs.name || 'Productor',
-               targetWorkspaceName: targetWs.name || 'Receptor',
-               assetCount: 1, // Por ahora createOffer acepta 1 activo
-               offerId: offer.id,
-               expiresAt: `${TRANSFER_EXPIRATION_HOURS} horas`
-             }
-           }).catch(err => {
-             console.error("[Email SDK Failed]", err);
-           });
+        return { success: true, transferId: transfer.id }
+      })
+    }),
+
+  // 2. Transportista recoge los Activos
+  carrierAccept: protectedProcedure
+    .input(z.object({
+      transferId: z.string().min(1),
+      signature: z.string().optional()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { db, workspaceId, memberId } = ctx
+      
+      const transfer = await db.query.assetTransfers.findFirst({
+        where: and(
+          eq(assetTransfers.id, input.transferId),
+          eq(assetTransfers.carrierWorkspaceId, workspaceId!)
+        )
+      })
+
+      if (!transfer) throw new TRPCError({ code: 'NOT_FOUND', message: 'No eres el transportista asignado' })
+      if (transfer.status !== 'PENDING_CARRIER_ACCEPTANCE') throw new TRPCError({ code: 'PRECONDITION_FAILED' })
+
+      return await db.transaction(async (tx) => {
+        await tx.update(assetTransfers)
+          .set({ status: 'IN_TRANSIT', carrierAcceptedAt: new Date() })
+          .where(eq(assetTransfers.id, transfer.id))
+
+        const eventData = { transferId: transfer.id, message: 'Carga escaneada y en el camión' }
+        const eventsToInsert = (transfer.assetIds as string[]).map(assetId => ({
+          workspaceId: transfer.senderWorkspaceId, // Seguimos impactando el historial del origen
+          streamId: assetId,
+          streamType: 'asset',
+          eventType: 'ASSET_TRANSIT_SCAN',
+          hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventData, animal: assetId })).digest('hex'),
+          data: eventData,
+          signerId: memberId || 'system',
+          signature: input.signature,
+        }))
+        await tx.insert(domainEvents).values(eventsToInsert)
+
+        return { success: true }
+      })
+    }),
+
+  // 3. Frigorífico evalúa y resuelve
+  destinationResolve: requirePermission(Permission.TRANSFERS_ACCEPT)
+    .input(z.object({
+      transferId: z.string().min(1),
+      action: z.enum(['ACCEPT', 'REJECT']),
+      reason: z.string().optional(),
+      signature: z.string().optional()
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const { db, workspaceId, memberId } = ctx
+      
+      const transfer = await db.query.assetTransfers.findFirst({
+        where: and(
+          eq(assetTransfers.id, input.transferId),
+          eq(assetTransfers.receiverWorkspaceId, workspaceId!) // OJO, workspaceId es el Destino
+        )
+      })
+
+      if (!transfer) throw new TRPCError({ code: 'NOT_FOUND', message: 'Manifiesto de carga ajeno' })
+      if (transfer.status !== 'IN_TRANSIT') throw new TRPCError({ code: 'PRECONDITION_FAILED' })
+
+      return await db.transaction(async (tx) => {
+        const isAccept = input.action === 'ACCEPT'
+        
+        await tx.update(assetTransfers)
+          .set({ 
+            status: isAccept ? 'COMPLETED' : 'REJECTED',
+            receivedAt: isAccept ? new Date() : null,
+            rejectedAt: !isAccept ? new Date() : null,
+            metadata: { ...transfer.metadata as object, rejectReason: input.reason }
+          })
+          .where(eq(assetTransfers.id, transfer.id))
+
+        if (isAccept) {
+           // Transferir de dueño real
+           await tx.update(assets)
+             .set({ workspaceId: workspaceId!, status: 'ACTIVE', updatedAt: new Date() })
+             .where(inArray(assets.id, transfer.assetIds as string[])) // Mueve las vacas al Frigorífico
+        } else {
+           // Si rechaza, caemos a DISPUTED logísticamente pero le devuelvo el control transaccional como HOLD al origen (O lo dejamos bloqueado IN_TRANSIT)
+           // Actualizamos estado a hold/disputa para la UI del Productor Original
+           await tx.update(assets)
+             .set({ status: 'DISPUTED', updatedAt: new Date() })
+             .where(inArray(assets.id, transfer.assetIds as string[]))
         }
 
-        return {
-          success: true,
-          offerId: offer.id,
-          message: 'Oferta de transferencia generada exitosamente. Notificación asincrónica en camino.'
-        };
-      });
+        const eventData = { transferId: transfer.id, action: input.action, reason: input.reason }
+        const eventsToInsert = (transfer.assetIds as string[]).map(assetId => ({
+          workspaceId: workspaceId,
+          streamId: assetId,
+          streamType: 'asset',
+          eventType: isAccept ? 'ASSET_RECEIVED' : 'ASSET_REJECTED',
+          hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventData, animal: assetId })).digest('hex'),
+          data: eventData,
+          signerId: memberId || 'system',
+          signature: input.signature,
+        }))
+        await tx.insert(domainEvents).values(eventsToInsert)
+
+        return { success: true, newStatus: isAccept ? 'COMPLETED' : 'REJECTED' }
+      })
     }),
 
-  listIncoming: protectedProcedure
-    .query(async ({ ctx }) => {
-       const { db, workspaceId } = ctx;
-       return await db.query.transferOffers.findMany({
-          where: eq(transferOffers.toWorkspaceId, workspaceId!),
-          orderBy: (offers, { desc }) => [desc(offers.createdAt)]
-       });
-    }),
-
-  listOutgoing: protectedProcedure
-    .query(async ({ ctx }) => {
-       const { db, workspaceId } = ctx;
-       return await db.query.transferOffers.findMany({
-          where: eq(transferOffers.fromWorkspaceId, workspaceId!),
-          orderBy: (offers, { desc }) => [desc(offers.createdAt)]
-       });
-    }),
-
-  acceptOffer: requirePermission(Permission.TRANSFERS_ACCEPT)
-    .input(z.object({
-       offerId: z.string().min(1),
-       signature: z.string().optional() // Mock Ed25519 payload
-    }))
-    .mutation(async ({ ctx, input }) => {
-       const { db, workspaceId, memberId } = ctx;
-
-       if (!workspaceId) throw new TRPCError({ code: 'UNAUTHORIZED' });
-
-       // 1. Verificar la oferta
-       const offer = await db.query.transferOffers.findFirst({
-         where: and(
-           eq(transferOffers.id, input.offerId),
-           eq(transferOffers.toWorkspaceId, workspaceId)
-         )
-       });
-
-       if (!offer) {
-         throw new TRPCError({ code: 'NOT_FOUND', message: 'Oferta no encontrada o no te pertenece.' });
-       }
-       if (offer.status !== 'pending') {
-         throw new TRPCError({ code: 'PRECONDITION_FAILED', message: `La oferta ya se encuentra en estado: ${offer.status}` });
-       }
-
-       // 2. Transacción Atómica de Titularidad
-       return await db.transaction(async (tx) => {
-          // A. Completar la oferta
-          await tx.update(transferOffers)
-            .set({ status: 'completed', resolvedAt: new Date() })
-            .where(eq(transferOffers.id, offer.id));
-
-          // B. Transferencia del Activo (WorkspaceId change)
-          await tx.update(assets)
-            .set({ 
-              workspaceId: workspaceId, 
-              status: 'active', // Liberar bloqueo
-              updatedAt: new Date()
-            })
-            .where(eq(assets.id, offer.assetId));
-
-          const eventData = {
-            offerId: offer.id,
-            fromWorkspaceId: offer.fromWorkspaceId,
-            message: 'Propiedad y custodia criptográfica transferida exitosamente',
-          };
-          const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
-
-          // C. Sellar el Historial (Event Sourcing)
-          await tx.insert(domainEvents).values({
-            workspaceId: workspaceId,
-            streamId: offer.assetId,
-            streamType: 'asset',
-            eventType: 'TRANSFER_ACCEPTED',
-            hash: hashDigest, // (A-05 Remediado)
-            previousHash: null,
-            data: eventData,
-            signerId: memberId || 'system',
-            signature: input.signature,
-          });
-
-          return { success: true, message: '¡Transferencia aceptada! El activo ahora está en tu Workspace.' };
-       });
-    }),
-
-  rejectOffer: requirePermission(Permission.TRANSFERS_REJECT)
-    .input(z.object({
-       offerId: z.string().min(1),
-       reason: z.string().optional()
-    }))
-    .mutation(async ({ ctx, input }) => {
-       const { db, workspaceId, memberId } = ctx;
-
-       if (!workspaceId) throw new TRPCError({ code: 'UNAUTHORIZED' });
-
-       const offer = await db.query.transferOffers.findFirst({
-         where: and(
-           eq(transferOffers.id, input.offerId),
-           eq(transferOffers.toWorkspaceId, workspaceId)
-         )
-       });
-
-       if (!offer) throw new TRPCError({ code: 'NOT_FOUND', message: 'Oferta no encontrada o no te pertenece.' });
-       if (offer.status !== 'pending') throw new TRPCError({ code: 'PRECONDITION_FAILED', message: `Oferta en estado inválido (${offer.status})` });
-
-       return await db.transaction(async (tx) => {
-          const safeConditions = typeof offer.conditions === 'object' && offer.conditions !== null ? offer.conditions : {};
-          
-          await tx.update(transferOffers)
-            .set({ status: 'rejected', resolvedAt: new Date(), conditions: { ...safeConditions, rejectReason: input.reason } })
-            .where(eq(transferOffers.id, offer.id));
-
-          await tx.update(assets)
-            .set({ status: 'active', updatedAt: new Date() })
-            .where(eq(assets.id, offer.assetId));
-
-          const eventData = { offerId: offer.id, reason: input.reason };
-          const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
-
-          await tx.insert(domainEvents).values({
-            workspaceId: offer.fromWorkspaceId,
-            streamId: offer.assetId,
-            streamType: 'asset',
-            eventType: 'TRANSFER_REJECTED',
-            hash: hashDigest, // (A-05 Remediado)
-            data: eventData,
-            signerId: memberId || 'system',
-          });
-
-          // Hack/Mock para el envío de Email
-          console.log(`[EMAIL DISPATCH MOCK] -> Enviando Resend a ${offer.fromWorkspaceId}: "Tu transferencia ha sido rechazada por el receptor."`);
-
-          return { success: true, message: 'Transferencia rechazada.' };
-       });
-    }),
-
-  expireOffers: protectedProcedure // Puede ser publicProcedure o authServer en un worker
-    .mutation(async ({ ctx }) => {
-       const { db } = ctx;
-       
-       // Buscar ofertas pending mayores al TTL
-       const expirationLimit = new Date(Date.now() - TRANSFER_EXPIRATION_HOURS * 60 * 60 * 1000);
-       // Fetch first for SQLite/PG compatibility without complex Drizzle operators here
-       const pendingOffers = await db.query.transferOffers.findMany({
-         where: eq(transferOffers.status, 'pending')
-       });
-
-       const expired = pendingOffers.filter(o => new Date(o.createdAt) < expirationLimit);
-       if (expired.length === 0) return { expiredCount: 0 };
-
-       await db.transaction(async (tx) => {
-         for (const offer of expired) {
-           await tx.update(transferOffers)
-             .set({ status: 'cancelled', resolvedAt: new Date() })
-             .where(eq(transferOffers.id, offer.id));
-
-           await tx.update(assets)
-             .set({ status: 'active', updatedAt: new Date() })
-             .where(eq(assets.id, offer.assetId));
-
-           const eventData = { offerId: offer.id, message: `La oferta excedió el TTL de ${TRANSFER_EXPIRATION_HOURS} horas.` };
-           const hashDigest = crypto.createHash('sha256').update(JSON.stringify(eventData)).digest('hex');
-           
-           await tx.insert(domainEvents).values({
-             workspaceId: offer.fromWorkspaceId,
-             streamId: offer.assetId,
-             streamType: 'asset',
-             eventType: 'TRANSFER_EXPIRED',
-             hash: hashDigest,
-             data: eventData,
-             signerId: 'system-cron',
-           });
-           
-           console.log(`[EMAIL DISPATCH MOCK] -> Expired offer notify to ${offer.fromWorkspaceId}`);
-         }
-       });
-
-       return { expiredCount: expired.length, message: `Se limpiaron ${expired.length} transferencias vencidas.` };
+  // Queries para Interfaces Logísticas
+  listIncomingLogistics: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.assetTransfers.findMany({
+      where: eq(assetTransfers.receiverWorkspaceId, ctx.workspaceId!),
+      orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
     })
-});
+  }),
+
+  listOutgoingLogistics: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.assetTransfers.findMany({
+      where: eq(assetTransfers.senderWorkspaceId, ctx.workspaceId!),
+      orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
+    })
+  }),
+
+  listAsCarrier: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.assetTransfers.findMany({
+      where: eq(assetTransfers.carrierWorkspaceId, ctx.workspaceId!),
+      orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
+    })
+  }),
+})
