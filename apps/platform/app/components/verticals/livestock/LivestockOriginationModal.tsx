@@ -1,3 +1,4 @@
+/* eslint-env browser */
 'use client'
 
 import React, { useState } from 'react'
@@ -28,7 +29,8 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
       onClose()
       setIsSubmitting(false)
     },
-    onError: (err) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (err: any) => {
       toast.error(err.message || 'Error al mintear el activo')
       setIsSubmitting(false)
     }
@@ -38,9 +40,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const generatePayloadHash = async (payload: any) => {
     const text = JSON.stringify(payload, Object.keys(payload).sort())
-    const encoder = new window.TextEncoder()
+    const encoder = new TextEncoder()
     const data = encoder.encode(text)
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
   }
@@ -84,9 +86,10 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
     <Modal open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <ModalContent className="sm:max-w-[500px]">
         <ModalHeader>
+          {/* @ts-expect-error type inference from DialogPrimitive */}
           <ModalTitle>Originación de Activo (Vaca)</ModalTitle>
         </ModalHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 mt-2">
+        <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="flex flex-col gap-5 mt-2">
           <div className="bg-surface-raised border border-border rounded-lg p-4 flex gap-3 text-sm text-text-secondary items-start">
              <IconHash className="shrink-0 text-primary mt-0.5" size={20} />
              <p>
@@ -128,8 +131,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
 
           <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border">
             <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
-            <Button type="submit" isLoading={isSubmitting} className="bg-primary text-white">
-              <IconBox size={18} className="mr-2" /> Mintear en Cadena
+            <Button type="submit" disabled={isSubmitting} className={isSubmitting ? "opacity-70 bg-primary text-white" : "bg-primary text-white"}>
+              <IconBox size={18} className="mr-2" /> 
+              {isSubmitting ? "Minteando..." : "Mintear en Cadena"}
             </Button>
           </div>
         </form>
