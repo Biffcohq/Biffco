@@ -5,12 +5,13 @@ import { trpc } from '@/lib/trpc'
 import { Button, toast } from '@biffco/ui'
 import { useState } from 'react'
 // eslint-disable-next-line no-restricted-imports
-import { VerticalAssetTable } from '../../../../lib/verticals/registry'
+import { VerticalAssetTable, VerticalAssetModal } from '../../../../lib/verticals/registry'
 
 export default function AssetsPage() {
   const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
   const { data: assetsList, isLoading } = trpc.assets.list.useQuery()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const filteredAssets = filter === 'active' 
     ? assetsList?.filter(a => a.status === 'ACTIVE') 
@@ -30,7 +31,7 @@ export default function AssetsPage() {
           <p className="text-text-secondary text-sm">Registro inmutable de unidades trazables físicas o lógicas dentro de tu cadena de suministro.</p>
         </div>
         <Button 
-          onClick={() => toast.info("Modal de originación de Activos dependiente del Vertical Pack instalado en este Workspace.")}
+          onClick={() => setIsModalOpen(true)}
           className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
         >
           <IconPlus size={18} />
@@ -68,6 +69,13 @@ export default function AssetsPage() {
           isLoading={isLoading} 
         />
       </div>
+
+      {/* Originacion Activos */}
+      <VerticalAssetModal 
+        verticalId={verticalId}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   )
 }

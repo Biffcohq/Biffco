@@ -74,7 +74,14 @@ export const assetsRouter = router({
       initialState: z.record(z.unknown()), // Estado inicial dinámico manejado por el VerticalPack
       externalId: z.string().optional(),
       facilityId: z.string().optional(),
-      penId: z.string().optional()
+      penId: z.string().optional(),
+      genesisEvent: z.object({
+        eventType: z.string(),
+        payload: z.record(z.unknown()),
+        signature: z.string().optional(),
+        publicKey: z.string().optional(),
+        hash: z.string()
+      }).optional()
     }))
     .mutation(async ({ input, ctx }) => {
       const { db, workspaceId, verticalRegistry } = ctx
@@ -88,19 +95,47 @@ export const assetsRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: `Tipo de activo "${input.type}" no válido para el vertical "${workspace.verticalId}"` })
       }
 
-      const [newAsset] = await ctx.db.insert(assets).values({
-        workspaceId: workspaceId!,
-        verticalId: workspace.verticalId,
-        type: input.type,
-        status: "ACTIVE", // Estatus por default al crear
-        locationId: input.facilityId || input.penId || null,
-        metadata: {
-          initialState: input.initialState,
-          externalId: input.externalId,
-          facilityId: input.facilityId,
-          penId: input.penId
-        } as Record<string, unknown>
-      }).returning()
+      // Validar firma del evento inicial si se provee
+      if (input.genesisEvent?.signature && input.genesisEvent?.publicKey) {
+         const { verifyEvent } = await import('@biffco/core/crypto');
+         // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         const isValidSignature = await verifyEvent(input.genesisEvent.payload as any, input.genesisEvent.signature, input.genesisEvent.publicKey);
+         if (!isValidSignature) {
+           throw new TRPCError({ code: "UNAUTHORIZED", message: "Firma Criptográfica Inválida en Evento Semilla" })
+         }
+      }
+
+      // Transacción ACID para asegurar Minteo puro
+      const [newAsset] = await db.transaction(async (tx) => {
+        const [insertedAsset] = await tx.insert(assets).values({
+          workspaceId: workspaceId!,
+          verticalId: workspace.verticalId,
+          type: input.type,
+          status: "ACTIVE", // Estatus por default al crear
+          locationId: input.facilityId || input.penId || null,
+          metadata: {
+            initialState: input.initialState,
+            externalId: input.externalId,
+            facilityId: input.facilityId,
+            penId: input.penId
+          } as Record<string, unknown>
+        }).returning()
+
+        if (input.genesisEvent) {
+          await tx.insert(domainEvents).values({
+            workspaceId: workspaceId!,
+            streamId: insertedAsset.id,
+            streamType: 'asset',
+            eventType: input.genesisEvent.eventType,
+            data: input.genesisEvent.payload,
+            signature: input.genesisEvent.signature,
+            hash: input.genesisEvent.hash,
+            signerId: ctx.memberId || "system"
+          })
+        }
+
+        return [insertedAsset]
+      })
       
       return newAsset
     }),
