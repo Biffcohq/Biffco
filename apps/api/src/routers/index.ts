@@ -18,6 +18,7 @@ import { uploadRouter } from './upload'
 import { verifyRouter } from './verify'
 import { transfersRouter } from './transfers'
 import { transformRouter } from './transform'
+import { anchorRouter } from './anchor'
 
 export const appRouter = router({
   auth: authRouter,
@@ -39,6 +40,7 @@ export const appRouter = router({
   transfers: transfersRouter,
   verticals: verticalsRouter,
   transform: transformRouter,
+  anchor: anchorRouter,
 })
 
 export type AppRouter = typeof appRouter

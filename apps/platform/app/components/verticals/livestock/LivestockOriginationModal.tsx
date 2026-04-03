@@ -6,8 +6,8 @@ import React, { useState } from 'react'
 import { Modal, ModalContent, ModalHeader, ModalTitle, Button, Input, toast } from '@biffco/ui'
 import { useForm } from 'react-hook-form'
 import { trpc } from '@/lib/trpc'
-import { IconBox, IconHash } from '@tabler/icons-react'
-// import { useAuthStore } from '@/app/stores/useAuthStore'
+import { IconKey } from '@tabler/icons-react'
+import { useBiffcoKMS } from '../../../lib/crypto/useBiffcoKMS'
 // createHash removed
 
 type FormData = {
@@ -19,7 +19,7 @@ type FormData = {
 export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const utils = trpc.useUtils()
-  // const { publicKey } = useAuthStore() // Se usaría luego con KMS
+  const { isReady: isKmsReady, signPayload, publicKey } = useBiffcoKMS()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const mutation = trpc.assets.create.useMutation({
@@ -38,14 +38,21 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
   })
 
   // Generador de Hash simple (SHA-256) del Payload del Evento
+  // Generador de Firma del Payload del Evento usando KMS
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const generatePayloadHash = async (payload: any) => {
+  const processEventSignature = async (payload: any) => {
+    // Si bien el backend pide el hash puro también, el signPayload se encarga matemáticamente de blindarlo.
+    const sigData = await signPayload(payload);
+    
+    // Hash local manual (Sha-256 fallback para validadores visuales)
     const text = JSON.stringify(payload, Object.keys(payload).sort())
     const encoder = new TextEncoder()
     const data = encoder.encode(text)
     const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    const rawHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+
+    return { ...sigData, hash: rawHash }
   }
 
   const onSubmit = async (data: FormData) => {
@@ -62,7 +69,7 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
     }
 
     try {
-      const hash = await generatePayloadHash(payload)
+      const cryptoProof = await processEventSignature(payload)
 
       // Ejecutar la creación en el Core con la Transacción ACID
       mutation.mutate({
@@ -72,9 +79,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
         genesisEvent: {
           eventType: 'LIVESTOCK_ORIGINATED',
           payload: payload,
-          hash: hash,
-          // signature y publicKey quedan como undefined por ahora (System-Signed)
-          // hasta que integremos el Hook de LocalStorage KMS de Biffco.
+          hash: cryptoProof.hash,
+          signature: cryptoProof.signature,
+          publicKey: cryptoProof.publicKey,
         }
       })
     } catch (e: any) {
@@ -92,10 +99,17 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
         </ModalHeader>
         <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="flex flex-col gap-5 mt-2">
           <div className="bg-surface-raised border border-border rounded-lg p-4 flex gap-3 text-sm text-text-secondary items-start">
-             <IconHash className="shrink-0 text-primary mt-0.5" size={20} />
-             <p>
-               Este proceso creará una identidad inmutable en el Ledger y minteará el bloque <span className="font-mono text-text-primary bg-surface p-0.5 rounded">0</span> (Génesis) para este animal.
-             </p>
+             <IconKey className="shrink-0 text-primary mt-0.5" size={20} />
+             <div className="flex flex-col gap-1">
+               <p>
+                 Este proceso creará una identidad inmutable en el Ledger y minteará el bloque <span className="font-mono text-text-primary bg-surface p-0.5 rounded">0</span> (Génesis) para este animal.
+               </p>
+               {publicKey && (
+                 <p className="text-xs bg-bg-subtle p-1.5 rounded font-mono break-all mt-1 border border-border/40">
+                   Firma Local: <span className="text-primary">{publicKey.slice(0,16)}...</span>
+                 </p>
+               )}
+             </div>
           </div>
 
           <div className="flex flex-col gap-2">
@@ -132,9 +146,9 @@ export default function LivestockOriginationModal({ isOpen, onClose }: { isOpen:
 
           <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-border">
             <Button type="button" variant="ghost" onClick={onClose} disabled={isSubmitting}>Cancelar</Button>
-            <Button type="submit" disabled={isSubmitting} className={isSubmitting ? "opacity-70 bg-primary text-white" : "bg-primary text-white"}>
-              <IconBox size={18} className="mr-2" /> 
-              {isSubmitting ? "Minteando..." : "Mintear en Cadena"}
+            <Button type="submit" disabled={isSubmitting || !isKmsReady} className={isSubmitting ? "opacity-70 bg-primary text-white" : "bg-primary text-white"}>
+              <IconKey size={18} className="mr-2" /> 
+              {isSubmitting ? "Firmando y Minteando..." : "Firmar Evento y Mintear"}
             </Button>
           </div>
         </form>

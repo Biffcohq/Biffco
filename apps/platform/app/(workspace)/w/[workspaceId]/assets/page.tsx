@@ -1,6 +1,6 @@
 "use client"
 
-import { IconBox, IconPlus } from '@tabler/icons-react'
+import { IconBox, IconPlus, IconPolygon } from '@tabler/icons-react'
 import { trpc } from '@/lib/trpc'
 import { Button, toast } from '@biffco/ui'
 import { useState } from 'react'
@@ -12,6 +12,17 @@ export default function AssetsPage() {
   const { data: assetsList, isLoading } = trpc.assets.list.useQuery()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
   const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const utils = trpc.useUtils()
+  const anchorMutation = trpc.anchor.triggerBatch.useMutation({
+    onSuccess: () => {
+      toast.success('Eventos empaquetados y anclados exitosamente en Polygon Amoy')
+      utils.assets.list.invalidate()
+    },
+    onError: (err: any) => {
+      toast.error(err.message || 'Error en Polygon Network')
+    }
+  })
 
   const filteredAssets = filter === 'active' 
     ? assetsList?.filter(a => a.status === 'ACTIVE') 
@@ -30,13 +41,24 @@ export default function AssetsPage() {
           </h1>
           <p className="text-text-secondary text-sm">Registro inmutable de unidades trazables físicas o lógicas dentro de tu cadena de suministro.</p>
         </div>
-        <Button 
-          onClick={() => setIsModalOpen(true)}
-          className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
-        >
-          <IconPlus size={18} />
-          Registrar / Importar Activos
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button 
+            variant="outline"
+            disabled={anchorMutation.isPending}
+            onClick={() => anchorMutation.mutate()}
+            className="whitespace-nowrap text-text-primary hover:bg-surface-raised border-border/80 text-sm"
+          >
+            <IconPolygon size={16} className={anchorMutation.isPending ? "animate-spin text-primary" : "text-[#8247E5]"} />
+            {anchorMutation.isPending ? "Contactando SC..." : "Forzar Anclaje (Merkle)"}
+          </Button>
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            className="whitespace-nowrap w-fit bg-primary text-white hover:bg-primary-dark"
+          >
+            <IconPlus size={18} />
+            Registrar / Importar Activos
+          </Button>
+        </div>
       </div>
 
       {/* Toolbar */}
