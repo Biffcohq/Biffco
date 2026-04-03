@@ -1,8 +1,8 @@
 import { router, protectedProcedure } from '../trpc'
-import { domainEvents, anchorsLog, anchoredEvents, assets } from '@biffco/db/schema'
+import { domainEvents, anchorsLog, anchoredEvents } from '@biffco/db/schema'
 import { env } from '@biffco/config'
 import { TRPCError } from '@trpc/server'
-import { sql, notInArray, inArray } from 'drizzle-orm'
+import { sql, notInArray } from 'drizzle-orm'
 import { MerkleTree } from '@biffco/core/crypto'
 import { ethers } from 'ethers'
 
