@@ -17,12 +17,15 @@ export function useBiffcoKMS() {
       }
 
       // En fase demo usamos workspace 0, user 0. A futuro extraemos del Context.
-      const { privateKey, publicKey } = deriveKeyFromMnemonic(mnemonic, 0, 0)
+      const { privateKey } = deriveKeyFromMnemonic(mnemonic, 0, 0)
       
-      // Convertir publicKey a Hex
-      const crypto = await import('@biffco/core/crypto') // Asegurar imports si hay libsodium errors de sync
-      // Actually publicKey is Uint8Array, we can convert it to hex manually or using libsodium
-      const pubHex = Array.from(publicKey).map(b => b.toString(16).padStart(2, '0')).join('')
+      // Asegurar sincronicidad estricta entre la clave de firmado (libsodium) y la clave devuelta.
+      // hd-key a veces devuelve prefijos '00' de sign bit que rompen el crypto de Curve25519 original.
+      const _sodium = (await import('libsodium-wrappers')).default
+      await _sodium.ready
+      
+      const kp = _sodium.crypto_sign_seed_keypair(privateKey)
+      const pubHex = _sodium.to_hex(kp.publicKey)
       
       setKeys({
         privateKey,
