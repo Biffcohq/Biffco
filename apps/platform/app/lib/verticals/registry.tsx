@@ -4,9 +4,8 @@ const LivestockAssetTable = lazy(() => import('../../components/verticals/livest
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<string, any> = {
-  livestock: {
-    AssetTable: LivestockAssetTable
-  }
+  'livestock': { AssetTable: LivestockAssetTable },
+  'bif-bovine-ar': { AssetTable: LivestockAssetTable }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

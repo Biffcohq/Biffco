@@ -4,14 +4,18 @@ import { IconBox, IconPlus, IconActivity, IconAlertCircle } from '@tabler/icons-
 import { trpc } from '@/lib/trpc'
 import { Skeleton, Button, Badge, toast } from '@biffco/ui'
 import { useState } from 'react'
+import { VerticalAssetTable } from '../../../../../../lib/verticals/registry'
 
 export default function AssetsPage() {
+  const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
   const { data: assetsList, isLoading } = trpc.assets.list.useQuery()
   const [filter, setFilter] = useState<'all' | 'active'>('all')
 
   const filteredAssets = filter === 'active' 
     ? assetsList?.filter(a => a.status === 'ACTIVE') 
     : assetsList
+
+  const verticalId = workspaceData?.verticalId || 'livestock'; // Fallback mientras impacta migracion
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in duration-300">
@@ -55,52 +59,13 @@ export default function AssetsPage() {
          </div>
       </div>
 
-      {/* Grid list */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-8">
-        {isLoading ? (
-          Array(8).fill(0).map((_, i) => <Skeleton key={i} className="h-32 w-full rounded-xl" />)
-        ) : filteredAssets && filteredAssets.length > 0 ? (
-          filteredAssets.map((asset) => (
-             <div 
-               key={asset.id}
-               className="bg-surface border border-border rounded-xl p-4 flex flex-col gap-3 shadow-sm hover:shadow-md hover:border-primary/40 cursor-pointer transition-all group"
-             >
-                <div className="flex justify-between items-start">
-                   <div className="flex items-center justify-center size-10 rounded-lg bg-surface-raised border border-border text-text-secondary group-hover:text-primary transition-colors">
-                      <IconBox size={20} stroke={1.5} />
-                   </div>
-                   <Badge variant={asset.status === 'ACTIVE' ? 'blue' : 'gray'}>
-                     {asset.status}
-                   </Badge>
-                </div>
-                
-                <div className="mt-1">
-                   <h3 className="font-semibold text-text-primary text-base truncate">{asset.type}</h3>
-                   <div className="text-xs text-text-muted font-mono mt-1 w-full truncate">RID: {asset.id}</div>
-                </div>
-
-                <div className="flex items-center gap-4 mt-auto pt-3 border-t border-border text-xs text-text-secondary">
-                   <div className="flex items-center gap-1.5" title="Último evento registrado">
-                      <IconActivity size={14} className="opacity-70" />
-                      <span>{new Date(asset.createdAt).toLocaleDateString()}</span>
-                   </div>
-                   {asset.metadata && (asset.metadata as Record<string, unknown>).penId && (
-                      <div className="flex items-center gap-1.5 text-warning" title="Localizado en Hold/Cuarentena">
-                        <IconAlertCircle size={14} />
-                      </div>
-                   )}
-                </div>
-             </div>
-          ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center p-12 bg-surface-raised/50 border border-border border-dashed rounded-xl text-center">
-             <IconBox size={48} className="text-text-muted mb-4 opacity-50" stroke={1} />
-             <h3 className="text-text-primary font-medium">Bóveda Vacía</h3>
-             <p className="text-text-secondary text-sm max-w-sm mt-1">
-                Aún no existen registros físicos encriptados ni inventariado en esta partición operativa.
-             </p>
-          </div>
-        )}
+      {/* Grid list / Vertical Table */}
+      <div className="pb-8">
+        <VerticalAssetTable 
+          verticalId={verticalId} 
+          assets={filteredAssets || []} 
+          isLoading={isLoading} 
+        />
       </div>
     </div>
   )
