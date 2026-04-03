@@ -1,8 +1,8 @@
 import { router, protectedProcedure } from '../trpc'
-import { domainEvents, anchorsLog, anchoredEvents } from '@biffco/db/schema'
+import { domainEvents, anchorsLog, anchoredEvents, assets } from '@biffco/db/schema'
 import { env } from '@biffco/config'
 import { TRPCError } from '@trpc/server'
-import { sql, notInArray } from 'drizzle-orm'
+import { sql, notInArray, inArray } from 'drizzle-orm'
 import { MerkleTree } from '@biffco/core/crypto'
 import { ethers } from 'ethers'
 
@@ -91,6 +91,17 @@ export const anchorRouter = router({
         }))
 
         await tx.insert(anchoredEvents).values(linkages)
+
+        // Actualizar UI: Extraer los IDs de los Assets (streamId) asociados y marcarlos como Anclados
+        const assetIdsToMark = [...new Set(unanchoredEvents.map(e => e.streamId))]
+        if (assetIdsToMark.length > 0) {
+           // Usaremos Raw SQL para mutar el JSONB de Metadata y añadir el flag isBlockchainAnchored
+           await tx.execute(sql`
+             UPDATE "assets" 
+             SET metadata = jsonb_set(COALESCE(metadata, '{}'::jsonb), '{isBlockchainAnchored}', 'true')
+             WHERE id = ANY(${assetIdsToMark}) AND workspace_id = ${workspaceId}
+           `)
+        }
 
         return anchor
       })
