@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter, IconFileExport, IconFileDownload, IconShare } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter, IconFileExport, IconFileDownload, IconShare, IconArrowsSplit } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { StatusPill } from '@/app/components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
