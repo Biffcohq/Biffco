@@ -19,7 +19,7 @@ function PassportPrintBody() {
   useEffect(() => {
     if (asset) {
       setTimeout(() => {
-        globalThis.print()
+        globalThis.print();
       }, 1000)
     }
   }, [asset])

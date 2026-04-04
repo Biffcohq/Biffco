@@ -100,8 +100,7 @@ export default function AssetPassportPage() {
                 title="Descargar PDF (Vectorial)" 
                 className="text-text-secondary"
                 onClick={() => {
-                  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/trpc\/?$/, '');
-                  window.open(`${baseUrl}/api/assets/${assetId}/passport`, '_blank');
+                  window.open(`/print/w/${workspaceId}/assets/${assetId}`, '_blank');
                 }}
             >
                 <IconFileDownload size={18} />

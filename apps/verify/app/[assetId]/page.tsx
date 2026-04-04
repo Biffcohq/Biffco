@@ -3,7 +3,7 @@
 import { SignatureBadge, DAGVisualizer } from '@biffco/ui';
 import type { ReactElement } from 'react';
 
-export const runtime = "edge";
+
 
 interface VerifyPageProps {
   params: {
