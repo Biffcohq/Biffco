@@ -53,7 +53,7 @@ export const assetsRouter = router({
         limit: 10
       })
 
-      const signerIds = [...new Set(assetEventsRaw.map(e => e.signerId).filter(id => id !== 'system'))];
+      const signerIds = [...new Set(assetEventsRaw.map(e => e.signerId).filter(id => id && id !== 'system'))] as string[];
       const signersMap = new Map<string, string>();
       if (signerIds.length > 0) {
         const signersData = await ctx.db.select({
@@ -73,7 +73,7 @@ export const assetsRouter = router({
 
       const assetEventsMapped = assetEventsRaw.map(e => ({
         ...e,
-        signerAlias: e.signerId === 'system' ? 'Proceso Automatizado' : signersMap.get(e.signerId) || e.signerId
+        signerAlias: e.signerId === 'system' ? 'Proceso Automatizado' : (e.signerId ? (signersMap.get(e.signerId) || e.signerId) : 'Desconocido')
       }))
 
       const eventIds = assetEventsMapped.map(e => e.id)
