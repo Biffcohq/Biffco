@@ -65,7 +65,7 @@ export const transformationsRouter = router({
 
         // 2. Marcar padres como Consumidos
         await tx.update(assets)
-          .set({ status: 'consumed', updatedAt: now })
+          .set({ status: 'CONSUMED', updatedAt: now })
           .where(inArray(assets.id, input.sourceAssetIds));
 
         // 3. Generar eventos para Padres
@@ -94,7 +94,7 @@ export const transformationsRouter = router({
                workspaceId: workspaceId,
                verticalId: verticalId,
                type: out.type,
-               status: 'active',
+               status: 'ACTIVE',
                metadata: out.metadata,
                parentIds: input.sourceAssetIds // [Genealogía / Lineage]
              });
@@ -128,3 +128,4 @@ export const transformationsRouter = router({
       });
     })
 });
+
