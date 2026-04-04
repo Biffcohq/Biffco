@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, assetTransfers, domainEvents, workspaces } from '@biffco/db/schema'
 import { TRPCError } from '@trpc/server'
-import { and, eq, inArray } from 'drizzle-orm'
+import { and, eq, inArray, or } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
 import crypto from 'crypto'
 
@@ -23,13 +23,19 @@ export const transfersRouter = router({
       
       if (!workspaceId) throw new TRPCError({ code: 'UNAUTHORIZED' })
       
-      // Validar Destino y Transportista
-      const receiver = await db.query.workspaces.findFirst({ where: eq(workspaces.id, input.receiverWorkspaceId) })
-      if (!receiver) throw new TRPCError({ code: 'BAD_REQUEST', message: `El Biffco ID de destino (${input.receiverWorkspaceId}) no existe o está mal ingresado.` })
+      // Validar Destino y Transportista permitiendo "CBU/Alias"
+      const receiver = await db.query.workspaces.findFirst({ 
+        where: or(eq(workspaces.id, input.receiverWorkspaceId), eq(workspaces.alias, input.receiverWorkspaceId)) 
+      })
+      if (!receiver) throw new TRPCError({ code: 'BAD_REQUEST', message: `El destino (${input.receiverWorkspaceId}) no existe o está mal escrito.` })
       
+      let finalCarrierId = null;
       if (input.carrierWorkspaceId) {
-        const carrier = await db.query.workspaces.findFirst({ where: eq(workspaces.id, input.carrierWorkspaceId) })
-        if (!carrier) throw new TRPCError({ code: 'BAD_REQUEST', message: `El Biffco ID del transportista (${input.carrierWorkspaceId}) no existe o está mal ingresado.` })
+        const carrier = await db.query.workspaces.findFirst({ 
+          where: or(eq(workspaces.id, input.carrierWorkspaceId), eq(workspaces.alias, input.carrierWorkspaceId)) 
+        })
+        if (!carrier) throw new TRPCError({ code: 'BAD_REQUEST', message: `El transportista (${input.carrierWorkspaceId}) no existe o está mal escrito.` })
+        finalCarrierId = carrier.id;
       }
       
       // Controlar tenencia de todos los activos
@@ -56,11 +62,11 @@ export const transfersRouter = router({
           .set({ status: 'IN_TRANSIT', updatedAt: new Date() })
           .where(inArray(assets.id, input.assetIds))
 
-        // Crear la transferencia trilateral
+        // Crear la transferencia trilateral grabando siempre el UUID crudo
         const [transfer] = await tx.insert(assetTransfers).values({
           senderWorkspaceId: workspaceId,
-          carrierWorkspaceId: input.carrierWorkspaceId || null,
-          receiverWorkspaceId: input.receiverWorkspaceId,
+          carrierWorkspaceId: finalCarrierId,
+          receiverWorkspaceId: receiver.id,
           assetIds: input.assetIds,
           status: 'PENDING_CARRIER_ACCEPTANCE',
           dispatchedAt: new Date()
@@ -71,8 +77,8 @@ export const transfersRouter = router({
         // Generar evento Criptográfico Inmutable
         const eventData = {
           transferId: transfer.id,
-          carrier: input.carrierWorkspaceId,
-          receiver: input.receiverWorkspaceId,
+          carrier: finalCarrierId,
+          receiver: receiver.id,
           message: 'Lote despachado'
         }
 

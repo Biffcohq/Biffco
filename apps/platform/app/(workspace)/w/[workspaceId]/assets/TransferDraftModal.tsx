@@ -62,13 +62,13 @@ export function TransferDraftModal({ isOpen, onClose, assetsList }: { isOpen: bo
            
            <form id="transfer-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
              <div className="flex flex-col gap-2">
-               <label className="text-sm font-medium">Biffco ID Transportista (Camionero)</label>
-               <input value={carrierId} onChange={e => setCarrierId(e.target.value)} className="p-2 border border-border rounded-lg bg-bg-subtle text-sm focus:outline-primary focus:ring-1 focus:ring-primary" placeholder="Ej: wk_logistica_sur (opcional)" />
+               <label className="text-sm font-medium">Biffco ID o Alias del Transportista</label>
+               <input value={carrierId} onChange={e => setCarrierId(e.target.value)} className="p-2 border border-border rounded-lg bg-bg-subtle text-sm focus:outline-primary focus:ring-1 focus:ring-primary" placeholder="Ej: EXPRESO-SURI (Opcional)" />
              </div>
              
              <div className="flex flex-col gap-2">
-               <label className="text-sm font-medium flex items-center gap-1"><IconBriefcase size={16}/> Biffco ID Destino Final (Frigorífico)</label>
-               <input value={receiverId} onChange={e => setReceiverId(e.target.value)} required className="p-2 border border-border rounded-lg bg-bg-subtle text-sm focus:outline-primary focus:ring-1 focus:ring-primary" placeholder="Requerido. Ej: wk_frigorifico_rey" />
+               <label className="text-sm font-medium flex items-center gap-1"><IconBriefcase size={16}/> Biffco ID o Alias del Destino</label>
+               <input value={receiverId} onChange={e => setReceiverId(e.target.value)} required className="p-2 border border-border rounded-lg bg-bg-subtle text-sm focus:outline-primary focus:ring-1 focus:ring-primary" placeholder="Requerido. Ej: FRIGO-BERMEJO" />
              </div>
 
              <div className="flex flex-col gap-2 mt-2">

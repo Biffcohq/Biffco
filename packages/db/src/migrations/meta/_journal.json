@@ -57,6 +57,13 @@
       "when": 1775255636061,
       "tag": "0007_panoramic_yellow_claw",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1775263318073,
+      "tag": "0008_blue_caretaker",
+      "breakpoints": true
     }
   ]
 }

@@ -10,11 +10,15 @@ export const workspaces = pgTable("workspaces", {
   slug:        text('slug').notNull().unique(),
   verticalId:  text('vertical_id').notNull(),  // 'livestock' | 'mining' | ...
   plan:        workspacePlanEnum('plan').notNull().default('free'),
+  roles:       jsonb('roles').$type<string[]>().notNull().default(['PRODUCER']),
+  alias:       text('alias').unique(),
   settings:    jsonb('settings').notNull().default('{}'),
   isActive:    boolean('is_active').notNull().default(true),
   createdAt:   timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt:   timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-})
+}, (table) => [
+  index('idx_workspace_alias').on(table.alias)
+])
 
 // ─── WorkspaceMembers ────────────────────────────────────────────
 export const workspaceMembers = pgTable("workspace_members", {

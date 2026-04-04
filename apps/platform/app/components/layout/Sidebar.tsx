@@ -45,39 +45,53 @@ interface NavGroup {
     label: string
     href: string
     icon: React.ElementType
+    roles?: string[] // Opcional, si no se provee es para todos
   }[]
 }
 
 // Generador dinámico de navegación para un workspace específico
-const getWorkspaceNavGroups = (workspaceId: string): NavGroup[] => [
-  {
-    label: "Gestión",
-    items: [
-      { label: "Dashboard Cadena", href: `/w/${workspaceId}`, icon: IconBuilding },
-      { label: "Personal y Roles", href: `/w/${workspaceId}/members`, icon: IconUsers },
-    ]
-  },
-  {
-    label: "Operaciones",
-    items: [
-      { label: "Activos (Assets)", href: `/w/${workspaceId}/assets`, icon: IconBox },
-      { label: "Agrupaciones (Lotes)", href: `/w/${workspaceId}/groups`, icon: IconShape },
-      { label: "Logística B2B", href: `/w/${workspaceId}/logistics`, icon: IconTruck },
-      { label: "Facilities", href: `/w/${workspaceId}/facilities`, icon: IconPackage },
-      { label: "Eventos", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
-    ]
-  },
-  {
-    label: "Compliance",
-    items: [
-      { label: "Auditorías", href: `/w/${workspaceId}/audits`, icon: IconFileCheck },
-      { label: "Reportes", href: `/w/${workspaceId}/reports`, icon: IconChartDonut },
-      { label: "Cuarentenas", href: `/w/${workspaceId}/holds`, icon: IconAlertTriangle },
-      { label: "EUDR", href: `/w/${workspaceId}/eudr`, icon: IconLeaf },
-      { label: "Analytics", href: `/w/${workspaceId}/analytics`, icon: IconChartBar },
-    ]
+const getWorkspaceNavGroups = (workspaceId: string, roles: string[] = ['PRODUCER']): NavGroup[] => {
+  const hasRole = (requiredRoles?: string[]) => {
+    if (!requiredRoles) return true
+    return requiredRoles.some(r => roles.includes(r))
   }
-]
+  
+  const groups: NavGroup[] = [
+    {
+      label: "Gestión",
+      items: [
+        { label: "Dashboard Cadena", href: `/w/${workspaceId}`, icon: IconBuilding },
+        { label: "Personal y Roles", href: `/w/${workspaceId}/members`, icon: IconUsers },
+      ]
+    },
+    {
+      label: "Operaciones",
+      items: [
+        { label: "Activos (Assets)", href: `/w/${workspaceId}/assets`, icon: IconBox, roles: ['PRODUCER', 'PROCESSOR'] },
+        { label: "Agrupaciones (Lotes)", href: `/w/${workspaceId}/groups`, icon: IconShape, roles: ['PRODUCER', 'PROCESSOR'] },
+        { label: "Logística B2B", href: `/w/${workspaceId}/logistics`, icon: IconTruck, roles: ['PRODUCER', 'TRANSPORTER', 'PROCESSOR'] },
+        { label: "Instalaciones", href: `/w/${workspaceId}/facilities`, icon: IconPackage, roles: ['PRODUCER', 'PROCESSOR'] },
+        { label: "Libro de Eventos", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
+      ]
+    },
+    {
+      label: "Compliance",
+      items: [
+        { label: "Auditorías", href: `/w/${workspaceId}/audits`, icon: IconFileCheck, roles: ['PRODUCER', 'PROCESSOR', 'VET'] },
+        { label: "Reportes", href: `/w/${workspaceId}/reports`, icon: IconChartDonut },
+        { label: "Cuarentenas", href: `/w/${workspaceId}/holds`, icon: IconAlertTriangle, roles: ['PRODUCER'] },
+        { label: "EUDR", href: `/w/${workspaceId}/eudr`, icon: IconLeaf, roles: ['PRODUCER'] },
+        { label: "Analytics", href: `/w/${workspaceId}/analytics`, icon: IconChartBar },
+      ]
+    }
+  ]
+
+  // Filter items in each group based on roles
+  return groups.map(group => ({
+    ...group,
+    items: group.items.filter(item => hasRole(item.roles))
+  })).filter(group => group.items.length > 0)
+}
 
 // Navegación Global (Nivel Cuenta Administradora)
 const globalNavGroups: NavGroup[] = [
@@ -101,7 +115,7 @@ export function Sidebar() {
   const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
   
   const currentNavGroups = isWorkspaceContext && workspaceId 
-    ? getWorkspaceNavGroups(workspaceId) 
+    ? getWorkspaceNavGroups(workspaceId, (profile as any)?.roles || ['PRODUCER']) 
     : globalNavGroups;
 
   return (

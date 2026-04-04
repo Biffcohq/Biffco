@@ -21,9 +21,21 @@ export const workspacesRouter = router({
     .input(z.object({
       name: z.string().min(2).max(100).optional(),
       slug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/).optional(),
+      alias: z.string().min(4).max(50).regex(/^[A-Z0-9-]+$/).optional().nullable(),
+      roles: z.array(z.string()).optional(),
       settings: z.record(z.unknown()).optional(),
     }))
     .mutation(async ({ input, ctx }) => {
+      if (input.alias) {
+         const existing = await ctx.db.query.workspaces.findFirst({
+           where: and(
+             eq(workspaces.alias, input.alias),
+             ne(workspaces.id, ctx.workspaceId!)
+           )
+         })
+         if (existing) throw new TRPCError({ code: 'CONFLICT', message: `El alias ${input.alias} ya ha sido reclamado por otra organización.` })
+      }
+
       const [updated] = await ctx.db.update(workspaces)
         .set({
           ...input,
