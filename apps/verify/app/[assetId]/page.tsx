@@ -19,13 +19,26 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
   const { assetId } = params;
 
   // Edge-friendly Fetch a nuestro Backend tRPC (Cero dependencias de PostgreSQL o TCP!)
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/trpc';
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.biffco.co/trpc';
   const url = new URL(`${baseUrl}/verify.getAssetById`);
   url.searchParams.set('input', JSON.stringify({ id: assetId }));
 
-  const res = await fetch(url.toString(), {
-    cache: 'no-store', // Vital para evitar Stale Data en aduanas reales
-  });
+  let res;
+  try {
+    res = await fetch(url.toString(), {
+      cache: 'no-store', // Vital para evitar Stale Data en aduanas reales
+    });
+  } catch (error) {
+    console.error("Fetch Error:", error);
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md text-center">
+          <h1 className="text-2xl font-bold">Error de Conexión</h1>
+          <p className="mt-2 text-gray-600">No se pudo contactar al nodo de verificación. Intente nuevamente.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!res.ok) {
     return (
@@ -42,14 +55,21 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
   const event = assetData.events?.[0]; // Último evento
 
   // Fetch the lineage DAG graph for this asset (también compatible en Edge)
-  const graphUrl = new URL(`${baseUrl}/verify.getLineageGraph`);
-  graphUrl.searchParams.set('input', JSON.stringify({ id: assetId }));
-
-  const [graphRes] = await Promise.all([
-    fetch(graphUrl.toString(), { cache: 'no-store' })
-  ]);
-
-  const graphData = graphRes.ok ? (await graphRes.json()).result?.data : { nodes: [], edges: [] };
+  let graphData = { nodes: [], edges: [] };
+  try {
+    const graphUrl = new URL(`${baseUrl}/verify.getLineageGraph`);
+    graphUrl.searchParams.set('input', JSON.stringify({ id: assetId }));
+    
+    const [graphRes] = await Promise.all([
+      fetch(graphUrl.toString(), { cache: 'no-store' })
+    ]);
+    if (graphRes.ok) {
+       const raw = await graphRes.json();
+       graphData = raw.result?.data || graphData;
+    }
+  } catch (err) {
+    console.error("Graph Fetch Error", err);
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-[#F9FAFB] p-6 pt-12 dark:bg-[#0C111D] animate-in fade-in">
