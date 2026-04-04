@@ -50,8 +50,9 @@ export const transfersRouter = router({
         throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "No posees algunos de los activos solicitados." })
       }
 
-      // Validar que no estén bloqueados
-      const invalidAssets = targetAssets.filter(a => a.status !== 'active' && a.status !== 'ACTIVE')
+      // Validar que no estén bloqueados operativamente
+      // PERMITIMOS 'ACTIVE' y 'REJECTED_IN_TRANSIT' (para retornos/redespachos de disputas).
+      const invalidAssets = targetAssets.filter(a => a.status !== 'ACTIVE' && a.status !== 'REJECTED_IN_TRANSIT' && a.status !== 'active')
       if (invalidAssets.length > 0) {
         throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "Algunos activos están bloqueados o ya en tránsito." })
       }
@@ -179,10 +180,10 @@ export const transfersRouter = router({
              .set({ workspaceId: workspaceId!, status: 'ACTIVE', updatedAt: new Date() })
              .where(inArray(assets.id, transfer.assetIds as string[])) // Mueve las vacas al Frigorífico
         } else {
-           // Si rechaza, caemos a DISPUTED logísticamente pero le devuelvo el control transaccional como HOLD al origen (O lo dejamos bloqueado IN_TRANSIT)
-           // Actualizamos estado a hold/disputa para la UI del Productor Original
+           // Si rechaza, quedan varados en el camión como REJECTED_IN_TRANSIT. 
+           // El Origen Original es el único con potestad para despacharlos en un nuevo viaje de retorno/redirección.
            await tx.update(assets)
-             .set({ status: 'DISPUTED', updatedAt: new Date() })
+             .set({ status: 'REJECTED_IN_TRANSIT', updatedAt: new Date() })
              .where(inArray(assets.id, transfer.assetIds as string[]))
         }
 

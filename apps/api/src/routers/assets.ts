@@ -55,6 +55,14 @@ export const assetsRouter = router({
 
       const signerIds = [...new Set(assetEventsRaw.map(e => e.signerId).filter(id => id && id !== 'system'))] as string[];
       const signersMap = new Map<string, string>();
+      
+      const genericWorkspaceIds = new Set<string>();
+      assetEventsRaw.forEach(e => {
+        const d = e.data as Record<string, unknown>;
+        if (d && typeof d.carrier === 'string') genericWorkspaceIds.add(d.carrier);
+        if (d && typeof d.receiver === 'string') genericWorkspaceIds.add(d.receiver);
+      });
+
       if (signerIds.length > 0) {
         const signersData = await ctx.db.select({
           memberId: workspaceMembers.id,
@@ -71,10 +79,27 @@ export const assetsRouter = router({
         })
       }
 
-      const assetEventsMapped = assetEventsRaw.map(e => ({
-        ...e,
-        signerAlias: e.signerId === 'system' ? 'Proceso Automatizado' : (e.signerId ? (signersMap.get(e.signerId) || e.signerId) : 'Desconocido')
-      }))
+      const genericWorkspacesMap = new Map<string, string>();
+      if (genericWorkspaceIds.size > 0) {
+        const genericWps = await ctx.db.select({
+          id: workspaces.id,
+          alias: workspaces.alias
+        }).from(workspaces).where(inArray(workspaces.id, [...genericWorkspaceIds]));
+
+        genericWps.forEach(w => genericWorkspacesMap.set(w.id, w.alias || 'Tenant'));
+      }
+
+      const assetEventsMapped = assetEventsRaw.map(e => {
+        const newData = { ...(e.data as Record<string, unknown> || {}) };
+        if (newData.carrier && typeof newData.carrier === 'string' && genericWorkspacesMap.has(newData.carrier)) newData.carrierAlias = genericWorkspacesMap.get(newData.carrier);
+        if (newData.receiver && typeof newData.receiver === 'string' && genericWorkspacesMap.has(newData.receiver)) newData.receiverAlias = genericWorkspacesMap.get(newData.receiver);
+
+        return {
+          ...e,
+          data: newData,
+          signerAlias: e.signerId === 'system' ? 'Proceso Automatizado' : (e.signerId ? (signersMap.get(e.signerId) || e.signerId) : 'Desconocido')
+        }
+      })
 
       const eventIds = assetEventsMapped.map(e => e.id)
       let eventsWithAnchors = assetEventsMapped as (typeof assetEventsMapped[0] & { polygonTxHash?: string | undefined })[]

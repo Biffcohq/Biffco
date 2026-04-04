@@ -121,6 +121,7 @@ export default function AssetPassportPage() {
                     'ASSET_DISPATCHED': { icon: IconTruck, textColor: 'text-amber-600', bgColor: 'bg-amber-100', ringColor: 'ring-amber-50', title: 'Despacho Logístico' },
                     'ASSET_TRANSIT_SCAN': { icon: IconMapPin, textColor: 'text-indigo-600', bgColor: 'bg-indigo-100', ringColor: 'ring-indigo-50', title: 'Punto de Control' },
                     'ASSET_RECEIVED': { icon: IconBuildingStore, textColor: 'text-emerald-600', bgColor: 'bg-emerald-100', ringColor: 'ring-emerald-50', title: 'Recepción en Destino' },
+                    'ASSET_REJECTED': { icon: IconHistory, textColor: 'text-red-500', bgColor: 'bg-red-100', ringColor: 'ring-red-50', title: 'Carga Observada / Destino Rechazado' },
                   }
                   const defaultConf: VisualConf = { icon: IconCheck, textColor: 'text-primary', bgColor: 'bg-primary/10', ringColor: 'ring-bg', title: event.eventType.replace(/_/g, ' ') };
                   const v: VisualConf = eventNameMap[event.eventType] || defaultConf;
@@ -140,12 +141,24 @@ export default function AssetPassportPage() {
                               {v.title}
                               {isGenesis && <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
                             </h4>
-                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2.5 py-1 rounded-full border border-border/50 w-max">
+                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2.5 py-1 rounded-full border border-border/50 w-max mt-1 sm:mt-0">
                               {new Date(event.createdAt).toLocaleDateString()} — {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                          </div>
                          
                          <p className="text-sm text-text-primary mt-1">{displayDesc}</p>
+                         
+                         {/* Optional Humanized Data Blocks */}
+                         {(eData.carrierAlias || eData.receiverAlias) && (
+                           <div className="flex flex-col gap-1 mt-1 bg-surface-raised/40 p-2 rounded border border-border/40">
+                              {eData.carrierAlias && (
+                                <span className="text-xs text-text-muted"><strong className="text-text-primary/90 font-medium">Logística:</strong> {eData.carrierAlias}</span>
+                              )}
+                              {eData.receiverAlias && (
+                                <span className="text-xs text-text-muted"><strong className="text-text-primary/90 font-medium">Destino Pautado:</strong> {eData.receiverAlias}</span>
+                              )}
+                           </div>
+                         )}
                          
                          <div className="flex items-center gap-1.5 text-xs text-text-muted mt-1">
                            <span className="opacity-70">Responsable:</span> 
