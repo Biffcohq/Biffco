@@ -143,6 +143,18 @@ export default function AssetPassportPage() {
             >
                 <IconShare size={18} />
             </Button>
+            
+            {asset.status === 'active' && (asset.holds || []).length === 0 && (
+              <Button 
+                  variant="outline" 
+                  size="icon"
+                  title="Transformar Industrialmente (Split)" 
+                  className="text-emerald-600 dark:text-emerald-400 border-emerald-200 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ml-2"
+                  onClick={() => window.location.href = `/w/${workspaceId}/assets/${assetId}/split`}
+              >
+                  <IconArrowsSplit size={18} />
+              </Button>
+            )}
         </div>
       </div>
 
@@ -177,17 +189,60 @@ export default function AssetPassportPage() {
           </div>
         </div>
 
-        {/* Columna Derecha: The Event Ledger (Línea de Tiempo) */}
-        <div className="lg:col-span-2 flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-border pb-3">
-            <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
-              <IconHistory size={20} className="text-primary" />
-              Event Ledger 
-            </h2>
-            <span className="text-xs text-text-muted font-mono bg-surface-raised px-2 py-1 rounded border border-border">
-              {asset.events?.length || 0} Bloques
-            </span>
-          </div>
+        {/* Columna Derecha: Trazabilidad y Ledger */}
+        <div className="lg:col-span-2 flex flex-col gap-6">
+          
+          {/* Lineage Box (Parents & Children) */}
+          {(asset.parentIds?.length > 0 || asset.derivedChildren?.length > 0) && (
+            <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
+              <h2 className="text-lg font-bold text-text-primary flex items-center gap-2 border-b border-border pb-3 mb-4">
+                <IconArrowsSplit size={20} className="text-primary" />
+                Genealogía Logística (Lineage)
+              </h2>
+              
+              <div className="flex flex-col gap-4">
+                {asset.parentIds?.length > 0 && (
+                  <div>
+                    <h3 className="text-xs uppercase tracking-wider font-semibold text-text-muted mb-2">Origen (Padres)</h3>
+                    <div className="flex flex-wrap gap-2">
+                       {asset.parentIds.map((pId: string) => (
+                         <a key={pId} href={`/w/${workspaceId}/assets/${pId}`} className="text-sm border border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors">
+                            <IconArrowUpLeft size={16} />
+                            {pId.split('_').pop()?.slice(0, 8)}...
+                         </a>
+                       ))}
+                    </div>
+                  </div>
+                )}
+                
+                {asset.derivedChildren?.length > 0 && (
+                  <div>
+                    <h3 className="text-xs uppercase tracking-wider font-semibold text-text-muted mb-2">Derivaciones Industriales (Hijos)</h3>
+                    <div className="flex flex-wrap gap-2">
+                       {(asset as any).derivedChildren.map((child: any) => (
+                         <a key={child.id} href={`/w/${workspaceId}/assets/${child.id}`} className="text-sm border border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 px-3 py-1.5 rounded-md flex items-center gap-1.5 transition-colors">
+                            <IconArrowDownRight size={16} />
+                            {child.type} - {child.id.split('_').pop()?.slice(0, 8)}...
+                         </a>
+                       ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Event Ledger */}
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                <IconHistory size={20} className="text-primary" />
+                Event Ledger 
+              </h2>
+              <span className="text-xs text-text-muted font-mono bg-surface-raised px-2 py-1 rounded border border-border">
+                {asset.events?.length || 0} Bloques
+              </span>
+            </div>
 
           <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden p-6">
              <div className="relative border-l border-border/80 ml-3 md:ml-4 space-y-8 pb-4">
@@ -304,11 +359,12 @@ export default function AssetPassportPage() {
                        </div>
                     </div>
                   )
-                })}
+                 })}
              </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   )
 }

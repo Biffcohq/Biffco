@@ -8,7 +8,7 @@ import crypto from 'crypto'
 
 export const splitRouter = router({
   
-  createSplit: requirePermission(Permission.ASSETS_CREATE)
+  createSplit: requirePermission(Permission.ASSETS_SPLIT)
     .input(z.object({
       inputAssetId: z.string(),
       outputAllocations: z.array(z.object({

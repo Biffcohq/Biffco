@@ -138,10 +138,16 @@ export const assetsRouter = router({
         )
       })
 
+      // Identificar herederos directos (Children)
+      const children = await ctx.db.execute<{id: string, type: string, status: string, metadata: any}>(
+         sql`SELECT id, type, status, metadata FROM "assets" WHERE "workspace_id" = ${ctx.workspaceId} AND "parent_ids" @> ${JSON.stringify([asset.id])}::jsonb`
+      );
+
       return {
         ...asset,
         events: eventsWithAnchors,
-        holds: assetHolds
+        holds: assetHolds,
+        derivedChildren: (children as any).rows || children || []
       }
     }),
 

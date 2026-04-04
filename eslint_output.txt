@@ -1,0 +1,31 @@
+
+C:\Users\weare\Documents\Projects\Biffco\apps\platform\app\(workspace)\w\[workspaceId]\assets\[assetId]\page.tsx
+   47:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   60:25  error  'Blob' is not defined                     no-undef
+   61:20  error  'URL' is not defined                      no-undef
+   62:21  error  'document' is not defined                 no-undef
+   65:8   error  'document' is not defined                 no-undef
+   67:8   error  'document' is not defined                 no-undef
+   68:15  error  'err' is defined but never used           no-unused-vars
+   68:15  error  'err' is defined but never used           @typescript-eslint/no-unused-vars
+   69:8   error  'console' is not defined                  no-undef
+  103:19  error  'window' is not defined                   no-undef
+  122:32  error  'window' is not defined                   no-undef
+  132:23  error  'navigator' is not defined                no-undef
+  133:21  error  'navigator' is not defined                no-undef
+  137:37  error  'console' is not defined                  no-undef
+  139:21  error  'navigator' is not defined                no-undef
+  140:21  error  'alert' is not defined                    no-undef
+  187:18  error  'IconArrowsSplit' is not defined          no-undef
+  198:30  error  'IconArrowUpLeft' is not defined          no-undef
+  210:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  210:68  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  212:30  error  'IconArrowDownRight' is not defined       no-undef
+  239:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  274:48  error  'window' is not defined                   no-undef
+  298:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  301:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  308:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 26 problems (26 errors, 0 warnings)
+
