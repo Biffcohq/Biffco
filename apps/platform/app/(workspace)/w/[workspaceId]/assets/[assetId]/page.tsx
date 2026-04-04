@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
@@ -114,67 +114,78 @@ export default function AssetPassportPage() {
                   const isGenesis = idx === asset.events.length - 1;
                   const eData = event.data as Record<string, any>;
                   
-                  // Traducción visual del evento técnico a Operativo
-                  const eventNameMap: Record<string, string> = {
-                    'ASSET_CREATED': 'Registro Inicial',
-                    'ASSET_DISPATCHED': 'Despacho Logístico',
-                    'ASSET_TRANSIT_SCAN': 'Punto de Control',
-                    'ASSET_RECEIVED': 'Recepción en Destino',
+                  type VisualConf = { icon: React.ElementType, textColor: string, bgColor: string, ringColor: string, title: string };
+                  const eventNameMap: Record<string, VisualConf> = {
+                    'ASSET_CREATED': { icon: IconBox, textColor: 'text-blue-600', bgColor: 'bg-blue-100', ringColor: 'ring-blue-50', title: 'Registro Inicial' },
+                    'ASSET_DISPATCHED': { icon: IconTruck, textColor: 'text-amber-600', bgColor: 'bg-amber-100', ringColor: 'ring-amber-50', title: 'Despacho Logístico' },
+                    'ASSET_TRANSIT_SCAN': { icon: IconMapPin, textColor: 'text-indigo-600', bgColor: 'bg-indigo-100', ringColor: 'ring-indigo-50', title: 'Punto de Control' },
+                    'ASSET_RECEIVED': { icon: IconBuildingStore, textColor: 'text-emerald-600', bgColor: 'bg-emerald-100', ringColor: 'ring-emerald-50', title: 'Recepción en Destino' },
                   }
-                  const displayTitle = eventNameMap[event.eventType] || event.eventType.replace(/_/g, ' ');
+                  const defaultConf = { icon: IconCheck, textColor: 'text-primary', bgColor: 'bg-primary/10', ringColor: 'ring-bg', title: event.eventType.replace(/_/g, ' ') };
+                  const v = eventNameMap[event.eventType] || defaultConf;
                   const displayDesc = eData.message || (isGenesis ? 'Activo dado de alta en la red Biffco' : 'Actualización de estado');
 
                   return (
-                    <div key={event.id} className="relative pl-6 md:pl-8">
-                       {/* Timeline Marker */}
-                       <div className="absolute w-3 h-3 bg-primary rounded-full -left-[6.5px] top-1.5 ring-4 ring-bg"></div>
+                    <div key={event.id} className="relative pl-8 md:pl-12 pb-6">
+                       {/* Timeline Marker (Iconized and Colored) */}
+                       <div className={`absolute w-8 h-8 rounded-full left-[-16px] top-0 flex items-center justify-center ring-4 ${v.ringColor} ${v.bgColor} ${v.textColor}`}>
+                         <v.icon size={16} stroke={2.5}/>
+                       </div>
                        
                        {/* Event Card */}
-                       <div className="flex flex-col gap-1.5">
-                         <div className="flex flex-wrap items-center gap-2 justify-between">
-                            <h4 className="font-semibold text-text-primary text-base flex items-center gap-2">
-                              {displayTitle}
+                       <div className="flex flex-col gap-2">
+                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                            <h4 className={`font-bold text-base flex items-center gap-2 ${v.textColor}`}>
+                              {v.title}
                               {isGenesis && <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
                             </h4>
-                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2 py-1 rounded-full border border-border/50">
-                              {new Date(event.createdAt).toLocaleDateString()} a las {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2.5 py-1 rounded-full border border-border/50 w-max">
+                              {new Date(event.createdAt).toLocaleDateString()} — {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                          </div>
                          
-                         <p className="text-sm text-text-secondary">{displayDesc}</p>
+                         <p className="text-sm text-text-primary mt-1">{displayDesc}</p>
                          
-                         <div className="flex items-center gap-1.5 text-xs text-text-muted mt-1">
-                           <span className="opacity-70">Responsable (Firma Jurídica):</span> 
-                           <span className="font-mono bg-surface-raised px-1 py-0.5 rounded border border-border/50 font-medium text-text-primary">
-                             {event.signerId === 'system' ? 'Sistema Automatizado' : event.signerId}
+                         <div className="flex items-center gap-1.5 text-xs text-text-muted">
+                           <span className="opacity-70">Responsable:</span> 
+                           <span className="font-mono bg-surface-raised px-1.5 py-0.5 rounded border border-border/50 text-text-primary">
+                             {event.signerId === 'system' ? 'Proceso Automatizado' : event.signerId}
                            </span>
                          </div>
 
-                         {/* Acordeón Criptográfico Oculto */}
-                         <details className="group mt-2">
-                           <summary className="cursor-pointer text-xs font-semibold text-primary flex items-center gap-1 hover:underline outline-none select-none">
-                             <span className="group-open:hidden flex items-center gap-1"><IconPolygon size={14}/> Mostrar Evidencia Criptográfica </span>
-                             <span className="hidden group-open:flex items-center gap-1"><IconPolygon size={14}/> Ocultar Evidencia</span>
+                         {/* First Level Accordion: Crypto Metadata */}
+                         <details className="group mt-3">
+                           <summary className="w-max cursor-pointer text-xs font-semibold text-text-secondary flex items-center gap-1.5 px-3 py-1.5 bg-surface-raised border border-border rounded-lg hover:bg-surface-raised/80 hover:text-text-primary transition-colors outline-none select-none">
+                             <div className="group-open:hidden flex items-center gap-1.5"><IconPolygon size={14}/> Ver Evidencia Matemática </div>
+                             <div className="hidden group-open:flex items-center gap-1.5"><IconPolygon size={14}/> Ocultar Evidencia </div>
                            </summary>
-                           <div className="bg-surface border border-border/60 rounded-md p-3 text-xs text-text-secondary font-mono overflow-x-auto mt-2 shadow-inner">
-                              <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/40">
-                                <div>
-                                  <span className="text-text-muted block text-[10px] uppercase">SHA-256 Hash del Bloque</span>
-                                  <span className="text-primary/80">{event.hash}</span>
+                           
+                           <div className="bg-surface border border-border/60 rounded-xl p-4 text-xs text-text-secondary font-mono overflow-x-auto mt-2 shadow-sm flex flex-col gap-4">
+                              <div className="flex flex-col gap-3 pb-3 border-b border-border/40">
+                                <div className="flex flex-col gap-1">
+                                  <span className="text-text-muted font-bold text-[10px] uppercase tracking-wider">SHA-256 Hash del Bloque</span>
+                                  <span className="text-primary/90 break-all">{event.hash}</span>
                                 </div>
                                 {event.polygonTxHash && (
-                                  <div className="flex flex-col items-end">
-                                    <span className="text-text-muted block text-[10px] uppercase">Anclaje Polygon</span>
-                                    <a href={`https://amoy.polygonscan.com/tx/${event.polygonTxHash}`} target="_blank" rel="noreferrer" className="text-[#8247E5] flex items-center gap-1 hover:underline">
-                                      {event.polygonTxHash.slice(0, 8)}... <IconPolygon size={12}/>
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-text-muted font-bold text-[10px] uppercase tracking-wider">Certificado Blockhain Polygon</span>
+                                    <a href={`https://amoy.polygonscan.com/tx/${event.polygonTxHash}`} target="_blank" rel="noreferrer" className="text-[#8247E5] flex items-center gap-1 w-max hover:underline bg-[#8247E5]/10 px-2 py-1 rounded">
+                                      TX: {event.polygonTxHash.slice(0, 16)}... <IconPolygon size={12}/>
                                     </a>
                                   </div>
                                 )}
                               </div>
-                              <span className="text-text-muted block text-[10px] uppercase mb-1">Payload JSON</span>
-                              <pre className="text-text-muted/80">
-                                {JSON.stringify(eData, null, 2)}
-                              </pre>
+
+                              {/* Second Level Accordion: JSON Payload */}
+                              <details className="group/json">
+                                <summary className="w-max cursor-pointer text-xs font-medium text-text-muted flex items-center gap-1 hover:text-text-primary outline-none select-none">
+                                  <span className="group-open/json:hidden border-b border-dashed border-text-muted/50 pb-0.5">Inspeccionar Payload Crudo (JSON)</span>
+                                  <span className="hidden group-open/json:inline border-b border-dashed border-text-muted/50 pb-0.5">Ocultar Payload</span>
+                                </summary>
+                                <pre className="text-text-muted/80 mt-3 p-3 bg-bg-subtle rounded-lg border border-border/50">
+                                  {JSON.stringify(eData, null, 2)}
+                                </pre>
+                              </details>
                            </div>
                          </details>
                        </div>
