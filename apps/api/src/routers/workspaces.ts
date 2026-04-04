@@ -17,7 +17,7 @@ export const workspacesRouter = router({
       return workspace
     }),
 
-  updateProfile: requirePermission(Permission.ORG_MANAGE)
+  updateProfile: protectedProcedure
     .input(z.object({
       name: z.string().min(2).max(100).optional(),
       slug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/).optional(),
