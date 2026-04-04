@@ -6,7 +6,7 @@ import { IconTruck, IconBox, IconMapPin } from '@tabler/icons-react'
 import { Button, toast } from '@biffco/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { StatusPill } from '../components/StatusPill'
+import { StatusPill } from '@/app/components/StatusPill'
 
 export default function LogisticsClient() {
   const [tab, setTab] = useState<'OUTGOING' | 'INCOMING' | 'CARRIER'>('OUTGOING')

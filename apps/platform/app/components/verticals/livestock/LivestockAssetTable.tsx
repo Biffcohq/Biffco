@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { IconPolygon } from '@tabler/icons-react';
-import { StatusPill } from '../../StatusPill';
+import { StatusPill } from '@/app/components/StatusPill';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetTable({ assets, isLoading }: { assets: any[], isLoading?: boolean }) {

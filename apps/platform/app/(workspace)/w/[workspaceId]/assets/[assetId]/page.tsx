@@ -6,7 +6,7 @@ import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
 import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
-import { StatusPill } from '../../../../components/StatusPill'
+import { StatusPill } from '@/app/components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
 
