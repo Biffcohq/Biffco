@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./workspaces"), exports);
 __exportStar(require("./assets"), exports);
 __exportStar(require("./core"), exports);
+__exportStar(require("./transfers"), exports);
 __exportStar(require("./operations"), exports);
 __exportStar(require("./locations"), exports);
 __exportStar(require("./persons"), exports);

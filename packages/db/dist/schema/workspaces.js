@@ -11,11 +11,15 @@ exports.workspaces = (0, pg_core_1.pgTable)("workspaces", {
     slug: (0, pg_core_1.text)('slug').notNull().unique(),
     verticalId: (0, pg_core_1.text)('vertical_id').notNull(), // 'livestock' | 'mining' | ...
     plan: (0, exports.workspacePlanEnum)('plan').notNull().default('free'),
+    roles: (0, pg_core_1.jsonb)('roles').$type().notNull().default(['PRODUCER']),
+    alias: (0, pg_core_1.text)('alias').unique(),
     settings: (0, pg_core_1.jsonb)('settings').notNull().default('{}'),
     isActive: (0, pg_core_1.boolean)('is_active').notNull().default(true),
     createdAt: (0, pg_core_1.timestamp)('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: (0, pg_core_1.timestamp)('updated_at', { withTimezone: true }).notNull().defaultNow(),
-});
+}, (table) => [
+    (0, pg_core_1.index)('idx_workspace_alias').on(table.alias)
+]);
 // ─── WorkspaceMembers ────────────────────────────────────────────
 exports.workspaceMembers = (0, pg_core_1.pgTable)("workspace_members", {
     id: (0, pg_core_1.text)('id').primaryKey().$defaultFn(() => (0, cuid2_1.createId)()),

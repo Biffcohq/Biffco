@@ -68,7 +68,7 @@ export default function AssetPassportPage() {
                 variant="outline" 
                 size="sm" 
                 className="gap-2 text-text-secondary"
-                onClick={() => window.open(`/w/${workspaceId}/assets/${assetId}/print`, '_blank')}
+                onClick={() => window.open(`/print/w/${workspaceId}/assets/${assetId}`, '_blank')}
             >
                 <IconPrinter size={16} /> Imprimir Trazabilidad PDF
             </Button>
@@ -165,7 +165,7 @@ export default function AssetPassportPage() {
                               </span>
                               <button
                                 aria-label="Imprimir Certificado de Movimiento"
-                                onClick={() => window.open(`/w/${workspaceId}/assets/${assetId}/print?eventId=${event.id}`, '_blank')}
+                                onClick={() => window.open(`/print/w/${workspaceId}/assets/${assetId}?eventId=${event.id}`, '_blank')}
                                 className="text-text-muted hover:text-primary transition-colors p-1"
                                 title="Imprimir Comprobante"
                               >

@@ -9,28 +9,43 @@
    Skipping validation of types
    Skipping linting
    Collecting page data ...
-   Generating static pages (0/10) ...
-   Generating static pages (2/10) 
-   Generating static pages (4/10) 
-   Generating static pages (7/10) 
- ✓ Generating static pages (10/10)
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ ✓ Generating static pages (13/13)
    Finalizing page optimization ...
    Collecting build traces ...
 
-Route (app)                              Size     First Load JS
-┌ ○ /                                    2.81 kB         113 kB
-├ ○ /_not-found                          142 B          87.9 kB
-├ ○ /employees                           2.29 kB         269 kB
-├ ○ /facilities                          2.85 kB        90.6 kB
-├ ○ /login                               3.56 kB         160 kB
-├ ○ /members                             2.71 kB         269 kB
-├ ○ /signup                              10.3 kB         167 kB
-└ ○ /teams                               2.44 kB         269 kB
-+ First Load JS shared by all            87.7 kB
-  ├ chunks/1a8804fd-24d478a7b7a1446e.js  53.6 kB
-  ├ chunks/772-7c953159dc0c2065.js       31.9 kB
-  └ other shared chunks (total)          2.18 kB
+Route (app)                                  Size     First Load JS
+┌ ƒ /                                        2.41 kB         122 kB
+├ ƒ /_not-found                              154 B          88.6 kB
+├ ƒ /assets                                  1.87 kB         112 kB
+├ ƒ /login                                   3.8 kB          160 kB
+├ ƒ /print/w/[workspaceId]/assets/[assetId]  2.94 kB         120 kB
+├ ƒ /settings                                154 B          88.6 kB
+├ ƒ /settings/billing                        2.88 kB         282 kB
+├ ƒ /settings/general                        2.29 kB         284 kB
+├ ƒ /settings/preferences                    2.54 kB         284 kB
+├ ƒ /settings/profile                        1.27 kB         283 kB
+├ ƒ /settings/wallet                         5.11 kB         306 kB
+├ ƒ /signup                                  12.1 kB         359 kB
+├ ƒ /w/[workspaceId]                         2.85 kB         122 kB
+├ ƒ /w/[workspaceId]/assets                  3.74 kB         308 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]        7.5 kB          315 kB
+├ ƒ /w/[workspaceId]/events                  2.4 kB          120 kB
+├ ƒ /w/[workspaceId]/facilities              3.68 kB         308 kB
+├ ƒ /w/[workspaceId]/groups                  1.76 kB         306 kB
+├ ƒ /w/[workspaceId]/holds                   5.54 kB         307 kB
+├ ƒ /w/[workspaceId]/logistics               8.12 kB         309 kB
+├ ƒ /w/[workspaceId]/members                 5.29 kB         310 kB
+├ ƒ /w/[workspaceId]/settings                4.88 kB         306 kB
+└ ƒ /w/[workspaceId]/settings/wallet         5.41 kB         285 kB
++ First Load JS shared by all                88.4 kB
+  ├ chunks/1a8804fd-6388c8241ae2862f.js      53.6 kB
+  ├ chunks/2772-1a50be1fa77ec703.js          31.9 kB
+  └ other shared chunks (total)              2.88 kB
 
 
-○  (Static)  prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
 
