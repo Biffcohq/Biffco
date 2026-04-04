@@ -133,6 +133,7 @@ export const authRouter = router({
             slug: input.workspaceSlug,
             verticalId: input.verticalId,
             plan: "free",
+            roles: input.initialRoles,
             settings: { country: input.country },
           })
 
