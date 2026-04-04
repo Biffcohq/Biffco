@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { publicProcedure, router } from '../trpc';
-import { assets, domainEvents, holds } from '@biffco/db/schema';
+import { assets, domainEvents, holds, anchoredEvents, anchorsLog } from '@biffco/db/schema';
 import { eq, and } from '@biffco/db';
 import { sql } from 'drizzle-orm';
 import { getSignedUrl as getCloudFrontSignedUrl } from '@aws-sdk/cloudfront-signer';
@@ -28,13 +28,20 @@ export const verifyRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Activo inyectable no existe" });
       }
 
-      const eventArray = await ctx.db
-        .select()
+      const rawEvents = await ctx.db
+        .select({
+          event: domainEvents,
+          anchorHash: anchorsLog.polygonTxHash
+        })
         .from(domainEvents)
+        .leftJoin(anchoredEvents, eq(domainEvents.id, anchoredEvents.eventId))
+        .leftJoin(anchorsLog, eq(anchoredEvents.anchorId, anchorsLog.id))
         .where(eq(domainEvents.streamId, input.id))
-        .orderBy(domainEvents.globalId /* DESC no disponible en string literal en este helper directo, lo trae ordenado o usamos sql */)
+        .orderBy(domainEvents.globalId)
         .limit(10);
-      
+        
+      const eventArray = rawEvents.map(r => ({ ...r.event, anchorTxHash: r.anchorHash }));
+
       const holdingArray = await ctx.db
         .select()
         .from(holds)

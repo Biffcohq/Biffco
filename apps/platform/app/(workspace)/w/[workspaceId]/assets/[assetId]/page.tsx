@@ -251,6 +251,14 @@ export default function AssetPassportPage() {
                            </div>
                          )}
                          
+                         {/* Blockchain Anchor Status */}
+                         {(event as any).anchorTxHash && (
+                           <div className="mt-2 inline-flex items-center gap-1.5 bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-md border border-purple-200 dark:border-purple-800/50 w-max shadow-sm">
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.564 6.77L16.48 3.256a.956.956 0 00-1 0L9.4 6.772a.965.965 0 00-.5.84v7.03c0 .341.184.654.496.835L15.48 18.99v7.033a.965.965 0 001.004.835h.001c.17 0 .338-.046.488-.133l6.084-3.513a.965.965 0 00.496-.835V15.35c0-.341-.184-.654-.496-.835L16.97 10.999V3.972l5.594 3.23v1.85a.96.96 0 00.496.835l6.084 3.514a.956.956 0 001 0l6.084-3.513a.965.965 0 00.496-.835v-7.03a.965.965 0 00-.496-.835l-6.084-3.514a.956.956 0 00-1 0l-6.084 3.514a.965.965 0 00-.496.835v1.656z" fill="currentColor"/><path d="M9.4 17.202a.965.965 0 00-.496-.835L2.82 12.853a.956.956 0 00-1 0L-3.264 16.368a.965.965 0 00-.5.84v7.03c0 .341.184.654.496.835L2.816 28.586a.956.956 0 001 0l6.084-3.513a.965.965 0 00.496-.835V17.202h.004zm-5.594 6.544l-5.594-3.23V18.667l5.594 3.23v1.85z" fill="currentColor"/></svg>
+                              Validado en Polygon: {(event as any).anchorTxHash.slice(0, 10)}...
+                           </div>
+                         )}
+                         
                          <div className="flex items-center gap-1.5 text-xs text-text-muted mt-1">
                            <span className="opacity-70">Responsable:</span> 
                            <span className="font-mono bg-surface-raised px-1.5 py-0.5 rounded border border-border/50 text-text-primary">

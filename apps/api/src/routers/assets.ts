@@ -3,7 +3,7 @@ import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
 import { assets, domainEvents, workspaces, workspaceMembers, persons } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
-import { sql, inArray } from 'drizzle-orm'
+import { sql, inArray, desc } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
 import { holds, anchoredEvents, anchorsLog } from '@biffco/db/schema'
 
@@ -46,12 +46,19 @@ export const assetsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Activo no encontrado en este workspace" })
       }
 
-      // Traer los últimos 10 eventos aplicados a este activo
-      const assetEventsRaw = await ctx.db.query.domainEvents.findMany({
-        where: eq(domainEvents.streamId, asset.id),
-        orderBy: (domainEvents, { desc }) => [desc(domainEvents.createdAt)],
-        limit: 10
-      })
+      const rawEvents = await ctx.db
+        .select({
+          event: domainEvents,
+          anchorHash: anchorsLog.polygonTxHash
+        })
+        .from(domainEvents)
+        .leftJoin(anchoredEvents, eq(domainEvents.id, anchoredEvents.eventId))
+        .leftJoin(anchorsLog, eq(anchoredEvents.anchorId, anchorsLog.id))
+        .where(eq(domainEvents.streamId, asset.id))
+        .orderBy(desc(domainEvents.createdAt))
+        .limit(10)
+
+      const assetEventsRaw = rawEvents.map(r => ({ ...r.event, anchorTxHash: r.anchorHash }));
 
       const signerIds = [...new Set(assetEventsRaw.map(e => e.signerId).filter(id => id && id !== 'system'))] as string[];
       const signersMap = new Map<string, string>();
