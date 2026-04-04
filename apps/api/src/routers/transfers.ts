@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { assets, assetTransfers, domainEvents } from '@biffco/db/schema'
+import { assets, assetTransfers, domainEvents, workspaces } from '@biffco/db/schema'
 import { TRPCError } from '@trpc/server'
 import { and, eq, inArray } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
@@ -22,6 +22,15 @@ export const transfersRouter = router({
       const { db, workspaceId, memberId } = ctx
       
       if (!workspaceId) throw new TRPCError({ code: 'UNAUTHORIZED' })
+      
+      // Validar Destino y Transportista
+      const receiver = await db.query.workspaces.findFirst({ where: eq(workspaces.id, input.receiverWorkspaceId) })
+      if (!receiver) throw new TRPCError({ code: 'BAD_REQUEST', message: `El Biffco ID de destino (${input.receiverWorkspaceId}) no existe o está mal ingresado.` })
+      
+      if (input.carrierWorkspaceId) {
+        const carrier = await db.query.workspaces.findFirst({ where: eq(workspaces.id, input.carrierWorkspaceId) })
+        if (!carrier) throw new TRPCError({ code: 'BAD_REQUEST', message: `El Biffco ID del transportista (${input.carrierWorkspaceId}) no existe o está mal ingresado.` })
+      }
       
       // Controlar tenencia de todos los activos
       const targetAssets = await db.query.assets.findMany({
