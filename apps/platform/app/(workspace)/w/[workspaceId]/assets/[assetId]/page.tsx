@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
@@ -42,14 +42,15 @@ export default function AssetPassportPage() {
   return (
     <div className="flex flex-col gap-8 pb-12 animate-in fade-in duration-300 max-w-5xl mx-auto w-full">
       {/* Header and Back navigation */}
-      <div className="flex items-center gap-4">
-        <button 
-          onClick={() => router.push(`/w/${workspaceId}/assets`)}
-          className="p-2 rounded-full hover:bg-surface-raised text-text-secondary hover:text-text-primary transition-colors"
-        >
-          <IconArrowLeft size={20} />
-        </button>
-        <div className="flex flex-col">
+      <div className="flex items-start justify-between w-full">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => router.push(`/w/${workspaceId}/assets`)}
+            className="p-2 rounded-full hover:bg-surface-raised text-text-secondary hover:text-text-primary transition-colors"
+          >
+            <IconArrowLeft size={20} />
+          </button>
+          <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-text-primary">Pasaporte del Activo</h1>
             <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
@@ -62,6 +63,26 @@ export default function AssetPassportPage() {
             <IconHash size={14} className="text-primary/70" />
             {asset.id}
           </p>
+        </div>
+        </div>
+        
+        <div className="flex gap-2">
+            <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 text-text-secondary"
+                onClick={() => window.open(`/w/${workspaceId}/assets/${assetId}/print`, '_blank')}
+            >
+                <IconPrinter size={16} /> Imprimir Trazabilidad PDF
+            </Button>
+            <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2" 
+                onClick={() => setQrModalOpen(true)}
+            >
+                <IconQrcode size={16} /> Ver Identificador QR
+            </Button>
         </div>
       </div>
 
@@ -141,9 +162,19 @@ export default function AssetPassportPage() {
                               {v.title}
                               {isGenesis && <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
                             </h4>
-                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2.5 py-1 rounded-full border border-border/50 w-max mt-1 sm:mt-0">
-                              {new Date(event.createdAt).toLocaleDateString()} — {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                            </span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-xs text-text-muted font-medium bg-surface-raised px-2.5 py-1 rounded-full border border-border/50 w-max mt-1 sm:mt-0">
+                                {new Date(event.createdAt).toLocaleDateString()} — {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                              </span>
+                              <button
+                                aria-label="Imprimir Certificado de Movimiento"
+                                onClick={() => window.open(`/w/${workspaceId}/assets/${assetId}/print?eventId=${event.id}`, '_blank')}
+                                className="text-text-muted hover:text-primary transition-colors p-1"
+                                title="Imprimir Comprobante"
+                              >
+                                <IconPrinter size={16} />
+                              </button>
+                            </div>
                          </div>
                          
                          <p className="text-sm text-text-primary mt-1">{displayDesc}</p>
