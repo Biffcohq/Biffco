@@ -72,127 +72,128 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-[#F9FAFB] p-6 pt-12 dark:bg-[#0C111D] animate-in fade-in">
-      <div className="w-full max-w-2xl space-y-6">
+    <div className="flex min-h-screen flex-col items-center bg-gray-50 p-4 pt-8 dark:bg-[#0a0a0a] selection:bg-blue-500/30">
+      <div className="w-full max-w-3xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
         
-        <header className="text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-[#101828] dark:text-[#F2F4F7]">
-            Verificación de Activo Real
-          </h1>
-          <p className="text-sm font-mono mt-1 text-[#475467] dark:text-[#98A2B3]">
-            {assetId}
-          </p>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <span className="inline-block rounded bg-green-100 px-2 py-1 text-xs font-semibold text-green-800 dark:bg-green-900 dark:text-green-300">
-              {assetData.status}
-            </span>
-            {assetData.holds?.length === 0 ? (
-               <span className="inline-flex items-center gap-1 rounded bg-emerald-100 px-2 py-1 text-xs font-bold text-center text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300">
-                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
-                 Zero Deforestation (GFW)
-               </span>
-            ) : (
-               <span className="inline-flex items-center gap-1 rounded bg-red-100 px-2 py-1 text-xs font-bold text-center text-red-800 dark:bg-red-900 dark:text-red-300">
-                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
-                 No Compliant (Hold)
-               </span>
-            )}
-            {assetData.metadata?.hsCode && (
-               <span className="inline-block rounded bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-900 dark:text-blue-300">
-                 HSC: {assetData.metadata.hsCode}
-               </span>
+        {/* BRAND & STATUS HEADER */}
+        <header className="flex flex-col items-center text-center space-y-4">
+          <div className="flex items-center gap-3">
+             <img src="https://emojicdn.elk.sh/🔐" alt="Secure" className="w-6 h-6" />
+             <h1 className="text-xl font-black tracking-tighter text-gray-900 dark:text-white uppercase">BIFFCO TRUST INFRASTRUCTURE</h1>
+          </div>
+          
+          <div className="bg-white dark:bg-[#111111] p-6 rounded-3xl shadow-sm border border-gray-200 dark:border-gray-800 w-full relative overflow-hidden">
+             
+             {/* Decorative Background Blob */}
+             <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+             <h2 className="text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 mb-1">Activo Digital Verificado</h2>
+             <p className="font-mono text-xl md:text-2xl font-black text-gray-900 dark:text-white tracking-tight break-all">
+                {assetId}
+             </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+              <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold
+                ${assetData.status === 'ACTIVE' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800' 
+                : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300'}`}>
+                <span className="w-2 h-2 rounded-full bg-current animate-pulse"></span>
+                {assetData.status === 'ACTIVE' ? 'ESTADO CONFORME' : assetData.status}
+              </span>
+
+              {assetData.holds?.length === 0 ? (
+                 <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-bold dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800">
+                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                   Libre de Restricciones
+                 </span>
+              ) : (
+                 <span className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-red-50 text-red-700 border border-red-200 text-sm font-bold dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">
+                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                   Retenido (Hold)
+                 </span>
+              )}
+            </div>
+
+            {assetData.holds?.length > 0 && (
+              <div className="mt-6 border border-red-200 bg-red-50/50 p-4 rounded-xl dark:bg-red-950/20 dark:border-red-900/50 text-left">
+                <p className="text-sm font-bold text-red-800 dark:text-red-400">⚠️ Este activo se encuentra inmovilizado comercialmente. Su transferencia a nivel global será rechazada matemáticamente.</p>
+              </div>
             )}
           </div>
         </header>
 
-        <main className="rounded-xl border border-[#EAECF0] bg-white p-6 shadow-sm dark:border-[#1F242F] dark:bg-[#161B26]">
-          <h2 className="mb-4 text-lg font-semibold text-[#101828] dark:text-[#F2F4F7]">
-             Integridad Logística
-          </h2>
-          
-          <div className="grid grid-cols-2 gap-4 rounded bg-[#F2F4F7] p-4 dark:bg-[#1C222E]">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-[#475467] dark:text-[#98A2B3]">Último Evento</p>
-              <p className="font-mono text-sm dark:text-[#F2F4F7]">{event ? event.eventType : 'N/A'}</p>
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-[#475467] dark:text-[#98A2B3]">Timestamp</p>
-              <p className="text-sm font-mono dark:text-[#F2F4F7]">
-                {event ? new Date(event.createdAt).toLocaleString('es-AR') : 'N/A'}
-              </p>
-            </div>
-          </div>
-
-          {assetData.holds?.length > 0 && (
-            <div className="mt-6 border border-red-200 bg-red-50 p-4 rounded dark:bg-red-900/20 dark:border-red-800">
-              <h3 className="font-bold text-red-800 dark:text-red-400">⚠️ Advertencia de Cuarentena (Hold)</h3>
-              <p className="text-sm text-red-700 dark:text-red-300">
-                Este activo tiene restricciones legales y/o aduaneras vigentes que lo inmovilizan.
-              </p>
-            </div>
-          )}
-
-          <div className="mt-6 flex flex-col gap-2 p-4 rounded border border-dashed border-primary/30 bg-primary/5">
-             <p className="text-sm font-bold text-primary">⚡ Edge Runtime Live Fetch</p>
-             <p className="text-xs text-text-muted">
-                La página viaja en milisegundos desde el nodo CDN y los datos frescos son capturados vía Edge HTTP Request sin penalidad de Cold Start DB.
-                La verificación de firma se realiza utilizando WebCrypto API en The Edge Network.
-             </p>
-             <div className="mt-2">
-                <SignatureBadge status="valid" />
-             </div>
-          </div>
-
-          <div className="mt-8 border-t border-[#EAECF0] dark:border-[#1F242F] pt-6 flex flex-col gap-4">
-             <h3 className="font-semibold text-lg text-[#101828] dark:text-[#F2F4F7]">
-                Origen Geográfico Garantizado (EUDR)
-             </h3>
-             <p className="text-sm text-gray-500 dark:text-gray-400">
-                Polígono de nacimiento y cría. Certificado contra Global Forest Watch (Corte Diciembre 2020) garantizando Cero Deforestación.
-             </p>
-             <div className="relative w-full h-64 border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden bg-[#FAFAFA] dark:bg-black">
-                <iframe width="100%" height="100%" frameBorder="0" scrolling="no" src={`https://www.openstreetmap.org/export/embed.html?bbox=-59.0,-35.0,-58.0,-34.0&layer=mapnik`} className="pointer-events-none opacity-90 grayscale"></iframe>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="bg-emerald-500/20 w-48 h-48 animate-pulse rounded-full absolute mix-blend-multiply"></div>
-                  <svg className="w-12 h-12 text-emerald-600 drop-shadow-md z-10" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+        {/* LOGISTICS & DATA */}
+        <main className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {/* Card Last Event */}
+             <div className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between">
+                <div>
+                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Último Movimiento Registrado</p>
+                   <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{event ? event.eventType.replace(/_/g, ' ') : 'Registro Inicial'}</p>
                 </div>
-                <div className="absolute bottom-2 left-2 bg-white/95 dark:bg-black/95 px-3 py-1.5 shadow rounded border border-gray-300 dark:border-gray-700 flex items-center gap-2">
-                   <span className="relative flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span></span>
-                   <span className="text-[10px] uppercase font-mono font-bold text-gray-800 dark:text-gray-200">Satélite GFW: Live Sync (CLEAR)</span>
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                   <p className="text-sm font-mono text-gray-500 dark:text-gray-400">
+                     {event ? new Date(event.createdAt).toLocaleString('es-AR') : 'Sin historial'}
+                   </p>
+                </div>
+             </div>
+
+             {/* Proof Validated */}
+             <div className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity dark:from-blue-900/10"></div>
+                <div>
+                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Seguridad Matemática</p>
+                   <p className="text-sm font-medium text-gray-600 dark:text-gray-300 leading-snug">
+                     Firmas del operador validadas vía WebCrypto API desde nodos de borde (The Edge). Datos inmutables.
+                   </p>
+                </div>
+                <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+                   <SignatureBadge status="valid" />
                 </div>
              </div>
           </div>
 
-          {graphData.nodes.length > 0 && (
-            <div className="mt-8 border-t border-[#EAECF0] dark:border-[#1F242F] pt-6 flex flex-col gap-4">
-              <h3 className="font-semibold text-lg text-[#101828] dark:text-[#F2F4F7]">
-                 Trazabilidad Inyectable (DAG)
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                 Árbol gráfico representando los Assets antecesores (Merges) y dependientes originados por (Splits).
-              </p>
-              <div className="w-full h-[400px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden bg-[#FAFAFA] dark:bg-black">
-                 <DAGVisualizer 
-                   nodes={graphData.nodes} 
-                   edges={graphData.edges} 
-                 />
-              </div>
-            </div>
-          )}
+          <div className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
+             <div className="p-6 border-b border-gray-100 dark:border-gray-800">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                   Trazabilidad Física Inyectable
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Historial del ensamble de los componentes de este lote, auditables uno a uno.</p>
+             </div>
+             
+             {graphData.nodes.length > 0 ? (
+               <div className="w-full h-[400px] bg-[#fafafa] dark:bg-black/50">
+                   <DAGVisualizer nodes={graphData.nodes} edges={graphData.edges} />
+               </div>
+             ) : (
+               <div className="p-8 text-center bg-gray-50 dark:bg-[#0a0a0a]">
+                 <p className="text-sm font-mono text-gray-400">Sin dependencias logísticas (Lote Original)</p>
+               </div>
+             )}
+          </div>
 
-          <div className="mt-8 pt-4 pb-4 border-t border-dashed border-gray-300 dark:border-gray-800 flex justify-center">
-             <a 
-               href={`${baseUrl.replace('/trpc', '')}/assets/${assetId}/passport`} 
-               target="_blank" 
-               rel="noopener noreferrer"
-               className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-primary rounded-lg shadow-sm hover:bg-primary/90 transition-all active:scale-95"
+          {/* PRINT BUTTON */}
+          <div className="pt-8 pb-12 flex justify-center">
+             <button 
+               onClick={() => {
+                  if (typeof window !== 'undefined') window.print();
+               }}
+               className="inline-flex items-center gap-3 px-8 py-4 text-sm font-bold text-white bg-gray-900 dark:bg-white dark:text-gray-900 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all active:scale-95 border border-transparent dark:hover:border-gray-300"
              >
-               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-               Descargar Asset Passport (PDF)
-             </a>
+               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect width="12" height="8" x="6" y="14"></rect></svg>
+               Imprimir Resguardo Físico (PDF)
+             </button>
           </div>
         </main>
       </div>
+      
+      {/* CSS para esconder elementos en impresion */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+           button { display: none !important; }
+           body { background: white !important; }
+           * { color: black !important; border-color: #ddd !important; }
+        }
+      `}} />
     </div>
   );
 }
