@@ -1,9 +1,8 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
-import { router, protectedProcedure, requirePermission } from '../trpc'
+import { router, protectedProcedure } from '../trpc'
 import { workspaces } from '@biffco/db/schema'
 import { eq, and, or, ilike, ne } from '@biffco/db'
-import { Permission } from '@biffco/core/rbac'
 
 export const workspacesRouter = router({
   getProfile: protectedProcedure
