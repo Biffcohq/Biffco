@@ -9,8 +9,13 @@ import { AssetPassport } from '@biffco/pdf';
 export async function setupPdfRoutes(app: FastifyInstance) {
   app.get('/api/assets/:id/passport', async (request, reply) => {
     try {
-      await request.jwtVerify();
-      const user = request.user as { workspaceId: string };
+      const token = (request.query as { token?: string }).token || request.cookies?.accessToken;
+      if (!token) {
+        return reply.status(401).send({ error: "Falta token de acceso" });
+      }
+      
+      const payload = await app.jwt.verify<{ workspaceId: string }>(token);
+      const user = { workspaceId: payload.workspaceId };
       const { id } = request.params as { id: string };
 
       // 1. Fetch Asset Data

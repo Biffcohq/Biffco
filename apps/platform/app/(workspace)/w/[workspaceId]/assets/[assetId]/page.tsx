@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter, IconFileExport } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter, IconFileExport, IconFileDownload, IconShare } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { StatusPill } from '@/app/components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
@@ -96,27 +96,50 @@ export default function AssetPassportPage() {
         <div className="flex gap-2">
             <Button 
                 variant="outline" 
-                size="sm" 
-                className="gap-2 text-text-secondary"
+                size="icon"
+                title="Descargar PDF (Vectorial)" 
+                className="text-text-secondary"
+                onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/assets/${assetId}/passport`, '_blank')}
+            >
+                <IconFileDownload size={18} />
+            </Button>
+            <Button 
+                variant="outline" 
+                size="icon"
+                title="Descargar CSV (Dataset)" 
+                className="text-text-secondary"
                 onClick={downloadCSV}
             >
-                <IconFileExport size={16} /> Descargar CSV
+                <IconFileExport size={18} />
             </Button>
             <Button 
                 variant="outline" 
-                size="sm" 
-                className="gap-2 text-text-secondary"
+                size="icon"
+                title="Imprimir" 
+                className="text-text-secondary"
                 onClick={() => window.open(`/print/w/${workspaceId}/assets/${assetId}`, '_blank')}
             >
-                <IconPrinter size={16} /> Exportar Físico (PDF)
+                <IconPrinter size={18} />
             </Button>
             <Button 
                 variant="outline" 
-                size="sm" 
-                className="gap-2" 
-                onClick={() => setQrModalOpen(true)}
+                size="icon"
+                title="Compartir Trazabilidad" 
+                className="text-text-secondary"
+                onClick={() => {
+                  if (navigator.share) {
+                    navigator.share({
+                      title: 'Pasaporte Biffco',
+                      text: `Trazabilidad inmutable para el activo ${assetId}`,
+                      url: verifyUrl
+                    }).catch(err => console.error("Error compartiendo:", err));
+                  } else {
+                    navigator.clipboard.writeText(verifyUrl);
+                    alert("Enlace público copiado al portapapeles.");
+                  }
+                }}
             >
-                <IconQrcode size={16} /> Ver Identificador QR
+                <IconShare size={18} />
             </Button>
         </div>
       </div>
