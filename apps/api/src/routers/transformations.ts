@@ -1,16 +1,14 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { router, protectedProcedure, requirePermission } from '../trpc';
+import { router, requirePermission } from '../trpc';
 import { assets, domainEvents, holds } from '@biffco/db/schema';
 import { eq, inArray, and } from '@biffco/db';
-import { sql } from 'drizzle-orm';
 import { Permission } from '@biffco/core/rbac';
 
 export const transformationsRouter = router({
   
   // Transform or Split Assets
-  transform: protectedProcedure
-    .use(requirePermission(Permission.ASSETS_TRANSFORM))
+  transform: requirePermission(Permission.ASSETS_TRANSFORM)
     .input(z.object({
       sourceAssetIds: z.array(z.string()).min(1, "Debe haber al menos 1 activo origen"),
       outputs: z.array(z.object({
@@ -21,8 +19,13 @@ export const transformationsRouter = router({
       memo: z.string().optional()
     }))
     .mutation(async ({ input, ctx }) => {
+      const { db, workspaceId, memberId } = ctx;
+      if (!workspaceId) {
+         throw new TRPCError({ code: "UNAUTHORIZED", message: "Missing Workspace" })
+      }
+
       // Usar transacción para atomicidad total
-      return await ctx.db.transaction(async (tx) => {
+      return await db.transaction(async (tx) => {
         
         // 1. Verificar orígenes (activos, mismo workspace, no bloqueados)
         const sourceAssets = await tx.select()
@@ -30,7 +33,7 @@ export const transformationsRouter = router({
           .where(
             and(
               inArray(assets.id, input.sourceAssetIds),
-              eq(assets.workspaceId, ctx.workspaceId!)
+              eq(assets.workspaceId, workspaceId)
             )
           );
 
@@ -58,7 +61,7 @@ export const transformationsRouter = router({
         }
 
         const now = new Date();
-        const verticalId = sourceAssets[0].verticalId; // Asumimos misma verticalidad genérica
+        const verticalId = sourceAssets[0]?.verticalId; // Asumimos misma verticalidad genérica
 
         // 2. Marcar padres como Consumidos
         await tx.update(assets)
@@ -67,7 +70,7 @@ export const transformationsRouter = router({
 
         // 3. Generar eventos para Padres
         const parentEvents = sourceAssets.map(parent => ({
-          workspaceId: ctx.workspaceId!,
+          workspaceId: workspaceId,
           streamId: parent.id,
           streamType: 'asset',
           eventType: 'ASSET_TRANSFORMED',
@@ -77,7 +80,7 @@ export const transformationsRouter = router({
             outputCount: input.outputs.length
           },
           hash: `fake-server-hash-parent-${parent.id}-${now.getTime()}`, // TODO: Firma real del The Edge o Server Key
-          signerId: ctx.user.id
+          signerId: memberId || 'system'
         }));
 
         await tx.insert(domainEvents).values(parentEvents);
@@ -88,7 +91,7 @@ export const transformationsRouter = router({
         for (const out of input.outputs) {
            for (let i = 0; i < out.quantity; i++) {
              newAssetRows.push({
-               workspaceId: ctx.workspaceId!,
+               workspaceId: workspaceId,
                verticalId: verticalId,
                type: out.type,
                status: 'active',
@@ -102,7 +105,7 @@ export const transformationsRouter = router({
 
         // 5. Generar eventos de Nacimiento para Hijos
         const childEvents = createdAssets.map(child => ({
-          workspaceId: ctx.workspaceId!,
+          workspaceId: workspaceId,
           streamId: child.id,
           streamType: 'asset',
           eventType: 'ASSET_BORN_FROM_TRANSFORMATION',
@@ -112,7 +115,7 @@ export const transformationsRouter = router({
             bornAt: now.toISOString()
           },
           hash: `fake-server-hash-child-${child.id}-${now.getTime()}`,
-          signerId: ctx.user.id
+          signerId: memberId || 'system'
         }));
 
         await tx.insert(domainEvents).values(childEvents);
