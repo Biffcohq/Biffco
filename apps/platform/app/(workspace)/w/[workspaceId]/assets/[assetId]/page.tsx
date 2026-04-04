@@ -6,6 +6,7 @@ import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
 import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
+import { StatusPill } from '../../../../components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
 import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
 
@@ -53,11 +54,7 @@ export default function AssetPassportPage() {
           <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold text-text-primary">Pasaporte del Activo</h1>
-            <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
-              asset.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-surface-raised text-text-muted border-border'
-            }`}>
-              {asset.status}
-            </span>
+            <StatusPill status={asset.status} />
           </div>
           <p className="text-text-secondary text-sm font-mono flex items-center gap-1.5 mt-1">
             <IconHash size={14} className="text-primary/70" />

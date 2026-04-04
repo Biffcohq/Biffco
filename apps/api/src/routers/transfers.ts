@@ -206,23 +206,55 @@ export const transfersRouter = router({
 
   // Queries para Interfaces Logísticas
   listIncomingLogistics: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.query.assetTransfers.findMany({
+    const raw = await ctx.db.query.assetTransfers.findMany({
       where: eq(assetTransfers.receiverWorkspaceId, ctx.workspaceId!),
       orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
     })
+    return enrichWithAliases(raw, ctx.db)
   }),
 
   listOutgoingLogistics: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.query.assetTransfers.findMany({
+    const raw = await ctx.db.query.assetTransfers.findMany({
       where: eq(assetTransfers.senderWorkspaceId, ctx.workspaceId!),
       orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
     })
+    return enrichWithAliases(raw, ctx.db)
   }),
 
   listAsCarrier: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.db.query.assetTransfers.findMany({
+    const raw = await ctx.db.query.assetTransfers.findMany({
       where: eq(assetTransfers.carrierWorkspaceId, ctx.workspaceId!),
       orderBy: (transfers, { desc }) => [desc(transfers.createdAt)]
     })
+    return enrichWithAliases(raw, ctx.db)
   }),
 })
+
+async function enrichWithAliases(transfersData: any[], db: any) {
+  if (!transfersData.length) return []
+  
+  const idsToFetch = new Set<string>()
+  for (const t of transfersData) {
+    if (t.senderWorkspaceId) idsToFetch.add(t.senderWorkspaceId)
+    if (t.receiverWorkspaceId) idsToFetch.add(t.receiverWorkspaceId)
+    if (t.carrierWorkspaceId) idsToFetch.add(t.carrierWorkspaceId)
+  }
+  
+  const mappedIds: Record<string, string> = {}
+  if (idsToFetch.size > 0) {
+    const resolved = await db.query.workspaces.findMany({
+      where: inArray(workspaces.id, Array.from(idsToFetch)),
+      columns: { id: true, alias: true }
+    })
+    for (const w of resolved) {
+      mappedIds[w.id] = w.alias
+    }
+  }
+
+  return transfersData.map((t) => ({
+    ...t,
+    senderAlias: t.senderWorkspaceId ? mappedIds[t.senderWorkspaceId] : null,
+    receiverAlias: t.receiverWorkspaceId ? mappedIds[t.receiverWorkspaceId] : null,
+    carrierAlias: t.carrierWorkspaceId ? mappedIds[t.carrierWorkspaceId] : null,
+  }))
+}

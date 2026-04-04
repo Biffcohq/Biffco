@@ -6,6 +6,7 @@ import { IconTruck, IconBox, IconMapPin } from '@tabler/icons-react'
 import { Button, toast } from '@biffco/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
+import { StatusPill } from '../components/StatusPill'
 
 export default function LogisticsClient() {
   const [tab, setTab] = useState<'OUTGOING' | 'INCOMING' | 'CARRIER'>('OUTGOING')
@@ -40,22 +41,34 @@ export default function LogisticsClient() {
         {items.map((item) => (
           <div key={item.id} className="p-4 border border-border rounded-lg bg-surface flex flex-col sm:flex-row justify-between gap-4 sm:items-center">
             <div>
-              <p className="text-sm font-semibold flex items-center gap-2">
+               <p className="text-sm font-semibold flex items-center gap-2">
                  <IconBox size={16} className="text-primary"/> 
                  Manifiesto: {item.id.slice(0, 8).toUpperCase()}
-                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${item.status === 'COMPLETED' ? 'bg-success/20 text-success' : item.status === 'IN_TRANSIT' ? 'bg-primary/20 text-primary' : 'bg-warning/20 text-warning'}`}>
-                   {item.status.replace(/_/g, ' ')}
-                 </span>
+                 <StatusPill status={item.status} className="!text-[10px] !px-2 !py-0.5" />
               </p>
               <p className="text-xs text-text-muted mt-1">
                  Activos: {(item.assetIds as string[]).length} cabezas. 
                  {item.dispatchedAt ? ` Creado hace ${formatDistanceToNow(new Date(item.dispatchedAt), { addSuffix: true, locale: es })}.` : ''}
               </p>
-              <div className="mt-2 text-xs flex flex-col gap-1 text-text-secondary">
-                 <div className="flex items-center gap-1"><IconMapPin size={12}/> Desde: {item.senderWorkspaceId}</div>
-                 <div className="flex items-center gap-1"><IconMapPin size={12}/> Hacia: {item.receiverWorkspaceId}</div>
-                 <div className="flex items-center gap-1"><IconTruck size={12}/> Transporista: {item.carrierWorkspaceId || 'No asignado'}</div>
-              </div>
+              <details className="mt-2 text-xs flex flex-col gap-1 text-text-secondary group">
+                 <summary className="cursor-pointer text-primary hover:underline w-max mb-1 list-none font-medium text-[11px] uppercase tracking-wider">
+                   {type === 'OUTGOING' ? 'Ver Detalles Logísticos' : type === 'INCOMING' ? 'Ver Datos de Origen' : 'Inspeccionar Partes'}
+                 </summary>
+                 <div className="pl-2 border-l-2 border-border flex flex-col gap-1 py-1 mt-1">
+                   {type === 'OUTGOING' ? (
+                      <div className="flex items-center gap-1"><IconMapPin size={12}/> Destino Pautado: <strong>{(item as any).receiverAlias || item.receiverWorkspaceId}</strong></div>
+                   ) : (
+                      <div className="flex items-center gap-1"><IconMapPin size={12}/> Remitente Original: <strong>{(item as any).senderAlias || item.senderWorkspaceId}</strong></div>
+                   )}
+                   <div className="flex items-center gap-1"><IconTruck size={12}/> Transporte Legal: <strong>{(item as any).carrierAlias || item.carrierWorkspaceId || 'Vehículo Propio / No Asignado'}</strong></div>
+                   
+                   <div className="mt-2 text-[10px] text-text-muted/60 border-t border-border/50 pt-2 flex flex-col gap-0.5">
+                     <p>Origen ID: {item.senderWorkspaceId}</p>
+                     <p>Destino ID: {item.receiverWorkspaceId}</p>
+                     {item.carrierWorkspaceId && <p>Carrier ID: {item.carrierWorkspaceId}</p>}
+                   </div>
+                 </div>
+              </details>
             </div>
             
             <div className="flex items-center gap-2">

@@ -1,7 +1,8 @@
 'use client'
 import React from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { IconPolygon } from '@tabler/icons-react';
+import { StatusPill } from '../../StatusPill';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetTable({ assets, isLoading }: { assets: any[], isLoading?: boolean }) {
@@ -55,9 +56,7 @@ export default function LivestockAssetTable({ assets, isLoading }: { assets: any
                        Anclado a Polygon
                      </span>
                   ) : (
-                     <span className={`px-2 py-1 rounded-full text-xs font-medium border ${asset.status === 'ACTIVE' ? 'bg-green-500/10 text-green-500 border-green-500/20' : 'bg-orange-500/10 text-orange-500 border-orange-500/20'}`}>
-                       {asset.status === 'ACTIVE' ? 'Trazable Local' : asset.status}
-                     </span>
+                     <StatusPill status={asset.status} />
                   )}
                 </td>
               </tr>
