@@ -117,12 +117,13 @@ export default function AssetPassportPage() {
                   type VisualConf = { icon: React.ElementType, textColor: string, bgColor: string, ringColor: string, title: string };
                   const eventNameMap: Record<string, VisualConf> = {
                     'ASSET_CREATED': { icon: IconBox, textColor: 'text-blue-600', bgColor: 'bg-blue-100', ringColor: 'ring-blue-50', title: 'Registro Inicial' },
+                    'LIVESTOCK_ORIGINATED': { icon: IconBox, textColor: 'text-blue-600', bgColor: 'bg-blue-100', ringColor: 'ring-blue-50', title: 'Nacimiento Registrado' },
                     'ASSET_DISPATCHED': { icon: IconTruck, textColor: 'text-amber-600', bgColor: 'bg-amber-100', ringColor: 'ring-amber-50', title: 'Despacho Logístico' },
                     'ASSET_TRANSIT_SCAN': { icon: IconMapPin, textColor: 'text-indigo-600', bgColor: 'bg-indigo-100', ringColor: 'ring-indigo-50', title: 'Punto de Control' },
                     'ASSET_RECEIVED': { icon: IconBuildingStore, textColor: 'text-emerald-600', bgColor: 'bg-emerald-100', ringColor: 'ring-emerald-50', title: 'Recepción en Destino' },
                   }
-                  const defaultConf = { icon: IconCheck, textColor: 'text-primary', bgColor: 'bg-primary/10', ringColor: 'ring-bg', title: event.eventType.replace(/_/g, ' ') };
-                  const v = eventNameMap[event.eventType] || defaultConf;
+                  const defaultConf: VisualConf = { icon: IconCheck, textColor: 'text-primary', bgColor: 'bg-primary/10', ringColor: 'ring-bg', title: event.eventType.replace(/_/g, ' ') };
+                  const v: VisualConf = eventNameMap[event.eventType] || defaultConf;
                   const displayDesc = eData.message || (isGenesis ? 'Activo dado de alta en la red Biffco' : 'Actualización de estado');
 
                   return (
@@ -146,10 +147,10 @@ export default function AssetPassportPage() {
                          
                          <p className="text-sm text-text-primary mt-1">{displayDesc}</p>
                          
-                         <div className="flex items-center gap-1.5 text-xs text-text-muted">
+                         <div className="flex items-center gap-1.5 text-xs text-text-muted mt-1">
                            <span className="opacity-70">Responsable:</span> 
                            <span className="font-mono bg-surface-raised px-1.5 py-0.5 rounded border border-border/50 text-text-primary">
-                             {event.signerId === 'system' ? 'Proceso Automatizado' : event.signerId}
+                             {(event as any).signerAlias || event.signerId}
                            </span>
                          </div>
 

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { TRPCError } from '@trpc/server'
 import { router, protectedProcedure, requirePermission } from '../trpc'
-import { assets, domainEvents, workspaces } from '@biffco/db/schema'
+import { assets, domainEvents, workspaces, workspaceMembers, persons } from '@biffco/db/schema'
 import { eq, and } from '@biffco/db'
 import { sql, inArray } from 'drizzle-orm'
 import { Permission } from '@biffco/core/rbac'
@@ -47,15 +47,37 @@ export const assetsRouter = router({
       }
 
       // Traer los últimos 10 eventos aplicados a este activo
-      const assetEvents = await ctx.db.query.domainEvents.findMany({
+      const assetEventsRaw = await ctx.db.query.domainEvents.findMany({
         where: eq(domainEvents.streamId, asset.id),
         orderBy: (domainEvents, { desc }) => [desc(domainEvents.createdAt)],
         limit: 10
       })
 
-      // Buscar si estos eventos están anclados
-      const eventIds = assetEvents.map(e => e.id)
-      let eventsWithAnchors = assetEvents as (typeof assetEvents[0] & { polygonTxHash?: string | undefined })[]
+      const signerIds = [...new Set(assetEventsRaw.map(e => e.signerId).filter(id => id !== 'system'))];
+      const signersMap = new Map<string, string>();
+      if (signerIds.length > 0) {
+        const signersData = await ctx.db.select({
+          memberId: workspaceMembers.id,
+          alias: workspaces.alias,
+          personName: persons.name
+        })
+        .from(workspaceMembers)
+        .leftJoin(workspaces, eq(workspaceMembers.workspaceId, workspaces.id))
+        .leftJoin(persons, eq(workspaceMembers.personId, persons.id))
+        .where(inArray(workspaceMembers.id, signerIds));
+
+        signersData.forEach(sd => {
+           signersMap.set(sd.memberId, `${sd.personName} (${sd.alias || 'Tenant'})`);
+        })
+      }
+
+      const assetEventsMapped = assetEventsRaw.map(e => ({
+        ...e,
+        signerAlias: e.signerId === 'system' ? 'Proceso Automatizado' : signersMap.get(e.signerId) || e.signerId
+      }))
+
+      const eventIds = assetEventsMapped.map(e => e.id)
+      let eventsWithAnchors = assetEventsMapped as (typeof assetEventsMapped[0] & { polygonTxHash?: string | undefined })[]
       
       if (eventIds.length > 0) {
         // Buscar vínculos de anclaje para estos ids
@@ -66,9 +88,9 @@ export const assetsRouter = router({
         .leftJoin(anchorsLog, eq(anchoredEvents.anchorId, anchorsLog.id))
         .where(inArray(anchoredEvents.eventId, eventIds))
 
-        eventsWithAnchors = assetEvents.map(e => {
+        eventsWithAnchors = assetEventsMapped.map(e => {
           const link = linkages.find(l => l.eventId === e.id)
-          const newEvent = { ...e } as typeof assetEvents[0] & { polygonTxHash?: string }
+          const newEvent = { ...e } as typeof assetEventsMapped[0] & { polygonTxHash?: string | undefined }
           if (link?.txHash) {
             newEvent.polygonTxHash = link.txHash
           }
