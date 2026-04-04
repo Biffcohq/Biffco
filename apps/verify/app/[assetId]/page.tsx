@@ -53,7 +53,6 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
   }
 
   const { result: { data: assetData } } = await res.json();
-  const event = assetData.events?.[0]; // Último evento
 
   // Fetch the lineage DAG graph for this asset (también compatible en Edge)
   let graphData = { nodes: [], edges: [] };
@@ -125,18 +124,74 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
         {/* LOGISTICS & DATA */}
         <main className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {/* Card Last Event */}
-             <div className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between">
-                <div>
-                   <p className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-2">Último Movimiento Registrado</p>
-                   <p className="text-lg font-bold text-gray-900 dark:text-gray-100">{event ? event.eventType.replace(/_/g, ' ') : 'Registro Inicial'}</p>
-                </div>
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
-                   <p className="text-sm font-mono text-gray-500 dark:text-gray-400">
-                     {event ? new Date(event.createdAt).toLocaleString('es-AR') : 'Sin historial'}
-                   </p>
-                </div>
+          {/* Full Event Ledger */}
+          <div className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm col-span-1 md:col-span-2">
+             <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-3 mb-6">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                   <svg className="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                   Libro Mayor de Eventos (Event Ledger)
+                </h2>
+                <span className="text-xs text-gray-500 font-mono bg-gray-50 dark:bg-[#1A1A1A] px-2 py-1 rounded border border-gray-200 dark:border-gray-800">
+                   {assetData.events?.length || 0} Bloques
+                </span>
              </div>
+
+             <div className="relative border-l border-gray-200 dark:border-gray-800 ml-3 md:ml-4 space-y-8 pb-4">
+                {assetData.events?.map((evt: any, idx: number) => {
+                  const isGenesis = idx === assetData.events.length - 1;
+                  const eData = evt.data || {};
+                  
+                  type VisualConf = { icon: string, textColor: string, bgColor: string, ringColor: string, title: string };
+                  const eventNameMap: Record<string, VisualConf> = {
+                    'ASSET_CREATED': { icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Registro Inicial' },
+                    'LIVESTOCK_ORIGINATED': { icon: 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4', textColor: 'text-blue-600 dark:text-blue-400', bgColor: 'bg-blue-100 dark:bg-blue-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Nacimiento Registrado' },
+                    'ASSET_DISPATCHED': { icon: 'M8 6h13a1 1 0 011 1v7a1 1 0 01-1 1H8v-9zM3 10h5M3 14h5m-4' /* truck pseudo */, textColor: 'text-amber-600 dark:text-amber-400', bgColor: 'bg-amber-100 dark:bg-amber-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Despacho Logístico' },
+                    'ASSET_TRANSIT_SCAN': { icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z', textColor: 'text-indigo-600 dark:text-indigo-400', bgColor: 'bg-indigo-100 dark:bg-indigo-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Punto de Control' },
+                    'ASSET_RECEIVED': { icon: 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', textColor: 'text-emerald-600 dark:text-emerald-400', bgColor: 'bg-emerald-100 dark:bg-emerald-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Recepción en Destino' },
+                    'ASSET_REJECTED': { icon: 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z', textColor: 'text-red-500 dark:text-red-400', bgColor: 'bg-red-100 dark:bg-red-900/40', ringColor: 'ring-white dark:ring-[#111111]', title: 'Carga Observada / Destino Rechazado' },
+                  }
+                  const defaultConf: VisualConf = { icon: 'M5 13l4 4L19 7', textColor: 'text-blue-500 dark:text-blue-400', bgColor: 'bg-blue-50 dark:bg-blue-900/20', ringColor: 'ring-white dark:ring-[#111111]', title: evt.eventType.replace(/_/g, ' ') };
+                  const v: VisualConf = eventNameMap[evt.eventType] || defaultConf;
+                  const displayDesc = eData.message || (isGenesis ? 'Activo dado de alta en la red Logística Segura' : 'Actualización de estado');
+
+                  return (
+                    <div key={evt.id} className="relative pl-8 md:pl-12 pb-6">
+                       <div className={`absolute w-8 h-8 rounded-full left-[-16px] top-0 flex items-center justify-center ring-4 ${v.ringColor} ${v.bgColor} ${v.textColor}`}>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d={v.icon}></path></svg>
+                       </div>
+                       
+                       <div className="flex flex-col gap-2">
+                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
+                            <h4 className={`font-bold text-base flex items-center gap-2 ${v.textColor}`}>
+                              {v.title}
+                              {isGenesis && <span className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
+                            </h4>
+                            <span className="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-[#1A1A1A] px-2.5 py-1 rounded-full border border-gray-200 dark:border-gray-800 w-max mt-1 sm:mt-0">
+                              {new Date(evt.createdAt).toLocaleDateString()} — {new Date(evt.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
+                         </div>
+                         
+                         <p className="text-sm text-gray-700 dark:text-gray-300 mt-1">{displayDesc}</p>
+                         
+                         {(eData.carrierAlias || eData.receiverAlias || eData.operatorAlias) && (
+                           <div className="flex flex-col gap-1 mt-2 bg-gray-50 dark:bg-[#1A1A1A] p-3 rounded-lg border border-gray-200 dark:border-gray-800">
+                              {eData.operatorAlias && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400"><strong className="text-gray-900 dark:text-white font-medium">Registrado por:</strong> {eData.operatorAlias}</span>
+                              )}
+                              {eData.carrierAlias && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400"><strong className="text-gray-900 dark:text-white font-medium">Logística (Transporte):</strong> {eData.carrierAlias}</span>
+                              )}
+                              {eData.receiverAlias && (
+                                <span className="text-xs text-gray-500 dark:text-gray-400"><strong className="text-gray-900 dark:text-white font-medium">Destino Pautado:</strong> {eData.receiverAlias}</span>
+                              )}
+                           </div>
+                         )}
+                       </div>
+                    </div>
+                  );
+                })}
+             </div>
+          </div>
 
              {/* Proof Validated */}
              <div className="bg-white dark:bg-[#111111] p-6 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col justify-between overflow-hidden relative group">
