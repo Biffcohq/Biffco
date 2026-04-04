@@ -9,7 +9,7 @@
    Skipping validation of types
    Skipping linting
    Collecting page data ...
-⚠️ Saltando validación de entorno de variables (fase build detectada)
+ ⚠ Using edge runtime on a page currently disables static generation for that page
    Generating static pages (0/4) ...
    Generating static pages (1/4) 
    Generating static pages (2/4) 
@@ -20,12 +20,12 @@
 
 Route (app)                              Size     First Load JS
 ┌ ○ /                                    142 B          87.7 kB
-├ ○ /_not-found                          875 B          88.4 kB
-└ ƒ /[assetId]                           170 kB          258 kB
-+ First Load JS shared by all            87.5 kB
+├ ○ /_not-found                          875 B          88.5 kB
+└ ƒ /[assetId]                           190 kB          278 kB
++ First Load JS shared by all            87.6 kB
   ├ chunks/1a8804fd-407dc5ec1c904825.js  53.6 kB
-  ├ chunks/772-a6fcff81e380af6e.js       31.9 kB
-  └ other shared chunks (total)          2 kB
+  ├ chunks/856-6fae594978a52879.js       31.9 kB
+  └ other shared chunks (total)          2.03 kB
 
 
 ○  (Static)   prerendered as static content

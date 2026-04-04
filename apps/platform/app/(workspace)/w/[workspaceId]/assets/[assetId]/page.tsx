@@ -38,7 +38,7 @@ export default function AssetPassportPage() {
       </div>
     )
   }
-  const verifyUrl = `https://verify.biffco.co/assets/${asset.id}`
+  const verifyUrl = `https://verify.biffco.co/${asset.id}`
 
   const downloadCSV = () => {
      if (!asset) return;
@@ -99,7 +99,10 @@ export default function AssetPassportPage() {
                 size="icon"
                 title="Descargar PDF (Vectorial)" 
                 className="text-text-secondary"
-                onClick={() => window.open(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/assets/${assetId}/passport`, '_blank')}
+                onClick={() => {
+                  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/trpc\/?$/, '');
+                  window.open(`${baseUrl}/api/assets/${assetId}/passport`, '_blank');
+                }}
             >
                 <IconFileDownload size={18} />
             </Button>

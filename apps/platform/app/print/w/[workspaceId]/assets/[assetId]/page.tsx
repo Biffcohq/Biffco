@@ -31,7 +31,7 @@ function PassportPrintBody() {
   const isDore = asset.type === 'DoreBar'
   const isCoffee = asset.type === 'CoffeeSack'
   const meta = asset.metadata as Record<string, any>
-  const verifyUrl = `https://verify.biffco.co/assets/${asset.id}`
+  const verifyUrl = `https://verify.biffco.co/${asset.id}`
 
   // Filter events if specificEventId exists
   const eventsToPrint = specificEventId 
@@ -110,7 +110,7 @@ function PassportPrintBody() {
            const displayTitle = event.eventType.replace(/_/g, ' ');
            
            // Generate specific QR for the hash of this event
-           const eventVerifyUrl = `https://verify.biffco.co/assets/${asset.id}?txn=${event.hash}`
+           const eventVerifyUrl = `https://verify.biffco.co/${asset.id}?txn=${event.hash}`
 
            return (
              <div key={event.id} className="event-block border border-gray-200 shadow-sm rounded-xl p-5 flex flex-col gap-3 avoid-page-break relative overflow-hidden">
