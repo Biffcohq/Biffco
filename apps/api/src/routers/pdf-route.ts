@@ -80,9 +80,9 @@ export async function setupPdfRoutes(app: FastifyInstance) {
       // Enviamos el chorro binario directo al navegador
       return reply.send(stream);
 
-    } catch (error) {
+    } catch (error: any) {
        app.log.error(error);
-       return reply.status(500).send({ error: "Fallo rotundo generando el PDF Vectorial." });
+       return reply.status(500).send({ error: "Fallo rotundo generando el PDF Vectorial.", details: error.message, stack: error.stack });
     }
   });
 }
