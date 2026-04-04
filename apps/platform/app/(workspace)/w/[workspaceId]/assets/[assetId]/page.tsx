@@ -4,7 +4,7 @@ import React from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
-import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon, IconTruck, IconMapPin, IconBuildingStore, IconCheck, IconPrinter, IconFileExport } from '@tabler/icons-react'
 import { QRCodeSVG } from 'qrcode.react'
 import { StatusPill } from '@/app/components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
@@ -40,6 +40,36 @@ export default function AssetPassportPage() {
   }
   const verifyUrl = `https://verify.biffco.co/assets/${asset.id}`
 
+  const downloadCSV = () => {
+     if (!asset) return;
+     try {
+       const header = ['TIPO_EVENTO', 'FECHA', 'FIRMA', 'HASH_INMUTABLE', 'MENSAJE', 'TRANSPORTE', 'DESTINO'];
+       const rows = asset.events.map((e: any) => {
+         const d = e.data || {};
+         return [
+           e.eventType,
+           new Date(e.createdAt).toISOString(),
+           e.signerAlias || e.signerId || '',
+           e.hash,
+           d.message || '',
+           d.carrierAlias || d.carrierWorkspaceId || '',
+           d.receiverAlias || d.receiverWorkspaceId || ''
+         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+       });
+       const csvContent = [header.join(','), ...rows].join('\n');
+       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+       const url = URL.createObjectURL(blob);
+       const link = document.createElement('a');
+       link.setAttribute('href', url);
+       link.setAttribute('download', `trazabilidad_${asset.id.slice(0,8)}.csv`);
+       document.body.appendChild(link);
+       link.click();
+       document.body.removeChild(link);
+     } catch (err) {
+       console.error("Error generating CSV")
+     }
+  }
+
   return (
     <div className="flex flex-col gap-8 pb-12 animate-in fade-in duration-300 max-w-5xl mx-auto w-full">
       {/* Header and Back navigation */}
@@ -68,9 +98,17 @@ export default function AssetPassportPage() {
                 variant="outline" 
                 size="sm" 
                 className="gap-2 text-text-secondary"
+                onClick={downloadCSV}
+            >
+                <IconFileExport size={16} /> Descargar CSV
+            </Button>
+            <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 text-text-secondary"
                 onClick={() => window.open(`/print/w/${workspaceId}/assets/${assetId}`, '_blank')}
             >
-                <IconPrinter size={16} /> Imprimir Trazabilidad PDF
+                <IconPrinter size={16} /> Exportar Físico (PDF)
             </Button>
             <Button 
                 variant="outline" 

@@ -42,9 +42,9 @@ function PassportPrintBody() {
     <div className="bg-white min-h-screen text-black p-8 font-sans print:m-0 print:p-6 mx-auto w-[210mm]">
       {/* Brand Header with Color */}
       <div className="flex items-center justify-between border-b-4 border-blue-600 pb-5 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="bg-blue-600 text-white font-black text-2xl px-2 py-1 tracking-tighter">BIFFCO</div>
-          <div>
+        <div className="flex items-center gap-4">
+          <img src="/biffco-logo-color.svg" alt="Biffco" className="h-10" />
+          <div className="border-l-2 border-gray-300 pl-4">
             <h1 className="text-2xl font-black uppercase tracking-tight text-gray-900 leading-none">
               {specificEventId ? 'CONSTANCIA DE MOVIMIENTO' : 'PASAPORTE DIGITAL'}
             </h1>
