@@ -1,9 +1,13 @@
 /* eslint-env node, browser */
 /* global process, fetch, URL */
-import { SignatureBadge, DAGVisualizer } from '@biffco/ui';
+import { SignatureBadge } from '@biffco/ui';
+import dynamic from 'next/dynamic';
 import type { ReactElement } from 'react';
 
-
+const DAGVisualizer = dynamic(
+  () => import('@biffco/ui').then((mod) => mod.DAGVisualizer),
+  { ssr: false, loading: () => <div className="h-[400px] flex items-center justify-center font-mono text-gray-500">Renderizando Trazabilidad...</div> }
+);
 
 interface VerifyPageProps {
   params: {
