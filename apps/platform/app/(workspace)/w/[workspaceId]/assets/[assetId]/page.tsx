@@ -112,48 +112,71 @@ export default function AssetPassportPage() {
              <div className="relative border-l border-border/80 ml-3 md:ml-4 space-y-8 pb-4">
                 {asset.events?.map((event, idx) => {
                   const isGenesis = idx === asset.events.length - 1;
-                  const eData = event.data as Record<string, string | number>;
+                  const eData = event.data as Record<string, any>;
                   
+                  // Traducción visual del evento técnico a Operativo
+                  const eventNameMap: Record<string, string> = {
+                    'ASSET_CREATED': 'Registro Inicial',
+                    'ASSET_DISPATCHED': 'Despacho Logístico',
+                    'ASSET_TRANSIT_SCAN': 'Punto de Control',
+                    'ASSET_RECEIVED': 'Recepción en Destino',
+                  }
+                  const displayTitle = eventNameMap[event.eventType] || event.eventType.replace(/_/g, ' ');
+                  const displayDesc = eData.message || (isGenesis ? 'Activo dado de alta en la red Biffco' : 'Actualización de estado');
+
                   return (
                     <div key={event.id} className="relative pl-6 md:pl-8">
                        {/* Timeline Marker */}
                        <div className="absolute w-3 h-3 bg-primary rounded-full -left-[6.5px] top-1.5 ring-4 ring-bg"></div>
                        
                        {/* Event Card */}
-                       <div className="flex flex-col gap-2">
+                       <div className="flex flex-col gap-1.5">
                          <div className="flex flex-wrap items-center gap-2 justify-between">
-                            <h4 className="font-semibold text-text-primary text-sm flex items-center gap-2">
-                              {event.eventType.replace(/_/g, ' ')}
+                            <h4 className="font-semibold text-text-primary text-base flex items-center gap-2">
+                              {displayTitle}
                               {isGenesis && <span className="bg-primary/10 text-primary text-[10px] uppercase font-bold px-1.5 py-0.5 rounded">Génesis</span>}
-                              {event.polygonTxHash && (
-                                <a 
-                                  href={`https://amoy.polygonscan.com/tx/${event.polygonTxHash}`} 
-                                  target="_blank" 
-                                  rel="noreferrer"
-                                  title="Ver Registro Inmutable en Polygon Amoy"
-                                >
-                                  <IconPolygon size={14} className="text-[#8247E5] hover:opacity-80 transition-opacity" />
-                                </a>
-                              )}
                             </h4>
-                            <span className="text-xs text-text-muted tabular-nums">
-                              {new Date(event.createdAt).toLocaleString()}
+                            <span className="text-xs text-text-muted font-medium bg-surface-raised px-2 py-1 rounded-full border border-border/50">
+                              {new Date(event.createdAt).toLocaleDateString()} a las {new Date(event.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                             </span>
                          </div>
                          
-                         <div className="bg-surface-raised border border-border/60 rounded-md p-3 text-xs text-text-secondary font-mono overflow-x-auto">
-                            <span className="text-primary/70 block mb-1.5 pb-1 border-b border-border/40">Hash: {event.hash}</span>
-                            <pre className="text-text-muted mt-2">
-                              {JSON.stringify(eData, null, 2)}
-                            </pre>
-                         </div>
+                         <p className="text-sm text-text-secondary">{displayDesc}</p>
                          
                          <div className="flex items-center gap-1.5 text-xs text-text-muted mt-1">
-                           <span className="opacity-70">Firmante:</span> 
-                           <span className="font-mono bg-surface-raised px-1 py-0.5 rounded border border-border/50">
-                             {event.signerId === 'system' ? 'System-Signed (Trusted)' : event.signerId}
+                           <span className="opacity-70">Responsable (Firma Jurídica):</span> 
+                           <span className="font-mono bg-surface-raised px-1 py-0.5 rounded border border-border/50 font-medium text-text-primary">
+                             {event.signerId === 'system' ? 'Sistema Automatizado' : event.signerId}
                            </span>
                          </div>
+
+                         {/* Acordeón Criptográfico Oculto */}
+                         <details className="group mt-2">
+                           <summary className="cursor-pointer text-xs font-semibold text-primary flex items-center gap-1 hover:underline outline-none select-none">
+                             <span className="group-open:hidden flex items-center gap-1"><IconPolygon size={14}/> Mostrar Evidencia Criptográfica </span>
+                             <span className="hidden group-open:flex items-center gap-1"><IconPolygon size={14}/> Ocultar Evidencia</span>
+                           </summary>
+                           <div className="bg-surface border border-border/60 rounded-md p-3 text-xs text-text-secondary font-mono overflow-x-auto mt-2 shadow-inner">
+                              <div className="flex items-center justify-between mb-2 pb-2 border-b border-border/40">
+                                <div>
+                                  <span className="text-text-muted block text-[10px] uppercase">SHA-256 Hash del Bloque</span>
+                                  <span className="text-primary/80">{event.hash}</span>
+                                </div>
+                                {event.polygonTxHash && (
+                                  <div className="flex flex-col items-end">
+                                    <span className="text-text-muted block text-[10px] uppercase">Anclaje Polygon</span>
+                                    <a href={`https://amoy.polygonscan.com/tx/${event.polygonTxHash}`} target="_blank" rel="noreferrer" className="text-[#8247E5] flex items-center gap-1 hover:underline">
+                                      {event.polygonTxHash.slice(0, 8)}... <IconPolygon size={12}/>
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+                              <span className="text-text-muted block text-[10px] uppercase mb-1">Payload JSON</span>
+                              <pre className="text-text-muted/80">
+                                {JSON.stringify(eData, null, 2)}
+                              </pre>
+                           </div>
+                         </details>
                        </div>
                     </div>
                   )
