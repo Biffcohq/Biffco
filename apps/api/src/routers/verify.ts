@@ -58,7 +58,7 @@ export const verifyRouter = router({
           SELECT id, parent_ids, type FROM assets WHERE id = ${input.id}
           UNION ALL
           SELECT a.id, a.parent_ids, a.type FROM assets a
-          INNER JOIN lineage l ON l.id = ANY(a.parent_ids)
+          INNER JOIN lineage l ON a.parent_ids @> jsonb_build_array(l.id)
         )
         SELECT id, parent_ids, type FROM lineage LIMIT 500
       `);
@@ -69,7 +69,7 @@ export const verifyRouter = router({
           SELECT id, parent_ids, type FROM assets WHERE id = ${input.id}
           UNION ALL
           SELECT a.id, a.parent_ids, a.type FROM assets a
-          INNER JOIN lineage l ON a.id = ANY(l.parent_ids)
+          INNER JOIN lineage l ON l.parent_ids @> jsonb_build_array(a.id)
         )
         SELECT id, parent_ids, type FROM lineage LIMIT 500
       `);
