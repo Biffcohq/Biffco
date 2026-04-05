@@ -158,7 +158,7 @@ export function Sidebar() {
       >
         {/* Header */}
         <div className={`h-14 flex items-center shrink-0 ${effectiveIsCollapsed ? 'justify-center' : 'px-6'}`}>
-          <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}` : "/"} onClick={closeMobileSidebar} className="flex items-center overflow-hidden h-full">
+          <Link href="/" onClick={closeMobileSidebar} className="flex items-center overflow-hidden h-full" title="Ir al Global Hub">
             {effectiveIsCollapsed ? (
                <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-[18px] h-[18px] object-contain transition-all drop-shadow-sm" />
             ) : (
