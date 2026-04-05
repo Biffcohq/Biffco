@@ -49,12 +49,12 @@ export function Topbar() {
         </button>
       </div>
 
-      {/* Left Menu - Breadcrumbs */}
-      <div className="flex items-center gap-2 text-[13px] overflow-hidden whitespace-nowrap">
-        <Link href="/" className="hidden md:block text-text-secondary font-medium hover:text-text-primary transition-colors">
+      {/* Left Menu - Breadcrumbs (Desktop Only) */}
+      <div className="hidden md:flex items-center gap-2 text-[13px] overflow-hidden whitespace-nowrap">
+        <Link href="/" className="text-text-secondary font-medium hover:text-text-primary transition-colors">
           Biffco Corp
         </Link>
-        <IconChevronRight size={14} className="hidden md:block text-text-muted shrink-0" stroke={2} />
+        <IconChevronRight size={14} className="text-text-muted shrink-0" stroke={2} />
         
         {isWorkspaceContext && workspaceId ? (
           <>
@@ -77,7 +77,12 @@ export function Topbar() {
         )}
       </div>
 
-      {/* Center - SearchBar Placeholder */}
+      {/* Mobile Centered Logo */}
+      <div className="md:hidden absolute left-1/2 -translate-x-1/2 flex items-center pointer-events-none">
+        <img src="/biffco-logo-color.svg" alt="Biffco" className="h-[16px] w-auto object-contain" />
+      </div>
+
+      {/* Center - SearchBar Placeholder (Desktop Only) */}
       <div className="hidden flex-1 md:flex items-center justify-center max-w-lg mx-4">
         <div className="w-full max-w-sm flex items-center justify-between h-9 px-3 bg-surface-raised border border-border rounded-md text-sm text-text-muted cursor-pointer hover:border-border-strong transition-colors">
           <div className="flex items-center gap-2">
