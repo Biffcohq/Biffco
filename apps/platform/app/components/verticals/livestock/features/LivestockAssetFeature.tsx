@@ -40,6 +40,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
     const d = asset.metadata as any;
     return {
       id: d?.externalId || asset.id.slice(0, 10),
+      realId: asset.id,
       category: d?.initialState?.breed || 'Sin Especificar',
       weight: d?.initialState?.weight ? `${d.initialState.weight} kg` : '--',
       age: d?.initialState?.dateOfBirth ? d.initialState.dateOfBirth : '--',
@@ -136,9 +137,9 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                  )}
                  {formattedAssets.map(asset => (
                     <tr 
-                       key={asset.id} 
+                       key={asset.realId} 
                        className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group"
-                       onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.id}`)}
+                       onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.realId}`)}
                     >
                        <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
                           <div className="flex items-center gap-2">
@@ -174,9 +175,9 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
            {isLoading && <Skeleton className="h-[200px] rounded-xl w-full" />}
            {formattedAssets.map(asset => (
               <div 
-                 key={asset.id} 
+                 key={asset.realId} 
                  className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px]"
-                 onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.id}`)}
+                 onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.realId}`)}
               >
                  <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold">
