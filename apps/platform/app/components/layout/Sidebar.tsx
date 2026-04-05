@@ -133,33 +133,59 @@ export function Sidebar() {
     }
   }
 
-  return (
-    <aside 
-      className={`relative h-full flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface ${
-        isCollapsed ? 'w-16' : 'w-[240px]'
-      }`}
-    >
-      {/* Header */}
-      <div className={`h-14 flex items-center shrink-0 ${isCollapsed ? 'justify-center' : 'px-6'}`}>
-        <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}` : "/"} className="flex items-center overflow-hidden h-full">
-          {isCollapsed ? (
-             <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-[18px] h-[18px] object-contain transition-all drop-shadow-sm" />
-          ) : (
-             <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-[18px] w-auto object-contain transition-all" />
-          )}
-        </Link>
-      </div>
+  const isMobileSidebarOpen = useUIStore(s => s.isMobileSidebarOpen)
+  const closeMobileSidebar = useUIStore(s => s.closeMobileSidebar)
 
-      {/* Toggle Button Edge Hitbox */}
-      <div className="absolute right-[-12px] top-0 bottom-0 w-6 z-20 group/toggle flex items-center justify-center">
-        <button 
-          onClick={toggle}
-          className="opacity-0 group-hover/toggle:opacity-100 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-          aria-label="Toggle sidebar"
-        >
-          {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
-        </button>
-      </div>
+  return (
+    <>
+      {/* Mobile Drawer Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 z-40 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={closeMobileSidebar}
+        />
+      )}
+
+      <aside 
+        className={`flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface 
+          ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50 w-[260px] shadow-2xl' : 'hidden md:flex relative'}
+          ${!isMobileSidebarOpen && isCollapsed ? 'w-16' : ''}
+          ${!isMobileSidebarOpen && !isCollapsed ? 'w-[240px]' : ''}
+          h-full`}
+      >
+        {/* Header */}
+        <div className={`h-14 flex items-center shrink-0 ${isCollapsed && !isMobileSidebarOpen ? 'justify-center' : 'px-6'}`}>
+          <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}` : "/"} onClick={closeMobileSidebar} className="flex items-center overflow-hidden h-full">
+            {isCollapsed && !isMobileSidebarOpen ? (
+               <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-[18px] h-[18px] object-contain transition-all drop-shadow-sm" />
+            ) : (
+               <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-[18px] w-auto object-contain transition-all" />
+            )}
+          </Link>
+        </div>
+
+        {/* Role Context Header/Switcher if inside a specific role */}
+        {(!isCollapsed || isMobileSidebarOpen) && roleContext && (
+           <div className="px-4 py-2 mx-3 mb-2 mt-2 bg-surface-raised border border-border rounded-xl">
+             <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Estás en el rol:</span>
+             <div className="flex items-center justify-between mt-1">
+               <span className="text-sm font-semibold text-primary truncate flex items-center gap-1.5"><IconBox size={14}/> {roleContext}</span>
+             </div>
+           </div>
+        )}
+
+        {/* Toggle Button Edge Hitbox (Desktop Only) */}
+        {!isMobileSidebarOpen && (
+          <div className="absolute right-[-12px] top-0 bottom-0 w-6 z-20 group/toggle hidden md:flex items-center justify-center">
+            <button 
+              onClick={toggle}
+              className="opacity-0 group-hover/toggle:opacity-100 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+              aria-label="Toggle sidebar"
+            >
+              {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
+            </button>
+          </div>
+        )}
 
       {/* Navigation Groups */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-5 scrollbar-hide">
@@ -329,5 +355,6 @@ export function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   )
 }

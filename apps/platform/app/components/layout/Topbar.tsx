@@ -5,13 +5,16 @@ import {
   IconBell,
   IconSun,
   IconCheck,
-  IconChevronRight
+  IconChevronRight,
+  IconMenu2
 } from '@tabler/icons-react'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import { useUIStore } from '@/app/stores/useUIStore'
 
 export function Topbar() {
   const pathname = usePathname()
+  const toggleMobileSidebar = useUIStore(s => s.toggleMobileSidebar)
   
   const isWorkspaceContext = pathname.startsWith('/w/')
   const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
@@ -34,13 +37,24 @@ export function Topbar() {
 
 
   return (
-    <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-6 shrink-0 shadow-xs z-10 w-full">
+    <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0 shadow-xs z-10 w-full relative">
+      {/* Mobile Hamburger Button */}
+      <div className="md:hidden flex items-center shrink-0 mr-3">
+        <button 
+          onClick={toggleMobileSidebar}
+          className="p-1.5 -ml-1.5 text-text-secondary hover:text-text-primary rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          aria-label="Menú principal"
+        >
+          <IconMenu2 size={22} stroke={1.5} />
+        </button>
+      </div>
+
       {/* Left Menu - Breadcrumbs */}
-      <div className="flex items-center gap-2 text-[13px]">
-        <Link href="/" className="text-text-secondary font-medium hover:text-text-primary transition-colors">
+      <div className="flex items-center gap-2 text-[13px] overflow-hidden whitespace-nowrap">
+        <Link href="/" className="hidden md:block text-text-secondary font-medium hover:text-text-primary transition-colors">
           Biffco Corp
         </Link>
-        <IconChevronRight size={14} className="text-text-muted" stroke={2} />
+        <IconChevronRight size={14} className="hidden md:block text-text-muted shrink-0" stroke={2} />
         
         {isWorkspaceContext && workspaceId ? (
           <>
