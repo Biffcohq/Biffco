@@ -39,35 +39,33 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
             Inventario individual de cabezas activas en {workspace?.name}.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-           <div className="flex items-center gap-1 bg-surface border border-border rounded-lg p-1">
+         <div className="flex flex-wrap items-center gap-2">
+           <div className="flex items-center gap-1 bg-surface border border-border rounded-lg p-1 mr-1 shadow-xs">
               <button 
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-bg-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                className={`size-8 flex items-center justify-center rounded transition-colors ${viewMode === 'list' ? 'bg-bg-subtle text-text-primary shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-surface-overlay'}`}
               >
                  <IconList size={18} />
               </button>
               <button 
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-bg-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                className={`size-8 flex items-center justify-center rounded transition-colors ${viewMode === 'grid' ? 'bg-bg-subtle text-text-primary shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-surface-overlay'}`}
               >
                  <IconLayoutGrid size={18} />
               </button>
            </div>
            
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconShare size={16} />
-              <span className="hidden sm:inline">Compartir</span>
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Compartir">
+              <IconShare size={18} />
            </button>
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconPrinter size={16} />
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Imprimir">
+              <IconPrinter size={18} />
             </button>
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconDownload size={16} />
-              <span className="hidden leading-none sm:flex items-center gap-1">Exportar <IconChevronDown size={14} className="mt-0.5 opacity-60"/></span>
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Exportar">
+              <IconDownload size={18} />
            </button>
            
-           <button className="h-9 ml-2 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm">
+           <button className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
               <IconPlus size={18} stroke={2.5} />
               <span>Alta Individual</span>
            </button>

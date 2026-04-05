@@ -39,34 +39,37 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-           <div className="flex items-center gap-1 bg-surface border border-border rounded-lg p-1">
+           <div className="flex items-center gap-1 bg-surface border border-border rounded-lg p-1 mr-1 shadow-xs">
               <button 
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'list' ? 'bg-bg-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                className={`size-8 flex items-center justify-center rounded transition-colors ${viewMode === 'list' ? 'bg-bg-subtle text-text-primary shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-surface-overlay'}`}
               >
                  <IconList size={18} />
               </button>
               <button 
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-colors ${viewMode === 'grid' ? 'bg-bg-subtle text-text-primary shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+                className={`size-8 flex items-center justify-center rounded transition-colors ${viewMode === 'grid' ? 'bg-bg-subtle text-text-primary shadow-xs' : 'text-text-muted hover:text-text-primary hover:bg-surface-overlay'}`}
               >
                  <IconLayoutGrid size={18} />
               </button>
            </div>
            
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconMapPins size={16} />
-              <span className="hidden sm:inline">Ver Mapa Global</span>
+           <button className="h-10 px-4 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Ver Mapa Global">
+              <IconMapPins size={18} className="mr-2" />
+              <span className="text-sm font-medium">Global Map</span>
            </button>
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconShare size={16} />
+
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Compartir">
+              <IconShare size={18} />
            </button>
-           <button className="h-9 px-3 rounded-lg bg-surface border border-border text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition-colors flex items-center gap-2 shadow-sm">
-              <IconDownload size={16} />
-              <span className="hidden leading-none sm:flex items-center gap-1">Exportar PDF <IconChevronDown size={14} className="mt-0.5 opacity-60"/></span>
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Imprimir">
+              <IconPrinter size={18} />
+            </button>
+           <button className="size-10 rounded-lg bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-overlay transition-colors flex items-center justify-center shadow-xs" title="Exportar">
+              <IconDownload size={18} />
            </button>
            
-           <button className="h-9 ml-2 px-4 rounded-lg bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm">
+           <button className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
               <IconPlus size={18} stroke={2.5} />
               <span>Nuevo Establecimiento</span>
            </button>
@@ -128,37 +131,37 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
            {MOCK_FACILITIES.map(fac => (
               <div key={fac.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
-                 {/* Top header styling for Facility */}
-                 <div className="h-24 bg-gradient-to-br from-bg-subtle to-border relative flex items-center justify-center border-b border-border">
-                    <IconMap stroke={1} size={48} className="text-text-muted/30 absolute group-hover:scale-110 transition-transform duration-500" />
-                    <div className="absolute bottom-3 left-4 right-4 flex justify-between items-end">
-                       <span className="bg-surface/80 backdrop-blur border border-border font-mono text-[10px] px-2 py-1 rounded text-text-primary font-bold shadow-sm">
-                          RENSPA: {fac.renspa}
-                       </span>
-                       <span className="bg-success/90 text-white text-[10px] px-2 py-1 rounded font-bold uppercase shadow-sm">
-                          {fac.status}
-                       </span>
+                 <div className="bg-bg-subtle border-b border-border px-4 py-3 flex justify-between items-center">
+                    <div className="flex items-center gap-2 font-mono text-xs font-bold text-text-secondary">
+                       <IconBuildingEstate size={14} />
+                       {fac.renspa}
                     </div>
+                    <span className="text-[10px] uppercase font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
+                       {fac.status}
+                    </span>
                  </div>
                  
-                 <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="text-xl font-bold text-text-primary mt-1 flex items-center gap-2">
-                       <IconBuildingEstate size={20} className="text-primary"/>
-                       {fac.name}
-                    </h3>
-                    <p className="text-sm text-text-secondary mt-1 flex items-center gap-1">
-                       <IconMapPins size={14}/>
-                       {fac.location}
-                    </p>
+                 <div className="p-5 flex-1 flex flex-col relative overflow-hidden">
+                    <IconMap stroke={1} size={120} className="text-text-muted/5 absolute -bottom-4 -right-4 group-hover:scale-110 transition-transform duration-500" />
                     
-                    <div className="grid grid-cols-2 gap-3 mt-6">
-                       <div className="bg-bg-subtle rounded-lg p-3 border border-border/50">
-                          <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Superficie</span>
-                          <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.area}</span>
-                       </div>
-                       <div className="bg-bg-subtle rounded-lg p-3 border border-border/50">
-                          <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Zonas Asignadas</span>
-                          <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.zones}</span>
+                    <div className="relative z-10">
+                       <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
+                          {fac.name}
+                       </h3>
+                       <p className="text-sm text-text-secondary mt-1 flex items-center gap-1">
+                          <IconMapPins size={14}/>
+                          {fac.location}
+                       </p>
+                       
+                       <div className="grid grid-cols-2 gap-3 mt-6">
+                          <div className="bg-surface-raised rounded-lg p-3 border border-border">
+                             <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Superficie</span>
+                             <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.area}</span>
+                          </div>
+                          <div className="bg-surface-raised rounded-lg p-3 border border-border">
+                             <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Zonas Asignadas</span>
+                             <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.zones}</span>
+                          </div>
                        </div>
                     </div>
                  </div>
