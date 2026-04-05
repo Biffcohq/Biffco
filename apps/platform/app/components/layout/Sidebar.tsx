@@ -37,7 +37,9 @@ import {
 import Link from 'next/link'
 import { LogoutButton } from '../auth/LogoutButton'
 import { trpc } from '@/lib/trpc'
-import { usePathname } from 'next/navigation'
+import { usePathname, useParams } from 'next/navigation'
+// eslint-disable-next-line no-restricted-imports
+import { getVerticalDictionary } from '@/app/lib/verticals/registry'
 
 interface NavGroup {
   label: string
@@ -108,15 +110,40 @@ export function Sidebar() {
   const isCollapsed = useUIStore(s => s.isSidebarCollapsed)
   const toggle = useUIStore(s => s.toggleSidebar)
   const pathname = usePathname()
+  const params = useParams()
   const { data: profile } = trpc.workspaces.getProfile.useQuery()
   const { data: userProfile } = trpc.auth.me.useQuery()
 
   const isWorkspaceContext = pathname.startsWith('/w/')
-  const workspaceId = isWorkspaceContext ? pathname.split('/')[2] : null
-  
-  const currentNavGroups = isWorkspaceContext && workspaceId 
-    ? getWorkspaceNavGroups(workspaceId, (profile as any)?.roles || ['PRODUCER']) 
-    : globalNavGroups;
+  const workspaceId = typeof params?.workspaceId === 'string' ? params.workspaceId : null
+  const roleContext = typeof params?.roleId === 'string' ? params.roleId.toUpperCase() : null
+
+  let currentNavGroups = globalNavGroups;
+
+  if (isWorkspaceContext && workspaceId) {
+    if (roleContext) {
+      // 1. CONTEXTUAL ROLE SIDEBAR
+      const dict = getVerticalDictionary(profile?.verticalId || 'agnostic');
+      const verticalNavs = typeof dict.getRoleNavs === 'function' ? dict.getRoleNavs(workspaceId, roleContext) : null;
+
+      if (verticalNavs) {
+        currentNavGroups = verticalNavs;
+      } else {
+        currentNavGroups = [
+          {
+            label: `Gestión ${roleContext}`,
+            items: [
+              { label: `Panel de Control`, href: `/w/${workspaceId}/roles/${params?.roleId}`, icon: IconBuilding },
+              { label: "Volver a Mis Roles", href: `/w/${workspaceId}`, icon: IconHome },
+            ]
+          }
+        ];
+      }
+    } else {
+      // 2. ROOT WORKSPACE SIDEBAR (Gerencial)
+      currentNavGroups = getWorkspaceNavGroups(workspaceId, (profile as any)?.roles || []);
+    }
+  }
 
   return (
     <aside 

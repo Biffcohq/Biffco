@@ -4,6 +4,8 @@ import React, { useEffect, Suspense } from 'react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { QRCodeSVG } from 'qrcode.react'
+// eslint-disable-next-line no-restricted-imports
+import { getVerticalDictionary } from '@/app/lib/verticals/registry'
 
 function PassportPrintBody() {
   const params = useParams()
@@ -24,12 +26,13 @@ function PassportPrintBody() {
     }
   }, [asset])
 
+  const { data: workspaceData } = trpc.workspaces.getProfile.useQuery();
+
   if (isLoading) return <div className="p-8 text-black font-mono">Buscando Veracidad del Activo...</div>
   if (!asset) return <div className="p-8 text-black font-mono">Error: Documento Blockchain no encontrado</div>
 
-  const isBovine = asset.type === 'AnimalAsset'
-  const isDore = asset.type === 'DoreBar'
-  const isCoffee = asset.type === 'CoffeeSack'
+  const verticalId = workspaceData?.verticalId || 'agnostic';
+  const dict = getVerticalDictionary(verticalId);
   const meta = asset.metadata as Record<string, any>
   const verifyUrl = `https://verify.biffco.co/${asset.id}`
 
@@ -80,21 +83,27 @@ function PassportPrintBody() {
               <div>
                 <h2 className="text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-1">Especie / Tipo</h2>
                 <span className="inline-block bg-blue-50 text-blue-700 px-3 py-1 rounded text-xs font-bold uppercase">
-                  {isBovine ? 'Ganado Bovino' : isDore ? 'Oro Bullion' : isCoffee ? 'Café de Especialidad' : asset.type}
+                  {dict.assetTypeName || asset.type}
                 </span>
               </div>
             </div>
 
-            {/* Extra Meat/Gold data */}
-            <div className="pt-3 mt-1 border-t border-gray-200 flex flex-col gap-1.5">
-                {isBovine && (
+            {/* Extra metadata dump */}
+            {meta && Object.keys(meta).length > 0 && (
+              <div className="pt-3 mt-1 border-t border-gray-200 flex flex-col gap-1.5">
                   <div className="grid grid-cols-3 gap-2">
-                     <div><span className="text-[10px] uppercase text-gray-500 block">Raza</span><strong className="text-sm">{meta?.breed || '-'}</strong></div>
-                     <div><span className="text-[10px] uppercase text-gray-500 block">Identificador RFID</span><strong className="text-sm">{meta?.rfid || '-'}</strong></div>
-                     <div><span className="text-[10px] uppercase text-gray-500 block">Certificación</span><strong className="text-sm">{meta?.gfwStatus === 'clear' ? 'Aprobado' : 'Pendiente'}</strong></div>
+                     {Object.entries(meta).map(([k, v]) => {
+                         if (typeof v === 'object') return null;
+                         return (
+                           <div key={k}>
+                             <span className="text-[10px] uppercase text-gray-500 block truncate">{k}</span>
+                             <strong className="text-sm truncate block" title={String(v)}>{String(v)}</strong>
+                           </div>
+                         )
+                     })}
                   </div>
-                )}
-            </div>
+              </div>
+            )}
          </div>
       </div>
 
@@ -105,7 +114,7 @@ function PassportPrintBody() {
       
       <div className="flex flex-col gap-8">
          {eventsToPrint.map((event: any, index: number) => {
-           const isGenesis = event.eventType === 'ASSET_CREATED' || event.eventType === 'LIVESTOCK_ORIGINATED';
+           const isGenesis = event.eventType === 'ASSET_CREATED' || event.eventType === 'LIVESTOCK_ORIGINATED' || event.eventType === 'ORIGINATED';
            const d = event.data as Record<string, unknown>;
            const displayTitle = event.eventType.replace(/_/g, ' ');
            

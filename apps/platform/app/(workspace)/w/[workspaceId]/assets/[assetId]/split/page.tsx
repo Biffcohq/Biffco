@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import { trpc } from '@/lib/trpc'
 import { Button } from '@biffco/ui'
 import { IconArrowLeft, IconBox, IconArrowsSplit, IconPlus, IconTrash } from '@tabler/icons-react'
+// eslint-disable-next-line no-restricted-imports
+import { getVerticalDictionary } from '@/app/lib/verticals/registry'
 
 export default function SplitTransformationPage() {
   const params = useParams()
@@ -18,8 +20,7 @@ export default function SplitTransformationPage() {
     { enabled: !!assetId }
   )
 
-  const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
-  const verticalId = workspaceData?.verticalId || 'livestock'
+  const { data: workspaceData, isLoading: isLoadingWorkspace } = trpc.workspaces.getProfile.useQuery()
 
   const splitMutation = trpc.split.createSplit.useMutation({
     onSuccess: (data) => {
@@ -32,11 +33,17 @@ export default function SplitTransformationPage() {
     }
   })
 
-  const [outputs, setOutputs] = useState([
-    { type: verticalId === 'livestock' ? 'MeatCut' : 'Fraction', metadata: { weight: 10, category: 'A' }, quantity: 1 }
-  ])
+  const [outputs, setOutputs] = useState<any[]>([]);
 
-  if (isLoading) return <div className="p-12 animate-pulse text-center">Cargando orígen industrial...</div>
+  React.useEffect(() => {
+    if (workspaceData && outputs.length === 0) {
+      const dict = getVerticalDictionary(workspaceData.verticalId);
+      // deep copy to avoid mutating the dict
+      setOutputs(JSON.parse(JSON.stringify(dict.splitDefaultInputs)));
+    }
+  }, [workspaceData]);
+
+  if (isLoading || isLoadingWorkspace) return <div className="p-12 animate-pulse text-center">Cargando orígen industrial...</div>
 
   if (!asset || asset.status !== 'active') {
     return (

@@ -4,6 +4,34 @@ const LivestockAssetTable = lazy(() => import('../../components/verticals/livest
 const LivestockOriginationModal = lazy(() => import('../../components/verticals/livestock/LivestockOriginationModal'));
 const LivestockAssetProfile = lazy(() => import('../../components/verticals/livestock/LivestockAssetProfile'));
 
+// --- Diccionarios de Dominio Vertical ---
+import { IconBox, IconVaccine, IconStethoscope, IconScale, IconFileCheck, IconPackageExport } from '@tabler/icons-react'
+
+const livestockDictionary = {
+  assetTypeName: "Animal (Bovino)",
+  derivedAssetTypeName: "Corte / Derivado",
+  splitDefaultInputs: [{ type: 'MeatCut', metadata: { weight: 10, category: 'A' }, quantity: 1 }],
+  events: {
+    'LIVESTOCK_ORIGINATED': { title: 'Nacimiento Registrado', icon: IconBox, bgColor: 'bg-blue-100', textColor: 'text-blue-600', ringColor: 'ring-blue-50' },
+    'HEALTH_CERT_ISSUED': { title: 'Certificado de DTE (Senasa)', icon: IconFileCheck, bgColor: 'bg-emerald-100', textColor: 'text-emerald-600', ringColor: 'ring-emerald-50' },
+    'TREATMENT_ADMINISTERED': { title: 'Tratamiento Sanitario', icon: IconStethoscope, bgColor: 'bg-red-100', textColor: 'text-red-600', ringColor: 'ring-red-50' },
+    'VACCINE_ADMINISTERED': { title: 'Vacunación', icon: IconVaccine, bgColor: 'bg-indigo-100', textColor: 'text-indigo-600', ringColor: 'ring-indigo-50' },
+    'SLAUGHTER_COMPLETED': { title: 'Faena Completada', icon: IconScale, bgColor: 'bg-rose-100', textColor: 'text-rose-600', ringColor: 'ring-rose-50' },
+  }
+}
+
+const agnosticDictionary = {
+  assetTypeName: "Activo Base",
+  derivedAssetTypeName: "Fracción / Derivado",
+  splitDefaultInputs: [{ type: 'Fraction', metadata: { weight: 0 }, quantity: 1 }],
+  events: {}
+}
+
+export function getVerticalDictionary(verticalId: string): any {
+  if (['livestock', 'bif-bovine-ar'].includes(verticalId)) return livestockDictionary
+  return agnosticDictionary
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<string, any> = {
   'livestock': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal, AssetProfile: LivestockAssetProfile },

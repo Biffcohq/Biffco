@@ -1,0 +1,78 @@
+import { IconPackage, IconFileCheck, IconActivity, IconAlertCircle } from '@tabler/icons-react'
+import Link from 'next/link'
+
+export function ProducerDashboard({ workspace }: { workspace: any }) {
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Label descriptivo de rol */}
+      <h2 className="text-lg font-semibold border-b border-border pb-2 text-text-primary flex items-center gap-2">
+        <IconPackage className="text-primary" size={20} />
+        Panel de Origen / Productor Principal
+      </h2>
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {[ 
+          { label: "Activos Base (Origen)", value: "245", icon: IconPackage, color: "text-primary", bg: "bg-primary/10" },
+          { label: "Eventos Anclados", value: "1,204", icon: IconFileCheck, color: "text-teal", bg: "bg-teal/10" },
+          { label: "Alertas Riesgo Global", value: "3", icon: IconAlertCircle, color: "text-error", bg: "bg-error/10" },
+          { label: "Nivel de Salud Genérico", value: "98%", icon: IconActivity, color: "text-success", bg: "bg-success/10" },
+        ].map((kpi, idx) => (
+          <div key={idx} className="bg-surface border border-border rounded-xl p-5 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow cursor-default">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-secondary">{kpi.label}</span>
+              <span className="text-2xl font-bold text-text-primary">{kpi.value}</span>
+            </div>
+            <div className={`size-10 rounded-full flex items-center justify-center ${kpi.bg} ${kpi.color}`}>
+              <kpi.icon size={22} stroke={2} />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Content Areas */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        {/* Recent Events (takes 2/3 of grid) */}
+        <div className="lg:col-span-2 bg-surface border border-border rounded-xl shadow-sm min-h-[400px] flex flex-col">
+          <div className="px-6 py-4 border-b border-border flex justify-between items-center">
+            <h2 className="text-lg font-semibold text-text-primary">Línea de Tiempo Operativa</h2>
+            <button className="text-sm font-medium text-primary hover:text-primary-hover">Ver todos</button>
+          </div>
+          <div className="flex-1 p-6 flex items-center justify-center flex-col text-center gap-3">
+             <div className="size-16 rounded-full bg-surface-raised flex items-center justify-center border border-border">
+               <IconFileCheck size={28} className="text-text-muted" stroke={1.5} />
+             </div>
+             <div>
+               <p className="text-sm font-medium text-text-primary">Sin operaciones primarias</p>
+               <p className="text-xs text-text-secondary">Parece que aún no has registrado operaciones de origen en la cadena.</p>
+             </div>
+             <Link href={`/w/${workspace?.id}/events/new`} className="mt-2 text-white bg-primary hover:bg-primary-hover px-4 py-2 rounded-full text-sm font-medium transition-colors">
+               Registrar primer evento
+             </Link>
+          </div>
+        </div>
+
+        {/* Quick Actions or Analytics (takes 1/3) */}
+        <div className="bg-surface border border-border rounded-xl shadow-sm min-h-[400px] flex flex-col">
+          <div className="px-6 py-4 border-b border-border">
+            <h2 className="text-lg font-semibold text-text-primary">Compliance de Riesgo</h2>
+          </div>
+          <div className="flex-1 p-6 flex flex-col items-center justify-center gap-4">
+             {/* Chart placeholder */}
+             <div className="size-32 rounded-full border-8 border-success flex items-center justify-center relative shadow-sm">
+                <span className="text-3xl font-bold text-success flex items-baseline">
+                  98<span className="text-lg">%</span>
+                </span>
+             </div>
+             <div className="text-center mt-2">
+                <p className="text-sm font-semibold text-text-primary">Riesgo Mitigado</p>
+                <p className="text-xs text-text-secondary mt-1">El 98% de tus activos provienen de zonas seguras en los polígonos auditados.</p>
+             </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  )
+}

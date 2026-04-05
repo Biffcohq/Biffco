@@ -8,7 +8,7 @@ import { IconArrowLeft, IconBox, IconHash, IconHistory, IconQrcode, IconPolygon,
 import { QRCodeSVG } from 'qrcode.react'
 import { StatusPill } from '@/app/components/StatusPill'
 // eslint-disable-next-line no-restricted-imports
-import { VerticalAssetProfile } from '../../../../../lib/verticals/registry'
+import { VerticalAssetProfile, getVerticalDictionary } from '../../../../../lib/verticals/registry'
 
 export default function AssetPassportPage() {
   const params = useParams()
@@ -22,7 +22,8 @@ export default function AssetPassportPage() {
   )
 
   const { data: workspaceData } = trpc.workspaces.getProfile.useQuery()
-  const verticalId = workspaceData?.verticalId || 'livestock'
+  const verticalId = workspaceData?.verticalId || 'agnostic'
+  const dict = getVerticalDictionary(verticalId);
 
   if (isLoading) {
     return <div className="flex items-center justify-center h-64 animate-pulse">Cargando Pasaporte del Activo...</div>
@@ -253,14 +254,15 @@ export default function AssetPassportPage() {
                   type VisualConf = { icon: React.ElementType, textColor: string, bgColor: string, ringColor: string, title: string };
                   const eventNameMap: Record<string, VisualConf> = {
                     'ASSET_CREATED': { icon: IconBox, textColor: 'text-blue-600', bgColor: 'bg-blue-100', ringColor: 'ring-blue-50', title: 'Registro Inicial' },
-                    'LIVESTOCK_ORIGINATED': { icon: IconBox, textColor: 'text-blue-600', bgColor: 'bg-blue-100', ringColor: 'ring-blue-50', title: 'Nacimiento Registrado' },
                     'ASSET_DISPATCHED': { icon: IconTruck, textColor: 'text-amber-600', bgColor: 'bg-amber-100', ringColor: 'ring-amber-50', title: 'Despacho Logístico' },
                     'ASSET_TRANSIT_SCAN': { icon: IconMapPin, textColor: 'text-indigo-600', bgColor: 'bg-indigo-100', ringColor: 'ring-indigo-50', title: 'Punto de Control' },
                     'ASSET_RECEIVED': { icon: IconBuildingStore, textColor: 'text-emerald-600', bgColor: 'bg-emerald-100', ringColor: 'ring-emerald-50', title: 'Recepción en Destino' },
                     'ASSET_REJECTED': { icon: IconHistory, textColor: 'text-red-500', bgColor: 'bg-red-100', ringColor: 'ring-red-50', title: 'Carga Observada / Destino Rechazado' },
                   }
+                  
+                  // Priority: 1. Vertical overrides 2. Core Events 3. Fallback
                   const defaultConf: VisualConf = { icon: IconCheck, textColor: 'text-primary', bgColor: 'bg-primary/10', ringColor: 'ring-bg', title: event.eventType.replace(/_/g, ' ') };
-                  const v: VisualConf = eventNameMap[event.eventType] || defaultConf;
+                  const v: VisualConf = (dict.events as any)?.[event.eventType] || eventNameMap[event.eventType] || defaultConf;
                   const displayDesc = eData.message || (isGenesis ? 'Activo dado de alta en la red Biffco' : 'Actualización de estado');
 
                   return (
