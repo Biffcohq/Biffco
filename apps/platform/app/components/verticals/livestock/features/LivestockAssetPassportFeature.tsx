@@ -7,6 +7,8 @@ import { Skeleton } from '@/app/components/ui/Skeleton'
 import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconQrcode, IconLink } from '@tabler/icons-react'
 import { Button } from '@biffco/ui'
 
+import { QRCodeSVG } from 'qrcode.react'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetPassportFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const searchParams = useSearchParams()
@@ -42,6 +44,8 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
   const breed = metadata?.initialState?.breed || 'Bovino'
   const weight = metadata?.initialState?.weight || '--'
 
+  const verificationUrl = `https://biffco.co/verify/${asset.id}`
+
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
       <div className="flex items-center gap-4 border-b border-border pb-4">
@@ -74,9 +78,18 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
                   <span className="font-bold text-text-primary text-right">{facilityName}</span>
                </div>
                
-               <div className="bg-bg-subtle border border-border rounded-lg p-4 w-full flex flex-col items-center gap-2">
-                  <IconQrcode size={100} stroke={1.5} className="text-text-primary" />
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider text-center mt-2">
+               <div className="bg-bg-subtle border border-border rounded-lg p-5 w-full flex flex-col items-center gap-2">
+                  <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
+                     <QRCodeSVG 
+                        value={verificationUrl}
+                        size={140}
+                        bgColor={"#ffffff"}
+                        fgColor={"#0f172a"}
+                        level={"Q"}
+                        includeMargin={false}
+                     />
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider text-center mt-3">
                      Pasaporte Digital<br/>Escanea para verificar
                   </p>
                </div>
