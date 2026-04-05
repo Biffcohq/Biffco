@@ -9,9 +9,7 @@ import { notFound } from 'next/navigation'
 
 export default function RoleFeatureContextPage({ params }: { params: { workspaceId: string, roleId: string, featureId: string } }) {
   const { data: workspace, isLoading } = trpc.workspaces.getProfile.useQuery()
-  const { data: profile, isLoading: isProfileLoading } = trpc.auth.me.useQuery()
-
-  if (isLoading || isProfileLoading) {
+  if (isLoading) {
     return (
       <div className="flex flex-col gap-6 animate-pulse p-4">
         <Skeleton className="h-[200px] w-full rounded-xl" />
@@ -20,16 +18,12 @@ export default function RoleFeatureContextPage({ params }: { params: { workspace
     )
   }
 
-  if (!workspace || !profile) {
+  if (!workspace) {
     return notFound()
   }
 
   const currentRole = params.roleId.toUpperCase();
-  const globalRolesStr = (profile.globalRoles || []) as unknown as string[];
-  const hasRole = globalRolesStr.includes(currentRole) || 
-                  workspace.members?.some((m: { user?: { id: string }, roles?: unknown[] }) => 
-                     m.user?.id === profile.id && (m.roles as string[])?.includes(currentRole)) || 
-                  workspace.metadata?.simulatedRole;
+  const hasRole = workspace.roles?.includes(currentRole);
 
   if (!hasRole) {
      return (
