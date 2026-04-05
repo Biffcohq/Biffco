@@ -23,7 +23,9 @@ export default function RoleFeatureContextPage({ params }: { params: { workspace
   }
 
   const currentRole = params.roleId.toUpperCase();
-  const hasRole = workspace.roles?.includes(currentRole);
+  const hasRole = workspace.roles?.includes(currentRole) || 
+                  workspace.metadata?.simulatedRole === currentRole || 
+                  (workspace as any).metadata?.simulatedRole;
 
   if (!hasRole) {
      return (
@@ -35,6 +37,12 @@ export default function RoleFeatureContextPage({ params }: { params: { workspace
             <p className="text-sm text-text-secondary mt-2 max-w-sm">
                 No tienes permisos para acceder a las utilidades funcionales del rol {currentRole} en la cadena {workspace.name}.
             </p>
+            <div className="mt-4 p-3 bg-slate-900 text-slate-300 text-xs rounded-md text-left font-mono">
+               <p>Debug Context:</p>
+               <p>User Role Requested: {currentRole}</p>
+               <p>Workspace Roles: {JSON.stringify(workspace.roles)}</p>
+               <p>Workspace Metadata: {JSON.stringify(workspace.metadata)}</p>
+            </div>
         </div>
      )
   }
