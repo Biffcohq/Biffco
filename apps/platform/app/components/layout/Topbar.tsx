@@ -47,7 +47,9 @@ export function Topbar() {
         >
           <IconMenu2 size={24} stroke={1.5} />
         </button>
-        <img src="/biffco-logo-color.svg" alt="Biffco" className="h-[16px] w-auto object-contain mt-px" />
+        <Link href="/" aria-label="Ir al Global Hub" className="flex items-center">
+          <img src="/biffco-logo-color.svg" alt="Biffco" className="h-[16px] w-auto object-contain mt-px" />
+        </Link>
       </div>
 
       {/* Left Menu - Breadcrumbs (Desktop Only) */}
