@@ -38,15 +38,16 @@ export function Topbar() {
 
   return (
     <header className="h-14 bg-surface border-b border-border flex items-center justify-between px-4 md:px-6 shrink-0 shadow-xs z-10 w-full relative">
-      {/* Mobile Hamburger Button */}
-      <div className="md:hidden flex items-center shrink-0 mr-3">
+      {/* Left Menu - Mobile (Hamburger + Logo) */}
+      <div className="md:hidden flex items-center shrink-0 gap-2">
         <button 
           onClick={toggleMobileSidebar}
-          className="p-1.5 -ml-1.5 text-text-secondary hover:text-text-primary rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          className="p-1.5 -ml-1 text-text-secondary hover:text-text-primary rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           aria-label="Menú principal"
         >
-          <IconMenu2 size={22} stroke={1.5} />
+          <IconMenu2 size={24} stroke={1.5} />
         </button>
+        <img src="/biffco-logo-color.svg" alt="Biffco" className="h-[16px] w-auto object-contain mt-px" />
       </div>
 
       {/* Left Menu - Breadcrumbs (Desktop Only) */}
@@ -75,11 +76,6 @@ export function Topbar() {
             {title}
           </span>
         )}
-      </div>
-
-      {/* Mobile Centered Logo */}
-      <div className="md:hidden absolute left-1/2 -translate-x-1/2 flex items-center pointer-events-none">
-        <img src="/biffco-logo-color.svg" alt="Biffco" className="h-[16px] w-auto object-contain" />
       </div>
 
       {/* Center - SearchBar Placeholder (Desktop Only) */}
