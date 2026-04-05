@@ -27,7 +27,7 @@ const livestockDictionary = {
     if (roleContext === 'PRODUCER') {
       return [
         {
-          label: "Panel Principal",
+          label: "Dashboard",
           items: [
             { label: "Dashboard Operativo", href: `/w/${workspaceId}/roles/producer`, icon: IconDashboard }
           ]
@@ -35,31 +35,46 @@ const livestockDictionary = {
         {
           label: "Hacienda y Ubicaciones",
           items: [
-            { label: "Cabezas Individuales", href: `/w/${workspaceId}/roles/producer/assets`, icon: IconBox },
-            { label: "Lotes y Tropas", href: `/w/${workspaceId}/roles/producer/lots`, icon: IconPackages },
+            { label: "Rodeo", href: `/w/${workspaceId}/roles/producer/assets`, icon: IconBox },
+            { label: "Lotes / Tropas", href: `/w/${workspaceId}/roles/producer/lots`, icon: IconPackages },
             { label: "Establecimientos", href: `/w/${workspaceId}/roles/producer/facilities`, icon: IconBuildingEstate },
           ]
         },
         {
-          label: "Operaciones Diarias",
+          label: "Operaciones",
           items: [
-            { label: "Registros y Nacimientos", href: `/w/${workspaceId}/roles/producer/origination`, icon: IconActivity },
-            { label: "Movimiento de Corrales", href: `/w/${workspaceId}/roles/producer/moves`, icon: IconMapPins },
-            { label: "Bajas e Incidencias", href: `/w/${workspaceId}/roles/producer/incidents`, icon: IconAlertTriangle }
+            { label: "Nacimientos / Registros", href: `/w/${workspaceId}/roles/producer/origination`, icon: IconActivity },
+            { label: "Movimientos", href: `/w/${workspaceId}/roles/producer/moves`, icon: IconMapPins },
+            { label: "Bajas / Incidencias", href: `/w/${workspaceId}/roles/producer/incidents`, icon: IconAlertTriangle }
           ]
         },
         {
-          label: "Sanidad y Tránsito",
+          label: "Sanidad",
           items: [
-            { label: "Eventos y Vacunas", href: `/w/${workspaceId}/roles/producer/health`, icon: IconStethoscope },
+            { label: "Vacunaciones", href: `/w/${workspaceId}/roles/producer/vaccines`, icon: IconVaccine },
+            { label: "Tratamientos", href: `/w/${workspaceId}/roles/producer/health`, icon: IconStethoscope },
+            { label: "Inspecciones", href: `/w/${workspaceId}/roles/producer/inspections`, icon: IconActivity },
+          ]
+        },
+        {
+          label: "Normativas y Certificaciones",
+          items: [
             { label: "Compliance EUDR", href: `/w/${workspaceId}/roles/producer/eudr`, icon: IconShieldCheck },
-            { label: "Envíos y DTE", href: `/w/${workspaceId}/roles/producer/transfers`, icon: IconTruckDelivery }
+            { label: "Certificados", href: `/w/${workspaceId}/roles/producer/certificates`, icon: IconFileCheck }
           ]
         },
         {
-          label: "Organización",
+          label: "Transito",
           items: [
-            { label: "Personal e Inspectores", href: `/w/${workspaceId}/settings/members`, icon: IconUsers }
+            { label: "Envios / Recepciones", href: `/w/${workspaceId}/roles/producer/transfers`, icon: IconTruckDelivery },
+            { label: "DTE's", href: `/w/${workspaceId}/roles/producer/dte`, icon: IconFileCheck }
+          ]
+        },
+        {
+          label: "Organizacion",
+          items: [
+            { label: "Personal", href: `/w/${workspaceId}/settings/members`, icon: IconUsers },
+            { label: "Inspectores", href: `/w/${workspaceId}/settings/inspectors`, icon: IconUsers }
           ]
         }
       ]

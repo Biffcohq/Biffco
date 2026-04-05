@@ -20,9 +20,9 @@
 Route (app)                                  Size     First Load JS
 ┌ ƒ /                                        2.02 kB         122 kB
 ├ ƒ /_not-found                              154 B          88.6 kB
-├ ƒ /assets                                  4.66 kB         116 kB
+├ ƒ /assets                                  4.69 kB         116 kB
 ├ ƒ /login                                   3.41 kB         160 kB
-├ ƒ /print/w/[workspaceId]/assets/[assetId]  4.51 kB         123 kB
+├ ƒ /print/w/[workspaceId]/assets/[assetId]  4.55 kB         123 kB
 ├ ƒ /settings                                154 B          88.6 kB
 ├ ƒ /settings/billing                        3.29 kB         282 kB
 ├ ƒ /settings/general                        2.31 kB         284 kB
@@ -31,16 +31,16 @@ Route (app)                                  Size     First Load JS
 ├ ƒ /settings/wallet                         5.11 kB         306 kB
 ├ ƒ /signup                                  12.1 kB         359 kB
 ├ ƒ /w/[workspaceId]                         2.71 kB         122 kB
-├ ƒ /w/[workspaceId]/assets                  8.25 kB         310 kB
-├ ƒ /w/[workspaceId]/assets/[assetId]        7.49 kB         319 kB
-├ ƒ /w/[workspaceId]/assets/[assetId]/split  5.06 kB         310 kB
+├ ƒ /w/[workspaceId]/assets                  8.29 kB         310 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]        7.54 kB         319 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]/split  5.09 kB         310 kB
 ├ ƒ /w/[workspaceId]/events                  2.4 kB          120 kB
 ├ ƒ /w/[workspaceId]/facilities              4.16 kB         308 kB
 ├ ƒ /w/[workspaceId]/groups                  4.36 kB         306 kB
 ├ ƒ /w/[workspaceId]/holds                   5.55 kB         307 kB
 ├ ƒ /w/[workspaceId]/logistics               8.12 kB         309 kB
 ├ ƒ /w/[workspaceId]/members                 5.16 kB         310 kB
-├ ƒ /w/[workspaceId]/roles/[roleId]          4.41 kB         124 kB
+├ ƒ /w/[workspaceId]/roles/[roleId]          4.45 kB         124 kB
 ├ ƒ /w/[workspaceId]/settings                2.8 kB          307 kB
 └ ƒ /w/[workspaceId]/settings/wallet         5.8 kB          285 kB
 + First Load JS shared by all                88.4 kB

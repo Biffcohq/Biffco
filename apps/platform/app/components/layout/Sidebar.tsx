@@ -94,6 +94,60 @@ const globalNavGroups: NavGroup[] = [
   }
 ]
 
+// --- Collapsible Nav Group Utility Component ---
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function CollapsibleNavGroup({ group, effectiveIsCollapsed, pathname, isFirst }: { group: any, effectiveIsCollapsed: boolean, pathname: string, isFirst: boolean }) {
+  const [isOpen, setIsOpen] = React.useState(true);
+  
+  return (
+    <div className="flex flex-col gap-1 mb-1">
+      {!effectiveIsCollapsed && (
+        <button 
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center justify-between text-xs font-semibold text-text-muted hover:text-text-primary transition-colors tracking-widest px-3 mb-1 mt-2 w-full text-left"
+        >
+          <span className="uppercase truncate">{group.label}</span>
+          <IconChevronRight size={12} className={`transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-90' : ''}`} />
+        </button>
+      )}
+      
+      {/* Divider if collapsed */}
+      {effectiveIsCollapsed && !isFirst && <div className="h-px bg-slate-200/50 mx-auto w-6 mb-2 mt-2" />}
+
+      {/* Group Items */}
+      <div className={`flex flex-col gap-1 overflow-hidden transition-all duration-300 ${!effectiveIsCollapsed && !isOpen ? 'max-h-0 opacity-0 mb-0' : 'max-h-[1000px] opacity-100 mb-1'}`}>
+         {group.items.map((item: any) => {
+            const isActive = pathname === item.href
+            const Icon = item.icon
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-3 h-9 rounded-lg transition-colors overflow-hidden shrink-0 ${
+                  effectiveIsCollapsed 
+                     ? 'justify-center mx-auto w-9 px-0' 
+                     : 'px-3'
+                } ${
+                  isActive 
+                    ? 'bg-primary/10 text-primary font-medium' 
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+                title={effectiveIsCollapsed ? item.label : undefined}
+              >
+                <div className="shrink-0 flex items-center justify-center w-5">
+                  <Icon size={20} stroke={isActive ? 2 : 1.5} />
+                </div>
+                {!effectiveIsCollapsed && (
+                  <span className="text-sm whitespace-nowrap transition-opacity duration-200">{item.label}</span>
+                )}
+              </Link>
+            )
+          })}
+      </div>
+    </div>
+  )
+}
+
 export function Sidebar() {
   const isCollapsed = useUIStore(s => s.isSidebarCollapsed)
   const toggle = useUIStore(s => s.toggleSidebar)
@@ -191,46 +245,15 @@ export function Sidebar() {
         )}
 
       {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-5 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-1 scrollbar-hide">
         {currentNavGroups.map((group, idx) => (
-          <div key={idx} className="flex flex-col gap-1">
-            {!effectiveIsCollapsed && (
-              <h3 className="text-xs font-semibold text-text-muted uppercase tracking-widest px-3 mb-1">
-                {group.label}
-              </h3>
-            )}
-            
-            {/* Si está colapsado, una rayita divisoria para separar el primer grupo del resto */}
-            {effectiveIsCollapsed && idx > 0 && <div className="h-px bg-slate-200 mx-auto w-6 mb-2 mt-1" />}
-
-            {group.items.map((item) => {
-              const isActive = pathname === item.href
-              const Icon = item.icon
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-3 h-9 rounded-lg transition-colors overflow-hidden shrink-0 ${
-                    effectiveIsCollapsed 
-                       ? 'justify-center mx-auto w-9 px-0' 
-                       : 'px-3'
-                  } ${
-                    isActive 
-                      ? 'bg-primary/10 text-primary font-medium' 
-                      : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                  }`}
-                  title={effectiveIsCollapsed ? item.label : undefined}
-                >
-                  <div className="shrink-0 flex items-center justify-center w-5">
-                    <Icon size={20} stroke={isActive ? 2 : 1.5} />
-                  </div>
-                  {!effectiveIsCollapsed && (
-                    <span className="text-sm whitespace-nowrap transition-opacity duration-200">{item.label}</span>
-                  )}
-                </Link>
-              )
-            })}
-          </div>
+          <CollapsibleNavGroup 
+            key={idx} 
+            group={group} 
+            effectiveIsCollapsed={effectiveIsCollapsed} 
+            pathname={pathname}
+            isFirst={idx === 0}
+          />
         ))}
       </div>
 
