@@ -179,40 +179,38 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
            {isLoading && <Skeleton className="w-full h-40 rounded-xl" />}
            {facilities.map(fac => (
-              <div key={fac.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
-                 <div className="bg-bg-subtle border-b border-border px-5 py-3.5 flex justify-between items-center">
-                    <div className="flex items-center gap-2 font-mono text-sm font-bold text-text-secondary">
-                       <IconBuildingEstate size={18} className="text-primary/70" />
-                       {fac.renspa}
-                    </div>
-                    <span className="text-[10px] uppercase font-bold text-success flex items-center justify-center gap-1 bg-success/10 px-2.5 py-1 rounded-full border border-success/20 tracking-wider">
-                       {fac.status}
-                    </span>
+              <div key={fac.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all cursor-pointer flex flex-col overflow-hidden group relative">
+                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-0 transition-opacity opacity-0 group-hover:opacity-100" />
+                 
+                 <div className="px-5 py-4 flex justify-between items-start z-10 border-b border-border/40">
+                     <div className="flex flex-col gap-1">
+                         <span className="text-[10px] uppercase font-bold text-primary/70 tracking-wider flex items-center gap-1.5">
+                             <IconBuildingEstate size={14} />
+                             RENSPA: {fac.renspa}
+                         </span>
+                         <h3 className="text-lg font-bold text-text-primary mt-1">
+                             {fac.name}
+                         </h3>
+                         <p className="text-sm text-text-secondary flex items-center gap-1 mt-0.5">
+                             <IconMapPins size={14} className="text-text-muted"/>
+                             {fac.location}
+                         </p>
+                     </div>
+                     <span className="text-[10px] uppercase font-bold text-success flex items-center justify-center gap-1 bg-success/10 px-2 py-1 rounded-md border border-success/20 tracking-wider shrink-0 mt-1">
+                         {fac.status}
+                     </span>
                  </div>
                  
-                 <div className="p-5 flex-1 flex flex-col relative overflow-hidden">
-                    <IconMap stroke={1} size={120} className="text-text-muted/5 absolute -bottom-4 -right-4 group-hover:scale-110 transition-transform duration-500" />
-                    
-                    <div className="relative z-10">
-                       <h3 className="text-xl font-bold text-text-primary flex items-center gap-2">
-                          {fac.name}
-                       </h3>
-                       <p className="text-sm text-text-secondary mt-1 flex items-center gap-1">
-                          <IconMapPins size={14}/>
-                          {fac.location}
-                       </p>
-                       
-                       <div className="grid grid-cols-2 gap-3 mt-6">
-                          <div className="bg-surface-raised rounded-lg p-3 border border-border">
-                             <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Superficie</span>
-                             <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.area}</span>
-                          </div>
-                          <div className="bg-surface-raised rounded-lg p-3 border border-border">
-                             <span className="block text-[10px] uppercase text-text-muted font-bold tracking-wider">Zonas Asignadas</span>
-                             <span className="block text-lg font-bold text-text-primary mt-0.5">{fac.zones}</span>
-                          </div>
-                       </div>
-                    </div>
+                 <div className="px-5 py-4 flex gap-6 z-10 bg-bg-subtle/30">
+                     <div className="flex flex-col">
+                         <span className="text-[10px] uppercase text-text-muted font-bold tracking-wider">Superficie</span>
+                         <span className="text-sm font-semibold text-text-primary font-mono mt-0.5">{fac.area}</span>
+                     </div>
+                     <div className="w-px bg-border/60"></div>
+                     <div className="flex flex-col">
+                         <span className="text-[10px] uppercase text-text-muted font-bold tracking-wider">Zonas</span>
+                         <span className="text-sm font-semibold text-text-primary font-mono mt-0.5">{fac.zones}</span>
+                     </div>
                  </div>
               </div>
            ))}
