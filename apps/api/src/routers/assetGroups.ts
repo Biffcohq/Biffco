@@ -109,6 +109,34 @@ export const assetGroupsRouter = router({
             inArray(schema.assets.id, input.assetIds)
           )
         )
+
+        // 3. Crear eventos de trazabilidad en la línea de vida de cada activo
+        const crypto = await import('crypto')
+        const { createId } = await import('@paralleldrive/cuid2')
+        const eventsToInsert = input.assetIds.map(assetId => {
+           const payload = { 
+              action: 'ASSIGNED_TO_LOT', 
+              groupId: input.groupId, 
+              groupName: group.name,
+              timestamp: new Date().toISOString()
+           }
+           const strData = JSON.stringify(payload)
+           const hash = crypto.createHash('sha256').update(strData + assetId).digest('hex')
+           
+           return {
+             id: createId(),
+             workspaceId: ctx.workspaceId,
+             streamId: assetId,
+             streamType: 'asset',
+             eventType: 'ASSIGNED_TO_LOT',
+             data: payload,
+             hash: hash,
+             signerId: ctx.memberId || 'system'
+           }
+        })
+        
+        // @ts-ignore
+        await db.insert(schema.domainEvents).values(eventsToInsert)
       }
 
       return { success: true, count: input.assetIds.length }

@@ -98,7 +98,7 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
                   </div>
                   <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
                      <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider flex items-center gap-1"><IconHash size={12}/> Hash Core</span>
-                     <span className="font-mono text-xs font-semibold text-text-primary truncate max-w-[110px]" title={asset.id}>{asset.id}</span>
+                     <span className="font-mono text-xs font-semibold text-text-primary text-right break-all ml-4" title={asset.id}>{asset.id}</span>
                   </div>
                </div>
                
@@ -148,7 +148,7 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
                      <IconMapPin size={18} stroke={2} />
                   </div>
                   <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Dominio Raíz</p>
-                  <p className="text-sm font-bold text-text-primary mt-1 truncate w-full" title={asset.workspaceId}>{asset.workspaceId}</p>
+                  <p className="text-sm font-bold text-text-primary mt-1 line-clamp-2" title={workspace?.name || asset.workspaceId}>{workspace?.name || asset.workspaceId}</p>
                </div>
             </div>
 
