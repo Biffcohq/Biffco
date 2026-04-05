@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   IconSearch,
   IconFilter,
@@ -20,10 +21,20 @@ import { Skeleton } from '@/app/components/ui/Skeleton'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
+  const router = useRouter()
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [searchQuery, setSearchQuery] = useState('')
 
   const { data: realAssets, isLoading } = trpc.assets.list.useQuery()
+  const { data: realFacilities } = trpc.facilities.list.useQuery()
+
+  const facilityLookup = React.useMemo(() => {
+    const map: Record<string, string> = {}
+    realFacilities?.forEach(f => {
+      map[f.id] = f.name
+    })
+    return map
+  }, [realFacilities])
   
   const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
     const d = asset.metadata as any;
@@ -33,7 +44,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
       weight: d?.initialState?.weight ? `${d.initialState.weight} kg` : '--',
       age: d?.initialState?.dateOfBirth ? d.initialState.dateOfBirth : '--',
       status: asset.status,
-      facility: d?.facilityId ? d.facilityId.slice(0, 8) : 'En tránsito'
+      facility: d?.facilityId ? (facilityLookup[d.facilityId] || d.facilityId.slice(0, 8)) : 'En tránsito'
     }
   }) || []
 
@@ -124,7 +135,11 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                     </tr>
                  )}
                  {formattedAssets.map(asset => (
-                    <tr key={asset.id} className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group">
+                    <tr 
+                       key={asset.id} 
+                       className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group"
+                       onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.id}`)}
+                    >
                        <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
                           <div className="flex items-center gap-2">
                              <IconBox size={16} className="text-text-muted" />
@@ -158,7 +173,11 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
            {isLoading && <Skeleton className="h-[200px] rounded-xl w-full" />}
            {formattedAssets.map(asset => (
-              <div key={asset.id} className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px]">
+              <div 
+                 key={asset.id} 
+                 className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px]"
+                 onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.id}`)}
+              >
                  <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold">
                        <IconBox size={14} />

@@ -21,26 +21,26 @@ Route (app)                                      Size     First Load JS
 ┌ ƒ /                                            2.13 kB         122 kB
 ├ ƒ /_not-found                                  151 B          88.7 kB
 ├ ƒ /login                                       3.41 kB         160 kB
-├ ƒ /print/w/[workspaceId]/assets/[assetId]      4.82 kB         124 kB
+├ ƒ /print/w/[workspaceId]/assets/[assetId]      4.85 kB         124 kB
 ├ ƒ /signup                                      12 kB           359 kB
 ├ ƒ /w/[workspaceId]                             2.73 kB         123 kB
-├ ƒ /w/[workspaceId]/assets                      8.46 kB         310 kB
-├ ƒ /w/[workspaceId]/assets/[assetId]            7.81 kB         319 kB
-├ ƒ /w/[workspaceId]/assets/[assetId]/split      5.39 kB         310 kB
+├ ƒ /w/[workspaceId]/assets                      8.49 kB         310 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]            7.84 kB         319 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]/split      5.42 kB         310 kB
 ├ ƒ /w/[workspaceId]/events                      2.4 kB          120 kB
 ├ ƒ /w/[workspaceId]/facilities                  4.16 kB         308 kB
 ├ ƒ /w/[workspaceId]/groups                      4.26 kB         306 kB
 ├ ƒ /w/[workspaceId]/holds                       5.45 kB         307 kB
 ├ ƒ /w/[workspaceId]/logistics                   8.03 kB         309 kB
 ├ ƒ /w/[workspaceId]/members                     5.16 kB         310 kB
-├ ƒ /w/[workspaceId]/roles/[roleId]              4.71 kB         125 kB
-├ ƒ /w/[workspaceId]/roles/[roleId]/[featureId]  4.9 kB          116 kB
+├ ƒ /w/[workspaceId]/roles/[roleId]              4.74 kB         125 kB
+├ ƒ /w/[workspaceId]/roles/[roleId]/[featureId]  4.93 kB         116 kB
 ├ ƒ /w/[workspaceId]/settings                    2.8 kB          307 kB
 └ ƒ /w/[workspaceId]/settings/wallet             6.08 kB         285 kB
-+ First Load JS shared by all                    88.5 kB
++ First Load JS shared by all                    88.6 kB
   ├ chunks/1a8804fd-6388c8241ae2862f.js          53.6 kB
   ├ chunks/2772-1a50be1fa77ec703.js              31.9 kB
-  └ other shared chunks (total)                  3.01 kB
+  └ other shared chunks (total)                  3.02 kB
 
 
 ƒ  (Dynamic)  server-rendered on demand

@@ -44,8 +44,13 @@ export const facilitiesRouter = router({
         }
       }
       
-      // 3. Crear el Facility (usando location jsonb temporalmente si fallback a PostGIS full column no es soportado en DB schema actual)
-      const locationData = input.polygon ? input.polygon : { type: "Point", coordinates: [0,0] }
+      // 3. Crear el Facility (usando location jsonb temporalmente si fallback a PostGIS full column no es soportado)
+      const locationData = input.polygon ? input.polygon : { 
+        type: "Point", 
+        coordinates: [0,0],
+        renspa: input.licenseNumber,
+        address: input.address
+      }
 
       const [facility] = await db.insert(facilities).values({
         workspaceId: workspaceId!,

@@ -10,6 +10,7 @@ const LivestockAssetFeature = lazy(() => import('../../components/verticals/live
 const LivestockLotsFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockLotsFeature'));
 const LivestockFacilitiesFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockFacilitiesFeature'));
 const LivestockOriginationFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockOriginationFeature'));
+const LivestockAssetPassportFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockAssetPassportFeature'));
 
 // --- Diccionarios de Dominio Vertical ---
 import { 
@@ -115,7 +116,8 @@ const registry: Record<string, any> = {
        'PRODUCER.assets': LivestockAssetFeature,
        'PRODUCER.lots': LivestockLotsFeature,
        'PRODUCER.facilities': LivestockFacilitiesFeature,
-       'PRODUCER.origination': LivestockOriginationFeature
+       'PRODUCER.origination': LivestockOriginationFeature,
+       'PRODUCER.asset-passport': LivestockAssetPassportFeature
      }
   },
   'bif-bovine-ar': { 
@@ -129,7 +131,8 @@ const registry: Record<string, any> = {
        'PRODUCER.assets': LivestockAssetFeature,
        'PRODUCER.lots': LivestockLotsFeature,
        'PRODUCER.facilities': LivestockFacilitiesFeature,
-       'PRODUCER.origination': LivestockOriginationFeature
+       'PRODUCER.origination': LivestockOriginationFeature,
+       'PRODUCER.asset-passport': LivestockAssetPassportFeature
      }
   }
 };

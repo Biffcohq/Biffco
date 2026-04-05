@@ -60,9 +60,9 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
     const loc = f.location as any
     return {
       id: f.id,
-      renspa: f.licenseNumber || loc?.renspa || 'S/N',
+      renspa: loc?.renspa || 'S/N',
       name: f.name,
-      location: f.address || 'Sin especificar',
+      location: loc?.address || 'Sin especificar',
       zones: 0,
       area: '--',
       status: 'Habilitado'
