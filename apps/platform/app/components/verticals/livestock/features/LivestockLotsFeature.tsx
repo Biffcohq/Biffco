@@ -15,16 +15,34 @@ import {
   IconLocation
 } from '@tabler/icons-react'
 
+import { trpc } from '@/lib/trpc'
+import { Skeleton } from '@/app/components/ui/Skeleton'
+import LivestockLotModal from '../LivestockLotModal'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockLotsFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const MOCK_LOTS = [
-    { id: 'LOT-A1', name: 'Tropa Destete 2026', headCount: 140, avgWeight: '180 kg', destination: 'Recría', facility: 'La Josefina' },
-    { id: 'LOT-B2', name: 'Lote Novillos P1', headCount: 85, avgWeight: '410 kg', destination: 'Mercado', facility: 'El Ombú' },
-    { id: 'LOT-C3', name: 'Vaquillonas Repo', headCount: 60, avgWeight: '250 kg', destination: 'Inseminación', facility: 'La Josefina' }
-  ]
+  const { data: realLots, isLoading } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' })
+  const { data: facilities } = trpc.facilities.list.useQuery()
+
+  const facilityLookup = React.useMemo(() => {
+    const lookup: Record<string, string> = {}
+    facilities?.forEach(f => {
+      lookup[f.id] = f.name
+    })
+    return lookup
+  }, [facilities])
+
+  const formattedLots = realLots?.map(lot => {
+    return {
+      ...lot,
+      destination: (lot.metadata as any)?.purpose || 'General',
+      facilityName: (lot.metadata as any)?.facilityId ? (facilityLookup[(lot.metadata as any).facilityId] || '...') : 'Regional'
+    }
+  }).filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase()) || l.destination.toLowerCase().includes(searchQuery.toLowerCase())) || []
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
@@ -65,20 +83,20 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
               <IconDownload size={18} />
            </button>
            
-           <button className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
+           <button onClick={() => setIsModalOpen(true)} className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
               <IconPlus size={18} stroke={2.5} />
-              <span>Formar Lote / Tropa</span>
+              <span>Nueva Tropa</span>
            </button>
         </div>
       </div>
 
       {/* Filters & Search */}
       <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+        <div className="relative flex-1 max-w-md">
           <IconSearch size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" />
           <input 
              type="text" 
-             placeholder="Buscar lote por nombre o ID..." 
+             placeholder="Buscar tropa por nombre o propósito..." 
              className="w-full h-10 pl-10 pr-4 rounded-lg border border-border bg-surface text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-text-muted"
              value={searchQuery}
              onChange={e => setSearchQuery(e.target.value)}
@@ -90,35 +108,53 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
       {viewMode === 'list' ? (
         <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden min-h-[400px]">
            <table className="w-full text-left text-sm">
-              <thead className="bg-bg-subtle border-b border-border text-xs uppercase tracking-wider text-text-secondary">
+              <thead className="bg-bg-subtle border-b border-border text-text-muted font-medium uppercase tracking-wider text-[11px]">
                  <tr>
-                    <th className="px-6 py-4 font-semibold">Identificador</th>
-                    <th className="px-6 py-4 font-semibold">Nombre Tropa</th>
-                    <th className="px-6 py-4 font-semibold text-right cursor-pointer hover:text-text-primary">Cabezas <IconChevronDown size={14} className="inline mb-0.5"/></th>
-                    <th className="px-6 py-4 font-semibold text-right">Peso Prom.</th>
-                    <th className="px-6 py-4 font-semibold">Destino Operativo</th>
-                    <th className="px-6 py-4 font-semibold">Ubicación</th>
+                    <th className="px-6 py-4">Tropa / Identificador</th>
+                    <th className="px-6 py-4">Cabezas (Total)</th>
+                    <th className="px-6 py-4 hidden sm:table-cell">Propósito / Destino</th>
+                    <th className="px-6 py-4 hidden md:table-cell">Establecimiento</th>
                  </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                 {MOCK_LOTS.map(lot => (
-                    <tr key={lot.id} className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group">
-                       <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
-                          <div className="flex items-center gap-2">
-                             <IconPackages size={16} className="text-text-muted" />
-                             {lot.id}
+                 {isLoading && (
+                    <tr>
+                       <td colSpan={4} className="p-6">
+                           <div className="flex flex-col gap-3">
+                              <Skeleton className="h-8 w-full rounded" />
+                              <Skeleton className="h-8 w-full rounded" />
+                           </div>
+                       </td>
+                    </tr>
+                 )}
+                 {formattedLots.length === 0 && !isLoading && (
+                    <tr>
+                       <td colSpan={4} className="text-center py-16 text-text-muted">
+                          <IconPackages size={48} className="mx-auto mb-4 opacity-20" />
+                          <p>No se encontraron lotes ni tropas de hacienda.</p>
+                       </td>
+                    </tr>
+                 )}
+                 {formattedLots.map(lot => (
+                    <tr key={lot.id} className="hover:bg-bg-subtle/40 transition-colors">
+                       <td className="px-6 py-4 font-bold text-text-primary">
+                          <div className="flex items-center gap-3">
+                             <div className="size-8 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted">
+                                <IconPackages size={16} />
+                             </div>
+                             {lot.name}
                           </div>
                        </td>
-                       <td className="px-6 py-4 text-text-primary font-medium">{lot.name}</td>
-                       <td className="px-6 py-4 text-right font-bold text-text-primary">{lot.headCount}</td>
-                       <td className="px-6 py-4 text-right text-text-secondary">{lot.avgWeight}</td>
-                       <td className="px-6 py-4">
-                          <span className="px-2 py-1 bg-bg-subtle text-xs rounded-md text-text-secondary border border-border">
+                       <td className="px-6 py-4 font-mono font-medium text-text-primary">
+                          {lot.totalActive}
+                       </td>
+                       <td className="px-6 py-4 hidden sm:table-cell text-text-secondary">
+                          <span className="bg-bg-subtle border border-border px-2 py-1 rounded text-xs">
                              {lot.destination}
                           </span>
                        </td>
-                       <td className="px-6 py-4 text-text-secondary flex items-center gap-1">
-                          <IconLocation size={14}/> {lot.facility}
+                       <td className="px-6 py-4 hidden md:table-cell font-mono text-xs text-text-muted">
+                          {lot.facilityName}
                        </td>
                     </tr>
                  ))}
@@ -126,37 +162,39 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
            </table>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-           {MOCK_LOTS.map(lot => (
-              <div key={lot.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col overflow-hidden">
-                 <div className="bg-bg-subtle border-b border-border px-4 py-3 flex justify-between items-center">
-                    <div className="flex items-center gap-2 font-mono text-xs font-bold text-text-secondary">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+           {isLoading && <Skeleton className="h-40 rounded-xl w-full" />}
+           {formattedLots.map(lot => (
+              <div key={lot.id} className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-[180px]">
+                 <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold whitespace-normal">
                        <IconPackages size={14} />
-                       {lot.id}
+                       {lot.name.slice(0, 16)}
                     </div>
-                    <span className="text-[10px] uppercase font-bold text-text-muted flex items-center gap-1">
-                       <IconLocation size={12}/>
-                       {lot.facility}
-                    </span>
+                    <div className="text-[10px] uppercase font-bold text-text-muted tracking-wider border border-border rounded px-1.5 py-0.5 whitespace-nowrap">
+                       {lot.destination}
+                    </div>
                  </div>
-                 <div className="p-5 flex-1 flex flex-col">
-                    <h3 className="text-lg font-bold text-text-primary">{lot.name}</h3>
-                    <p className="text-xs text-text-muted mt-1 uppercase tracking-wider">Destino: {lot.destination}</p>
-                    
-                    <div className="flex justify-between mt-6 bg-surface-raised rounded-lg p-3 border border-border">
-                       <div className="text-center flex-1 border-r border-border">
-                          <span className="block text-2xl font-bold text-text-primary leading-none">{lot.headCount}</span>
-                          <span className="text-[10px] uppercase text-text-muted mt-1 font-semibold tracking-wider block">Cabezas</span>
-                       </div>
-                       <div className="text-center flex-1">
-                          <span className="block text-xl font-bold text-text-secondary leading-none mt-1">{lot.avgWeight}</span>
-                          <span className="text-[10px] uppercase text-text-muted mt-1 font-semibold tracking-wider block">Peso Prom</span>
-                       </div>
-                    </div>
+                 <div>
+                    <h3 className="text-3xl font-black text-text-primary font-mono">{lot.totalActive}</h3>
+                    <p className="text-sm font-medium text-text-muted">Cabezas Activas</p>
+                 </div>
+                 <div className="w-full flex justify-between items-center pt-3 border-t border-border/50 text-xs">
+                    <span className="text-text-muted flex items-center gap-1 min-w-0" title={lot.facilityName}>
+                       <IconLocation size={14} className="shrink-0" /> <span className="truncate">{lot.facilityName}</span>
+                    </span>
                  </div>
               </div>
            ))}
         </div>
+      )}
+
+      {isModalOpen && (
+         <LivestockLotModal 
+            isOpen={isModalOpen} 
+            onClose={() => setIsModalOpen(false)} 
+            workspaceId={workspace.id} 
+         />
       )}
     </div>
   )

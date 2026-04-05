@@ -67,7 +67,7 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
       area: '--',
       status: 'Habilitado'
     }
-  }) || []
+  }).filter(f => f.name.toLowerCase().includes(searchQuery.toLowerCase()) || f.renspa.toLowerCase().includes(searchQuery.toLowerCase())) || []
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
@@ -180,12 +180,12 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
            {isLoading && <Skeleton className="w-full h-40 rounded-xl" />}
            {facilities.map(fac => (
               <div key={fac.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
-                 <div className="bg-bg-subtle border-b border-border px-4 py-3 flex justify-between items-center">
-                    <div className="flex items-center gap-2 font-mono text-xs font-bold text-text-secondary">
-                       <IconBuildingEstate size={14} />
+                 <div className="bg-bg-subtle border-b border-border px-5 py-3.5 flex justify-between items-center">
+                    <div className="flex items-center gap-2 font-mono text-sm font-bold text-text-secondary">
+                       <IconBuildingEstate size={18} className="text-primary/70" />
                        {fac.renspa}
                     </div>
-                    <span className="text-[10px] uppercase font-bold text-success flex items-center gap-1 bg-success/10 px-2 py-0.5 rounded-full border border-success/20">
+                    <span className="text-[10px] uppercase font-bold text-success flex items-center justify-center gap-1 bg-success/10 px-2.5 py-1 rounded-full border border-success/20 tracking-wider">
                        {fac.status}
                     </span>
                  </div>

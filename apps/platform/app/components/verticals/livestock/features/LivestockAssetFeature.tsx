@@ -13,20 +13,38 @@ import {
   IconShare,
   IconPlus,
   IconBox,
-  IconChevronDown
+  IconChevronDown,
+  IconPackages,
+  IconCheck
 } from '@tabler/icons-react'
 
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
+import { toast } from 'sonner'
+import { Button } from '@biffco/ui'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const router = useRouter()
+  const utils = trpc.useUtils()
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
+  const [selectedLotId, setSelectedLotId] = useState<string>('')
 
   const { data: realAssets, isLoading } = trpc.assets.list.useQuery()
   const { data: realFacilities } = trpc.facilities.list.useQuery()
+  const { data: lots } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' })
+  
+  const addAssetsMutation = trpc.assetGroups.addAssets.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} cabezas asignadas al lote exitosamente.`)
+      setSelectedAssets(new Set())
+      utils.assets.list.invalidate()
+      utils.assetGroups.getWithAssets.invalidate()
+    },
+    onError: (err) => toast.error('Error al agrupar: ' + err.message)
+  })
 
   const facilityLookup = React.useMemo(() => {
     const map: Record<string, string> = {}
@@ -35,6 +53,14 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
     })
     return map
   }, [realFacilities])
+
+  const lotLookup = React.useMemo(() => {
+    const map: Record<string, {name: string, purpose: string}> = {}
+    lots?.forEach(l => {
+      map[l.id] = { name: l.name, purpose: (l.metadata as any)?.purpose || 'General' }
+    })
+    return map
+  }, [lots])
   
   const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
     const d = asset.metadata as any;
@@ -45,13 +71,74 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
       weight: d?.initialState?.weight ? `${d.initialState.weight} kg` : '--',
       age: d?.initialState?.dateOfBirth ? d.initialState.dateOfBirth : '--',
       status: asset.status,
-      facility: d?.facilityId ? (facilityLookup[d.facilityId] || d.facilityId.slice(0, 8)) : 'En tránsito'
+      facility: d?.facilityId ? (facilityLookup[d.facilityId] || d.facilityId.slice(0, 8)) : 'En tránsito',
+      groupId: asset.groupId,
+      lotName: asset.groupId ? lotLookup[asset.groupId]?.name : null
     }
-  }) || []
+  }).filter(a => 
+      a.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      a.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (a.lotName && a.lotName.toLowerCase().includes(searchQuery.toLowerCase()))
+  ) || []
+
+  const toggleSelection = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const newSet = new Set(selectedAssets)
+    if (newSet.has(id)) newSet.delete(id)
+    else newSet.add(id)
+    setSelectedAssets(newSet)
+  }
+
+  const toggleAll = () => {
+    if (selectedAssets.size === formattedAssets.length && formattedAssets.length > 0) {
+      setSelectedAssets(new Set())
+    } else {
+      setSelectedAssets(new Set(formattedAssets.map(a => a.realId)))
+    }
+  }
+
+  const handleGroupAction = () => {
+    if (!selectedLotId) {
+      toast.error('Selecciona un lote de destino primero.')
+      return
+    }
+    addAssetsMutation.mutate({
+      groupId: selectedLotId,
+      assetIds: Array.from(selectedAssets)
+    })
+  }
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
+    <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full relative">
       
+      {/* Grouping Action Bar (Floating) */}
+      {selectedAssets.size > 0 && (
+         <div className="sticky top-0 z-10 bg-surface border border-primary/30 shadow-lg rounded-xl p-3 mb-4 flex flex-col sm:flex-row items-center justify-between gap-4 animate-in slide-in-from-top-4">
+            <div className="flex items-center gap-3">
+               <div className="bg-primary/10 text-primary w-8 h-8 rounded-full flex items-center justify-center font-bold font-mono">
+                  {selectedAssets.size}
+               </div>
+               <span className="font-medium text-text-primary">cabezas seleccionadas</span>
+            </div>
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+               <select 
+                 className="flex-1 sm:w-64 h-10 px-3 rounded-md border border-border bg-bg-subtle text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 text-text-primary"
+                 value={selectedLotId}
+                 onChange={(e) => setSelectedLotId(e.target.value)}
+                 disabled={lots?.length === 0}
+               >
+                  <option value="">-- Seleccionar Tropa / Lote --</option>
+                  {lots?.map(l => (
+                     <option key={l.id} value={l.id}>{l.name} ({(l.metadata as any)?.purpose || 'General'})</option>
+                  ))}
+               </select>
+               <Button onClick={handleGroupAction} disabled={addAssetsMutation.isPending || lots?.length === 0}>
+                  {addAssetsMutation.isPending ? 'Agrupando...' : 'Asignar Lote'}
+               </Button>
+            </div>
+         </div>
+      )}
+
       {/* Header & Actions */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border pb-4">
         <div>
@@ -119,10 +206,19 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
            <table className="w-full text-left text-sm">
               <thead className="bg-bg-subtle border-b border-border text-xs uppercase tracking-wider text-text-secondary">
                  <tr>
+                    <th className="px-4 py-4 w-12 text-center">
+                       <input 
+                         type="checkbox" 
+                         className="rounded border-border text-primary focus:ring-primary/50 cursor-pointer size-4"
+                         checked={selectedAssets.size > 0 && selectedAssets.size === formattedAssets.length}
+                         ref={input => { if (input) input.indeterminate = selectedAssets.size > 0 && selectedAssets.size < formattedAssets.length }}
+                         onChange={toggleAll}
+                       />
+                    </th>
                     <th className="px-6 py-4 font-semibold">Identificador</th>
                     <th className="px-6 py-4 font-semibold cursor-pointer hover:text-text-primary flex items-center gap-1">Categoría <IconChevronDown size={14}/></th>
+                    <th className="px-6 py-4 font-semibold">Lote / Tropa</th>
                     <th className="px-6 py-4 font-semibold">Peso Act.</th>
-                    <th className="px-6 py-4 font-semibold">Edad</th>
                     <th className="px-6 py-4 font-semibold">Establecimiento</th>
                     <th className="px-6 py-4 font-semibold">Status</th>
                  </tr>
@@ -130,17 +226,27 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
               <tbody className="divide-y divide-border">
                  {isLoading && (
                     <tr>
-                       <td colSpan={6} className="px-6 py-6">
+                       <td colSpan={7} className="px-6 py-6">
                          <Skeleton className="h-10 w-full" />
                        </td>
                     </tr>
                  )}
-                 {formattedAssets.map(asset => (
+                 {formattedAssets.map(asset => {
+                    const isSelected = selectedAssets.has(asset.realId)
+                    return (
                     <tr 
                        key={asset.realId} 
-                       className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group"
+                       className={`transition-colors cursor-pointer group ${isSelected ? 'bg-primary/5' : 'hover:bg-bg-subtle/40'}`}
                        onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.realId}`)}
                     >
+                       <td className="px-4 py-4 w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                          <input 
+                            type="checkbox" 
+                            className="rounded border-border text-primary focus:ring-primary/50 cursor-pointer size-4"
+                            checked={isSelected}
+                            onChange={(e) => toggleSelection(asset.realId, e as any)}
+                          />
+                       </td>
                        <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
                           <div className="flex items-center gap-2">
                              <IconBox size={16} className="text-text-muted" />
@@ -148,8 +254,17 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                           </div>
                        </td>
                        <td className="px-6 py-4 text-text-primary">{asset.category}</td>
+                       <td className="px-6 py-4">
+                          {asset.lotName ? (
+                             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md bg-bg-subtle border border-border text-xs font-bold text-text-secondary">
+                                <IconPackages size={14} />
+                                {asset.lotName}
+                             </span>
+                          ) : (
+                             <span className="text-xs text-text-muted">Ninguno</span>
+                          )}
+                       </td>
                        <td className="px-6 py-4 text-text-secondary">{asset.weight}</td>
-                       <td className="px-6 py-4 text-text-secondary">{asset.age}</td>
                        <td className="px-6 py-4 text-text-secondary">{asset.facility}</td>
                        <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
@@ -159,11 +274,12 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                           </span>
                        </td>
                     </tr>
-                 ))}
+                    )
+                 })}
                  {!isLoading && formattedAssets.length === 0 && (
                     <tr>
-                       <td colSpan={6} className="px-6 py-12 text-center text-text-muted">
-                          No se encontraron animales registrados. Registra tu primer animal en Nacimientos y Altas.
+                       <td colSpan={7} className="px-6 py-12 text-center text-text-muted">
+                          No se encontraron animales registrados o coincidentes con la búsqueda.
                        </td>
                     </tr>
                  )}
@@ -173,25 +289,39 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
            {isLoading && <Skeleton className="h-[200px] rounded-xl w-full" />}
-           {formattedAssets.map(asset => (
+           {formattedAssets.map(asset => {
+              const isSelected = selectedAssets.has(asset.realId)
+              return (
               <div 
                  key={asset.realId} 
-                 className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px]"
+                 className={`bg-surface border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px] relative overflow-hidden ${isSelected ? 'border-primary ring-1 ring-primary/50' : 'border-border'}`}
                  onClick={() => router.push(`/w/${workspace.id}/roles/${roleId}/asset-passport?assetId=${asset.realId}`)}
               >
-                 <div className="flex justify-between items-start">
+                 {/* Multi-select check on the card */}
+                 <div 
+                   className={`absolute top-0 right-0 p-3 pt-4 pr-4 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                   onClick={(e) => toggleSelection(asset.realId, e as any)}
+                 >
+                    <div className={`size-5 rounded flex items-center justify-center border ${isSelected ? 'bg-primary border-primary text-white' : 'border-border bg-surface'}`}>
+                       {isSelected && <IconCheck size={14} stroke={3} />}
+                    </div>
+                 </div>
+
+                 <div className="flex justify-between items-start pr-8">
                     <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold">
                        <IconBox size={14} />
                        {asset.id}
                     </div>
-                    <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${
-                       asset.status === 'ACTIVE' ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-700'
-                    }`}>
-                      {asset.status}
-                    </span>
                  </div>
                  <div className="mt-auto">
-                    <h3 className="text-lg font-bold text-text-primary leading-tight">{asset.category}</h3>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="text-lg font-bold text-text-primary leading-tight">{asset.category}</h3>
+                      {asset.lotName && (
+                        <div className="flex items-center gap-1 text-[10px] uppercase font-bold text-text-muted border border-border px-1.5 py-0.5 rounded truncate max-w-[90px]" title={asset.lotName}>
+                           <IconPackages size={10} /> {asset.lotName}
+                        </div>
+                      )}
+                    </div>
                     <div className="flex gap-4 mt-2 text-sm text-text-secondary">
                        <div className="flex flex-col">
                           <span className="text-[10px] uppercase font-bold tracking-widest text-text-muted">Peso</span>
@@ -204,7 +334,8 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                     </div>
                  </div>
               </div>
-           ))}
+              )
+           })}
         </div>
       )}
     </div>
