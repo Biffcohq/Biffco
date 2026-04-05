@@ -44,7 +44,7 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
   const breed = metadata?.initialState?.breed || 'Bovino'
   const weight = metadata?.initialState?.weight || '--'
 
-  const verificationUrl = `https://verify.biffco.co/asset/${asset.id}`
+  const verificationUrl = `https://verify.biffco.co/${asset.id}`
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
