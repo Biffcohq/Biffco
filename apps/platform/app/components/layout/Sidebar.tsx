@@ -97,7 +97,10 @@ const globalNavGroups: NavGroup[] = [
 // --- Collapsible Nav Group Utility Component ---
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function CollapsibleNavGroup({ group, effectiveIsCollapsed, pathname, isFirst }: { group: any, effectiveIsCollapsed: boolean, pathname: string, isFirst: boolean }) {
-  const [isOpen, setIsOpen] = React.useState(true);
+  // Inicializa cerrado, A MENOS que tenga la ruta activa adentro.
+  const [isOpen, setIsOpen] = React.useState(() => {
+    return group.items.some((item: any) => pathname === item.href);
+  });
   
   return (
     <div className="flex flex-col gap-1 mb-1">
