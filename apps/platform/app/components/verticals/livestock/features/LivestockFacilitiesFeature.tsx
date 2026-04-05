@@ -57,12 +57,15 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
   }
 
   const facilities = realFacilities?.map(f => {
-    const loc = f.location as any
+    let loc = f.location as any
+    if (typeof loc === 'string') {
+       try { loc = JSON.parse(loc) } catch (e) {}
+    }
     return {
       id: f.id,
-      renspa: loc?.renspa || 'S/N',
+      renspa: loc?.renspa || loc?.properties?.renspa || 'S/N',
       name: f.name,
-      location: loc?.address || 'Sin especificar',
+      location: loc?.address || loc?.properties?.address || 'Sin especificar',
       zones: 0,
       area: '--',
       status: 'Habilitado'
