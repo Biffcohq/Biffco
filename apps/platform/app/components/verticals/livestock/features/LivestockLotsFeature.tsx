@@ -18,12 +18,14 @@ import {
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
 import LivestockLotModal from '../LivestockLotModal'
+import LivestockLotDetailModal from '../LivestockLotDetailModal'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockLotsFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [searchQuery, setSearchQuery] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [lotIdToView, setLotIdToView] = useState<string | undefined>()
 
   const { data: realLots, isLoading } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' })
   const { data: facilities } = trpc.facilities.list.useQuery()
@@ -136,8 +138,8 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
                     </tr>
                  )}
                  {formattedLots.map(lot => (
-                    <tr key={lot.id} className="hover:bg-bg-subtle/40 transition-colors">
-                       <td className="px-6 py-4 font-bold text-text-primary">
+                    <tr key={lot.id} className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group" onClick={() => setLotIdToView(lot.id)}>
+                       <td className="px-6 py-4 font-bold text-primary group-hover:underline">
                           <div className="flex items-center gap-3">
                              <div className="size-8 rounded-lg bg-surface border border-border flex items-center justify-center text-text-muted">
                                 <IconPackages size={16} />
@@ -165,7 +167,7 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
            {isLoading && <Skeleton className="h-40 rounded-xl w-full" />}
            {formattedLots.map(lot => (
-              <div key={lot.id} className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between h-[180px]">
+              <div key={lot.id} onClick={() => setLotIdToView(lot.id)} className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[180px]">
                  <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold whitespace-normal">
                        <IconPackages size={14} />
@@ -194,6 +196,15 @@ export default function LivestockLotsFeature({ workspace, roleId }: { workspace:
             isOpen={isModalOpen} 
             onClose={() => setIsModalOpen(false)} 
             workspaceId={workspace.id} 
+         />
+      )}
+
+      {!!lotIdToView && (
+         <LivestockLotDetailModal
+            isOpen={!!lotIdToView}
+            onClose={() => setLotIdToView(undefined)}
+            lotId={lotIdToView}
+            workspaceId={workspace.id}
          />
       )}
     </div>

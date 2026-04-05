@@ -46,7 +46,7 @@ export const assetGroupsRouter = router({
         return {
           ...agroup,
           assets: linked,
-          totalActive: linked.filter(a => a.status === 'active').length
+          totalActive: linked.filter(a => a.status === 'ACTIVE').length
         }
       })
     }),
