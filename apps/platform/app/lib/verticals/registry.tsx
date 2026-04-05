@@ -3,9 +3,14 @@ import React, { lazy, Suspense } from 'react';
 const LivestockAssetTable = lazy(() => import('../../components/verticals/livestock/LivestockAssetTable'));
 const LivestockOriginationModal = lazy(() => import('../../components/verticals/livestock/LivestockOriginationModal'));
 const LivestockAssetProfile = lazy(() => import('../../components/verticals/livestock/LivestockAssetProfile'));
+const LivestockProducerDashboard = lazy(() => import('../../components/verticals/livestock/dashboards/LivestockProducerDashboard'));
 
 // --- Diccionarios de Dominio Vertical ---
-import { IconBox, IconVaccine, IconStethoscope, IconScale, IconFileCheck, IconPackageExport } from '@tabler/icons-react'
+import { 
+  IconBox, IconVaccine, IconStethoscope, IconScale, IconFileCheck, IconPackageExport,
+  IconBuildingEstate, IconMapPins, IconPackages, IconActivity, IconShieldCheck, IconTruckDelivery,
+  IconUsers, IconDashboard, IconAlertTriangle
+} from '@tabler/icons-react'
 
 const livestockDictionary = {
   assetTypeName: "Animal (Bovino)",
@@ -17,6 +22,49 @@ const livestockDictionary = {
     'TREATMENT_ADMINISTERED': { title: 'Tratamiento Sanitario', icon: IconStethoscope, bgColor: 'bg-red-100', textColor: 'text-red-600', ringColor: 'ring-red-50' },
     'VACCINE_ADMINISTERED': { title: 'Vacunación', icon: IconVaccine, bgColor: 'bg-indigo-100', textColor: 'text-indigo-600', ringColor: 'ring-indigo-50' },
     'SLAUGHTER_COMPLETED': { title: 'Faena Completada', icon: IconScale, bgColor: 'bg-rose-100', textColor: 'text-rose-600', ringColor: 'ring-rose-50' },
+  },
+  getRoleNavs: (workspaceId: string, roleContext: string) => {
+    if (roleContext === 'PRODUCER') {
+      return [
+        {
+          label: "Panel Principal",
+          items: [
+            { label: "Dashboard Operativo", href: `/w/${workspaceId}/roles/producer`, icon: IconDashboard }
+          ]
+        },
+        {
+          label: "Hacienda y Ubicaciones",
+          items: [
+            { label: "Cabezas Individuales", href: `/w/${workspaceId}/roles/producer/assets`, icon: IconBox },
+            { label: "Lotes y Tropas", href: `/w/${workspaceId}/roles/producer/lots`, icon: IconPackages },
+            { label: "Establecimientos", href: `/w/${workspaceId}/roles/producer/facilities`, icon: IconBuildingEstate },
+          ]
+        },
+        {
+          label: "Operaciones Diarias",
+          items: [
+            { label: "Registros y Nacimientos", href: `/w/${workspaceId}/roles/producer/origination`, icon: IconActivity },
+            { label: "Movimiento de Corrales", href: `/w/${workspaceId}/roles/producer/moves`, icon: IconMapPins },
+            { label: "Bajas e Incidencias", href: `/w/${workspaceId}/roles/producer/incidents`, icon: IconAlertTriangle }
+          ]
+        },
+        {
+          label: "Sanidad y Tránsito",
+          items: [
+            { label: "Eventos y Vacunas", href: `/w/${workspaceId}/roles/producer/health`, icon: IconStethoscope },
+            { label: "Compliance EUDR", href: `/w/${workspaceId}/roles/producer/eudr`, icon: IconShieldCheck },
+            { label: "Envíos y DTE", href: `/w/${workspaceId}/roles/producer/transfers`, icon: IconTruckDelivery }
+          ]
+        },
+        {
+          label: "Organización",
+          items: [
+            { label: "Personal e Inspectores", href: `/w/${workspaceId}/settings/members`, icon: IconUsers }
+          ]
+        }
+      ]
+    }
+    return null; // Fallback to agnostic Role header
   }
 }
 
@@ -34,8 +82,22 @@ export function getVerticalDictionary(verticalId: string): any {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<string, any> = {
-  'livestock': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal, AssetProfile: LivestockAssetProfile },
-  'bif-bovine-ar': { AssetTable: LivestockAssetTable, NewAssetModal: LivestockOriginationModal, AssetProfile: LivestockAssetProfile }
+  'livestock': { 
+     AssetTable: LivestockAssetTable, 
+     NewAssetModal: LivestockOriginationModal, 
+     AssetProfile: LivestockAssetProfile,
+     roles: {
+       'PRODUCER': LivestockProducerDashboard
+     }
+  },
+  'bif-bovine-ar': { 
+     AssetTable: LivestockAssetTable, 
+     NewAssetModal: LivestockOriginationModal, 
+     AssetProfile: LivestockAssetProfile,
+     roles: {
+       'PRODUCER': LivestockProducerDashboard
+     }
+  }
 };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,4 +149,21 @@ export function VerticalAssetProfile({ verticalId, asset }: { verticalId: string
       <Profile asset={asset} />
     </Suspense>
   )
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function VerticalRoleDashboard({ verticalId, roleId, workspace }: { verticalId: string, roleId: string, workspace: any }) {
+  const VerticalComponents = registry[verticalId];
+  
+  if (VerticalComponents && VerticalComponents.roles && VerticalComponents.roles[roleId]) {
+    const Dashboard = VerticalComponents.roles[roleId];
+    return (
+      <Suspense fallback={<div className="animate-pulse bg-surface-raised h-96 rounded-xl w-full mt-6"></div>}>
+        <Dashboard workspace={workspace} />
+      </Suspense>
+    )
+  }
+
+  // Fallback to Agnostic generic layouts
+  return null;
 }

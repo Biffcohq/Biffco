@@ -2,13 +2,9 @@
 
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { ProducerDashboard } from '@/app/components/dashboards/ProducerDashboard'
-import { TransporterDashboard } from '@/app/components/dashboards/TransporterDashboard'
-import { ProcessorDashboard } from '@/app/components/dashboards/ProcessorDashboard'
-import { AuditorDashboard } from '@/app/components/dashboards/AuditorDashboard'
+import { VerticalRoleDashboard } from '../../../../../lib/verticals/registry'
 import { IconLock } from '@tabler/icons-react'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
 
 export default function RoleContextPage({ params }: { params: { workspaceId: string, roleId: string } }) {
   const { data: workspace, isLoading } = trpc.workspaces.getProfile.useQuery()
@@ -42,18 +38,12 @@ export default function RoleContextPage({ params }: { params: { workspaceId: str
   // Dashboard Context Router
   return (
     <div className="animate-in fade-in zoom-in-95 duration-300">
-       {currentRole === 'PRODUCER' && <ProducerDashboard workspace={workspace} />}
-       {currentRole === 'TRANSPORTER' && <TransporterDashboard workspace={workspace} />}
-       {currentRole === 'PROCESSOR' && <ProcessorDashboard workspace={workspace} />}
-       {currentRole === 'AUDITOR' && <AuditorDashboard workspace={workspace} />}
+       <VerticalRoleDashboard verticalId={workspace.verticalId || 'agnostic'} roleId={currentRole} workspace={workspace} />
        
-       {/* Si es un rol futuro que aun no tiene un dashboard UI programado */}
+       {/* Fallback para Roles Agnosticos que no tienen Inyección */}
        {!['PRODUCER', 'TRANSPORTER', 'PROCESSOR', 'AUDITOR'].includes(currentRole) && (
-          <div className="p-8 border border-border bg-surface rounded-xl">
-             <h2 className="text-lg font-bold text-text-primary uppercase flex gap-2">
-                Panel de {currentRole}
-             </h2>
-             <p className="text-sm text-text-muted mt-2">Módulo en construcción para tu vertical. Utiliza la barra lateral para gestionar tus activos y reportes.</p>
+          <div className="p-8 border border-border bg-surface rounded-xl hidden">
+             {/* Oculto, manejado internamente si hace falta */}
           </div>
        )}
     </div>
