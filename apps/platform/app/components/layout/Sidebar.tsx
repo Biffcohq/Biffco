@@ -136,6 +136,9 @@ export function Sidebar() {
   const isMobileSidebarOpen = useUIStore(s => s.isMobileSidebarOpen)
   const closeMobileSidebar = useUIStore(s => s.closeMobileSidebar)
 
+  // On Mobile, if the drawer is open, we MUST force un-collapsed mode visually
+  const effectiveIsCollapsed = isMobileSidebarOpen ? false : isCollapsed;
+
   return (
     <>
       {/* Mobile Drawer Overlay */}
@@ -149,14 +152,14 @@ export function Sidebar() {
       <aside 
         className={`flex flex-col transition-all duration-300 border-r border-border shrink-0 bg-surface 
           ${isMobileSidebarOpen ? 'fixed inset-y-0 left-0 z-50 w-[260px] shadow-2xl' : 'hidden md:flex relative'}
-          ${!isMobileSidebarOpen && isCollapsed ? 'w-16' : ''}
-          ${!isMobileSidebarOpen && !isCollapsed ? 'w-[240px]' : ''}
+          ${!isMobileSidebarOpen && effectiveIsCollapsed ? 'w-16' : ''}
+          ${!isMobileSidebarOpen && !effectiveIsCollapsed ? 'w-[240px]' : ''}
           h-full`}
       >
         {/* Header */}
-        <div className={`h-14 flex items-center shrink-0 ${isCollapsed && !isMobileSidebarOpen ? 'justify-center' : 'px-6'}`}>
+        <div className={`h-14 flex items-center shrink-0 ${effectiveIsCollapsed ? 'justify-center' : 'px-6'}`}>
           <Link href={isWorkspaceContext && workspaceId ? `/w/${workspaceId}` : "/"} onClick={closeMobileSidebar} className="flex items-center overflow-hidden h-full">
-            {isCollapsed && !isMobileSidebarOpen ? (
+            {effectiveIsCollapsed ? (
                <img src="/biffco-iso-color.svg" alt="Biffco Iso" className="w-[18px] h-[18px] object-contain transition-all drop-shadow-sm" />
             ) : (
                <img src="/biffco-logo-color.svg" alt="Biffco Logo" className="h-[18px] w-auto object-contain transition-all" />
@@ -165,7 +168,7 @@ export function Sidebar() {
         </div>
 
         {/* Role Context Header/Switcher if inside a specific role */}
-        {(!isCollapsed || isMobileSidebarOpen) && roleContext && (
+        {!effectiveIsCollapsed && roleContext && (
            <div className="px-4 py-2 mx-3 mb-2 mt-2 bg-surface-raised border border-border rounded-xl">
              <span className="text-[10px] font-bold text-text-muted uppercase tracking-widest block">Estás en el rol:</span>
              <div className="flex items-center justify-between mt-1">
@@ -182,7 +185,7 @@ export function Sidebar() {
               className="opacity-0 group-hover/toggle:opacity-100 bg-surface text-text-secondary hover:text-text-primary rounded-full size-6 flex items-center justify-center border border-border shadow-sm hover:bg-surface-raised cursor-pointer transition-all hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               aria-label="Toggle sidebar"
             >
-              {isCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
+              {effectiveIsCollapsed ? <IconChevronRight size={14} stroke={2} /> : <IconChevronLeft size={14} stroke={2} />}
             </button>
           </div>
         )}
@@ -191,14 +194,14 @@ export function Sidebar() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 flex flex-col gap-5 scrollbar-hide">
         {currentNavGroups.map((group, idx) => (
           <div key={idx} className="flex flex-col gap-1">
-            {!isCollapsed && (
+            {!effectiveIsCollapsed && (
               <h3 className="text-xs font-semibold text-text-muted uppercase tracking-widest px-3 mb-1">
                 {group.label}
               </h3>
             )}
             
             {/* Si está colapsado, una rayita divisoria para separar el primer grupo del resto */}
-            {isCollapsed && idx > 0 && <div className="h-px bg-slate-200 mx-auto w-6 mb-2 mt-1" />}
+            {effectiveIsCollapsed && idx > 0 && <div className="h-px bg-slate-200 mx-auto w-6 mb-2 mt-1" />}
 
             {group.items.map((item) => {
               const isActive = pathname === item.href
@@ -208,7 +211,7 @@ export function Sidebar() {
                   key={item.href}
                   href={item.href}
                   className={`flex items-center gap-3 h-9 rounded-lg transition-colors overflow-hidden shrink-0 ${
-                    isCollapsed 
+                    effectiveIsCollapsed 
                        ? 'justify-center mx-auto w-9 px-0' 
                        : 'px-3'
                   } ${
@@ -216,12 +219,12 @@ export function Sidebar() {
                       ? 'bg-primary/10 text-primary font-medium' 
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`}
-                  title={isCollapsed ? item.label : undefined}
+                  title={effectiveIsCollapsed ? item.label : undefined}
                 >
                   <div className="shrink-0 flex items-center justify-center w-5">
                     <Icon size={20} stroke={isActive ? 2 : 1.5} />
                   </div>
-                  {!isCollapsed && (
+                  {!effectiveIsCollapsed && (
                     <span className="text-sm whitespace-nowrap transition-opacity duration-200">{item.label}</span>
                   )}
                 </Link>
@@ -238,18 +241,18 @@ export function Sidebar() {
           {/* @ts-ignore */}
           <DropdownMenuTrigger asChild>
             <button className={`w-full flex items-center gap-3 rounded-lg hover:bg-surface-raised transition-colors overflow-hidden group outline-none ${
-              isCollapsed ? 'justify-center p-0 mx-auto w-9 h-9' : 'p-2'
+              effectiveIsCollapsed ? 'justify-center p-0 mx-auto w-9 h-9' : 'p-2'
             }`}>
               <div className="shrink-0 rounded-full bg-primary size-8 flex items-center justify-center text-white font-medium text-xs shadow-sm uppercase">
                 {userProfile?.name ? userProfile.name.substring(0,2) : "WK"}
               </div>
-              {!isCollapsed && (
+              {!effectiveIsCollapsed && (
                 <div className="flex flex-col min-w-0 flex-1 text-left">
                   <span className="text-sm font-medium text-text-primary truncate">{userProfile?.name || "Cargando..."}</span>
                   <span className="text-xs text-text-secondary truncate">{profile?.name || "Workspace"}</span>
                 </div>
               )}
-              {!isCollapsed && (
+              {!effectiveIsCollapsed && (
                 <IconSettings size={16} className="text-text-muted group-hover:text-text-primary transition-colors shrink-0" />
               )}
             </button>
