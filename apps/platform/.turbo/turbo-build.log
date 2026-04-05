@@ -25,7 +25,7 @@ Route (app)                                      Size     First Load JS
 ├ ƒ /signup                                      12 kB           359 kB
 ├ ƒ /w/[workspaceId]                             2.73 kB         123 kB
 ├ ƒ /w/[workspaceId]/assets                      8.49 kB         310 kB
-├ ƒ /w/[workspaceId]/assets/[assetId]            7.84 kB         319 kB
+├ ƒ /w/[workspaceId]/assets/[assetId]            7.85 kB         319 kB
 ├ ƒ /w/[workspaceId]/assets/[assetId]/split      5.42 kB         310 kB
 ├ ƒ /w/[workspaceId]/events                      2.4 kB          120 kB
 ├ ƒ /w/[workspaceId]/facilities                  4.16 kB         308 kB

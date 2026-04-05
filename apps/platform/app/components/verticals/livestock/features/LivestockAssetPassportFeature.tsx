@@ -4,7 +4,7 @@ import React from 'react'
 import { trpc } from '@/lib/trpc'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconQrcode, IconLink } from '@tabler/icons-react'
 import { Button } from '@biffco/ui'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -69,9 +69,16 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
                  {asset.status === 'ACTIVE' ? 'ACTIVO' : asset.status}
                </span>
                <div className="w-full h-px bg-border my-6" />
-               <div className="w-full flex justify-between items-center text-sm">
+               <div className="w-full flex justify-between items-center text-sm mb-4">
                   <span className="text-text-muted font-medium">Establecimiento actual</span>
-                  <span className="font-bold text-text-primary">{facilityName}</span>
+                  <span className="font-bold text-text-primary text-right">{facilityName}</span>
+               </div>
+               
+               <div className="bg-bg-subtle border border-border rounded-lg p-4 w-full flex flex-col items-center gap-2">
+                  <IconQrcode size={100} stroke={1.5} className="text-text-primary" />
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider text-center mt-2">
+                     Pasaporte Digital<br/>Escanea para verificar
+                  </p>
                </div>
             </div>
          </div>
@@ -80,19 +87,19 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
             <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
                <h4 className="text-lg font-bold text-text-primary mb-4">Datos Fisiológicos</h4>
                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  <div className="bg-bg-subtle p-4 rounded-lg">
+                  <div className="bg-bg-subtle p-4 rounded-lg border border-border/50">
                      <IconScale size={20} className="text-primary mb-2" />
-                     <p className="text-xs uppercase font-bold text-text-muted">Peso Registrado</p>
+                     <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider">Peso Registrado</p>
                      <p className="text-lg font-bold text-text-primary mt-1">{weight} kg</p>
                   </div>
-                  <div className="bg-bg-subtle p-4 rounded-lg">
+                  <div className="bg-bg-subtle p-4 rounded-lg border border-border/50">
                      <IconVaccine size={20} className="text-primary mb-2" />
-                     <p className="text-xs uppercase font-bold text-text-muted">Raza / Tipo</p>
+                     <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider">Raza / Tipo</p>
                      <p className="text-lg font-bold text-text-primary mt-1">{breed}</p>
                   </div>
-                  <div className="bg-bg-subtle p-4 rounded-lg">
+                  <div className="bg-bg-subtle p-4 rounded-lg border border-border/50">
                      <IconMapPin size={20} className="text-primary mb-2" />
-                     <p className="text-xs uppercase font-bold text-text-muted">Origen</p>
+                     <p className="text-[10px] uppercase font-bold text-text-muted tracking-wider">Origen</p>
                      <p className="text-sm font-bold text-text-primary mt-1 truncate" title={asset.workspaceId}>{asset.workspaceId.slice(0, 12)}...</p>
                   </div>
                </div>
@@ -101,14 +108,23 @@ export default function LivestockAssetPassportFeature({ workspace, roleId }: { w
             <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
                <h4 className="text-lg font-bold text-text-primary mb-4">Línea de Tiempo (Blockchain)</h4>
                <div className="relative pl-6 border-l-2 border-border/60 ml-3 flex flex-col gap-8">
-                  <div className="relative">
-                     <div className="absolute -left-[35px] top-0 size-4 rounded-full bg-success ring-4 ring-bg-subtle" />
-                     <p className="text-sm font-bold text-text-primary">LIVESTOCK_ORIGINATED</p>
-                     <p className="text-xs text-text-muted mt-1">{new Date(asset.createdAt).toLocaleString()}</p>
-                     <div className="mt-3 p-3 bg-bg-subtle rounded-md border border-border text-xs font-mono text-text-secondary overflow-x-auto">
-                       {JSON.stringify(asset.metadata, null, 2)}
-                     </div>
-                  </div>
+                  {asset.events?.map((ev: any, index: number) => (
+                    <div key={ev.id} className="relative">
+                       <div className={`absolute -left-[35px] top-0 size-4 rounded-full ring-4 ring-bg-subtle ${index === 0 ? 'bg-success' : 'bg-primary'}`} />
+                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+                           <p className="text-sm font-bold text-text-primary">{ev.eventType}</p>
+                           {ev.polygonTxHash && (
+                               <a href={`https://amoy.polygonscan.com/tx/${ev.polygonTxHash}`} target="_blank" rel="noreferrer" className="text-[10px] uppercase font-bold bg-purple-100 text-purple-700 px-2 py-0.5 rounded flex items-center gap-1 w-max">
+                                  <IconLink size={12} /> Amoy Testnet
+                               </a>
+                           )}
+                       </div>
+                       <p className="text-xs text-text-muted mt-1">{new Date(ev.createdAt).toLocaleString()} por {ev.signerAlias || 'N/A'}</p>
+                       <div className="mt-3 p-3 bg-bg-subtle rounded-md border border-border text-xs font-mono text-text-secondary overflow-x-auto">
+                         {JSON.stringify(ev.data, null, 2)}
+                       </div>
+                    </div>
+                  ))}
                </div>
             </div>
          </div>
