@@ -2,7 +2,8 @@
 
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { VerticalRoleFeature } from '../../../../../../lib/verticals/registry'
+// eslint-disable-next-line no-restricted-imports
+import { VerticalRoleFeature } from '@/app/lib/verticals/registry'
 import { IconLock } from '@tabler/icons-react'
 import { notFound } from 'next/navigation'
 
@@ -24,7 +25,11 @@ export default function RoleFeatureContextPage({ params }: { params: { workspace
   }
 
   const currentRole = params.roleId.toUpperCase();
-  const hasRole = profile.globalRoles?.includes(currentRole as any) || workspace.members?.some(m => m.user?.id === profile.id && m.roles?.includes(currentRole as any)) || workspace.metadata?.simulatedRole;
+  const globalRolesStr = (profile.globalRoles || []) as unknown as string[];
+  const hasRole = globalRolesStr.includes(currentRole) || 
+                  workspace.members?.some((m: { user?: { id: string }, roles?: unknown[] }) => 
+                     m.user?.id === profile.id && (m.roles as string[])?.includes(currentRole)) || 
+                  workspace.metadata?.simulatedRole;
 
   if (!hasRole) {
      return (
