@@ -5,6 +5,11 @@ const LivestockOriginationModal = lazy(() => import('../../components/verticals/
 const LivestockAssetProfile = lazy(() => import('../../components/verticals/livestock/LivestockAssetProfile'));
 const LivestockProducerDashboard = lazy(() => import('../../components/verticals/livestock/dashboards/LivestockProducerDashboard'));
 
+// Fase 1 Pestañas de Inventario / Tablas
+const LivestockAssetFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockAssetFeature'));
+const LivestockLotsFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockLotsFeature'));
+const LivestockFacilitiesFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockFacilitiesFeature'));
+
 // --- Diccionarios de Dominio Vertical ---
 import { 
   IconBox, IconVaccine, IconStethoscope, IconScale, IconFileCheck, IconPackageExport,
@@ -103,6 +108,12 @@ const registry: Record<string, any> = {
      AssetProfile: LivestockAssetProfile,
      roles: {
        'PRODUCER': LivestockProducerDashboard
+     },
+     features: {
+       // La key sigue el formato `roleId.featureId` o simplemente genérico si es para varios roles
+       'PRODUCER.assets': LivestockAssetFeature,
+       'PRODUCER.lots': LivestockLotsFeature,
+       'PRODUCER.facilities': LivestockFacilitiesFeature
      }
   },
   'bif-bovine-ar': { 
@@ -111,6 +122,11 @@ const registry: Record<string, any> = {
      AssetProfile: LivestockAssetProfile,
      roles: {
        'PRODUCER': LivestockProducerDashboard
+     },
+     features: {
+       'PRODUCER.assets': LivestockAssetFeature,
+       'PRODUCER.lots': LivestockLotsFeature,
+       'PRODUCER.facilities': LivestockFacilitiesFeature
      }
   }
 };
@@ -181,4 +197,33 @@ export function VerticalRoleDashboard({ verticalId, roleId, workspace }: { verti
 
   // Fallback to Agnostic generic layouts
   return null;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function VerticalRoleFeature({ verticalId, roleId, featureId, workspace }: { verticalId: string, roleId: string, featureId: string, workspace: any }) {
+  const VerticalComponents = registry[verticalId];
+  
+  if (VerticalComponents && VerticalComponents.features) {
+    // Intentamos buscar primero si el rol tiene un override para esta feature (ej. PRODUCER.assets)
+    const exactOverrideKey = `${roleId}.${featureId}`;
+    const FeatureComponent = VerticalComponents.features[exactOverrideKey] || VerticalComponents.features[featureId];
+
+    if (FeatureComponent) {
+      return (
+        <Suspense fallback={<div className="animate-pulse bg-surface-raised h-[600px] rounded-xl w-full"></div>}>
+          <FeatureComponent workspace={workspace} roleId={roleId} />
+        </Suspense>
+      )
+    }
+  }
+
+  // Fallback si la feature aun no esta programada
+  return (
+    <div className="p-8 border border-border bg-surface rounded-xl">
+        <h2 className="text-lg font-bold text-text-primary uppercase flex gap-2">
+          Pestaña {featureId}
+        </h2>
+        <p className="text-sm text-text-muted mt-2">Módulo en construcción para el rol {roleId} y vertical {verticalId}.</p>
+    </div>
+  )
 }
