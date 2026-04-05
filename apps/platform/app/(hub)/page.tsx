@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { IconBuilding, IconPackage, IconArrowRight } from '@tabler/icons-react'
-import { trpc } from '../lib/trpc'
+import { trpc } from '../../lib/trpc'
 import { Skeleton } from '../components/ui/Skeleton'
 
 export default function HubPage() {

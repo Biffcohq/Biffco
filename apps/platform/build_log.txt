@@ -1,0 +1,17 @@
+
+> @biffco/platform@1.0.0 build C:\Users\weare\Documents\Projects\Biffco\apps\platform
+> next build
+
+  Ôû▓ Next.js 14.2.35
+
+   Creating an optimized production build ...
+Failed to compile.
+
+./app/(hub)/page.tsx
+Module not found: Can't resolve '../lib/trpc'
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+ÔÇëELIFECYCLEÔÇë Command failed with exit code 1.
