@@ -60,30 +60,18 @@ const getWorkspaceNavGroups = (workspaceId: string, roles: string[] = ['PRODUCER
   
   const groups: NavGroup[] = [
     {
-      label: "Gestión",
+      label: "Gestión General",
       items: [
-        { label: "Dashboard Cadena", href: `/w/${workspaceId}`, icon: IconBuilding },
+        { label: "Mis Roles (Hub)", href: `/w/${workspaceId}`, icon: IconBuilding },
         { label: "Personal y Roles", href: `/w/${workspaceId}/members`, icon: IconUsers },
       ]
     },
     {
-      label: "Operaciones",
+      label: "Consolidación de Registros",
       items: [
-        { label: "Activos (Assets)", href: `/w/${workspaceId}/assets`, icon: IconBox, roles: ['PRODUCER', 'PROCESSOR'] },
-        { label: "Agrupaciones (Lotes)", href: `/w/${workspaceId}/groups`, icon: IconShape, roles: ['PRODUCER', 'PROCESSOR'] },
-        { label: "Logística B2B", href: `/w/${workspaceId}/logistics`, icon: IconTruck, roles: ['PRODUCER', 'TRANSPORTER', 'PROCESSOR'] },
-        { label: "Instalaciones", href: `/w/${workspaceId}/facilities`, icon: IconPackage, roles: ['PRODUCER', 'PROCESSOR'] },
-        { label: "Libro de Eventos", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
-      ]
-    },
-    {
-      label: "Compliance",
-      items: [
-        { label: "Auditorías", href: `/w/${workspaceId}/audits`, icon: IconFileCheck, roles: ['PRODUCER', 'PROCESSOR', 'VET'] },
-        { label: "Reportes", href: `/w/${workspaceId}/reports`, icon: IconChartDonut },
-        { label: "Cuarentenas", href: `/w/${workspaceId}/holds`, icon: IconAlertTriangle, roles: ['PRODUCER'] },
-        { label: "EUDR", href: `/w/${workspaceId}/eudr`, icon: IconLeaf, roles: ['PRODUCER'] },
-        { label: "Analytics", href: `/w/${workspaceId}/analytics`, icon: IconChartBar },
+        { label: "Libro de Eventos Universal", href: `/w/${workspaceId}/events`, icon: IconFileCheck },
+        { label: "Reportes Agregados", href: `/w/${workspaceId}/reports`, icon: IconChartDonut },
+        { label: "Alertas EUDR Globales", href: `/w/${workspaceId}/eudr`, icon: IconLeaf, roles: ['PRODUCER'] },
       ]
     }
   ]
