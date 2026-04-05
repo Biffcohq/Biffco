@@ -15,15 +15,59 @@ import {
   IconMapPins
 } from '@tabler/icons-react'
 
+import { trpc } from '@/lib/trpc'
+import { Modal, ModalContent, ModalHeader, ModalTitle, Input, Button, toast } from '@biffco/ui'
+import { useForm } from 'react-hook-form'
+import { Skeleton } from '@/app/components/ui/Skeleton'
+
+type FacilityForm = {
+  name: string
+  renspa: string
+  location: string
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockFacilitiesFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const MOCK_FACILITIES = [
-    { id: 'FAC-991', renspa: '01.023.0.00192/01', name: 'La Josefina', location: 'Buenos Aires, ARG', zones: 12, area: '450 ha', status: 'Habilitado' },
-    { id: 'FAC-992', renspa: '01.023.0.00412/03', name: 'El Ombú', location: 'Santa Fe, ARG', zones: 4, area: '120 ha', status: 'Habilitado' }
-  ]
+  const utils = trpc.useUtils()
+  const { data: realFacilities, isLoading } = trpc.facilities.list.useQuery()
+  
+  const mutation = trpc.facilities.create.useMutation({
+    onSuccess: () => {
+      toast.success('Establecimiento registrado con éxito')
+      utils.facilities.list.invalidate()
+      setIsModalOpen(false)
+    },
+    onError: (e) => toast.error('Error al registrar: ' + e.message)
+  })
+
+  const { register, handleSubmit, reset } = useForm<FacilityForm>()
+
+  const onSubmit = (data: FacilityForm) => {
+    mutation.mutate({
+      name: data.name,
+      type: 'Farm', // Fixed type for Biffco
+      licenseNumber: data.renspa,
+      address: data.location,
+      polygon: undefined // omit for now
+    })
+  }
+
+  const facilities = realFacilities?.map(f => {
+    const loc = f.location as any
+    return {
+      id: f.id,
+      renspa: f.licenseNumber || loc?.renspa || 'S/N',
+      name: f.name,
+      location: f.address || 'Sin especificar',
+      zones: 0,
+      area: '--',
+      status: 'Habilitado'
+    }
+  }) || []
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
@@ -69,7 +113,7 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
               <IconDownload size={18} />
            </button>
            
-           <button className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
+           <button onClick={() => { reset(); setIsModalOpen(true); }} className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
               <IconPlus size={18} stroke={2.5} />
               <span>Nuevo Establecimiento</span>
            </button>
@@ -105,7 +149,8 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
                  </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                 {MOCK_FACILITIES.map(fac => (
+                 {isLoading && <tr><td colSpan={6} className="p-4"><Skeleton className="w-full h-10" /></td></tr>}
+                 {facilities.map(fac => (
                     <tr key={fac.id} className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group">
                        <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
                           {fac.renspa}
@@ -124,12 +169,16 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
                        </td>
                     </tr>
                  ))}
+                 {!isLoading && facilities.length === 0 && (
+                   <tr><td colSpan={6} className="text-center p-8 text-text-muted">No tienes establecimientos registrados. Haz click en Nuevo Establecimiento para comenzar.</td></tr>
+                 )}
               </tbody>
            </table>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-           {MOCK_FACILITIES.map(fac => (
+           {isLoading && <Skeleton className="w-full h-40 rounded-xl" />}
+           {facilities.map(fac => (
               <div key={fac.id} className="bg-surface border border-border rounded-xl shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col overflow-hidden group">
                  <div className="bg-bg-subtle border-b border-border px-4 py-3 flex justify-between items-center">
                     <div className="flex items-center gap-2 font-mono text-xs font-bold text-text-secondary">
@@ -169,6 +218,36 @@ export default function LivestockFacilitiesFeature({ workspace, roleId }: { work
            ))}
         </div>
       )}
+
+      {/* Modal de Creación */}
+      <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <ModalContent>
+          <ModalHeader>
+            {/* @ts-expect-error title type */}
+            <ModalTitle>Alta de Establecimiento</ModalTitle>
+          </ModalHeader>
+          <form onSubmit={(e) => { void handleSubmit(onSubmit)(e) }} className="flex flex-col gap-4 mt-2">
+             <div className="flex flex-col gap-2">
+               <label className="text-sm font-medium text-text-primary">Nombre del Predio</label>
+               <Input {...register('name')} placeholder="Ej: La Josefina" required />
+             </div>
+             <div className="flex flex-col gap-2">
+               <label className="text-sm font-medium text-text-primary">Nº RENSPA o Licencia</label>
+               <Input {...register('renspa')} placeholder="01.023.0.00192/01" required />
+             </div>
+             <div className="flex flex-col gap-2">
+               <label className="text-sm font-medium text-text-primary">Ubicación</label>
+               <Input {...register('location')} placeholder="Provincia, País" required />
+             </div>
+             <div className="flex justify-end gap-3 mt-4">
+                <Button type="button" variant="ghost" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+                <Button type="submit" disabled={mutation.isPending}>
+                  {mutation.isPending ? 'Guardando...' : 'Crear Predio'}
+                </Button>
+             </div>
+          </form>
+        </ModalContent>
+      </Modal>
     </div>
   )
 }
