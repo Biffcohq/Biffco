@@ -6,18 +6,14 @@ import { useUIStore } from '../../stores/useUIStore'
 import {
   IconBuilding,
   IconUsers,
-  IconPackage,
   IconFileCheck,
   IconLeaf,
   IconChartBar,
   IconChevronLeft,
   IconChevronRight,
-  IconAlertTriangle,
   IconSettings,
   IconLogout,
   IconBox,
-  IconTruck,
-  IconShape,
   IconChartDonut,
   IconMoodSmile,
   IconSun,
@@ -95,11 +91,10 @@ const globalNavGroups: NavGroup[] = [
 ]
 
 // --- Collapsible Nav Group Utility Component ---
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function CollapsibleNavGroup({ group, effectiveIsCollapsed, pathname, isFirst }: { group: any, effectiveIsCollapsed: boolean, pathname: string, isFirst: boolean }) {
+function CollapsibleNavGroup({ group, effectiveIsCollapsed, pathname, isFirst }: { group: NavGroup, effectiveIsCollapsed: boolean, pathname: string, isFirst: boolean }) {
   // Inicializa cerrado, A MENOS que tenga la ruta activa adentro.
   const [isOpen, setIsOpen] = React.useState(() => {
-    return group.items.some((item: any) => pathname === item.href);
+    return group.items.some((item) => pathname === item.href);
   });
   
   return (
@@ -119,7 +114,7 @@ function CollapsibleNavGroup({ group, effectiveIsCollapsed, pathname, isFirst }:
 
       {/* Group Items */}
       <div className={`flex flex-col gap-1 overflow-hidden transition-all duration-300 ${!effectiveIsCollapsed && !isOpen ? 'max-h-0 opacity-0 mb-0' : 'max-h-[1000px] opacity-100 mb-1'}`}>
-         {group.items.map((item: any) => {
+         {group.items.map((item) => {
             const isActive = pathname === item.href
             const Icon = item.icon
             return (
@@ -186,6 +181,7 @@ export function Sidebar() {
       }
     } else {
       // 2. ROOT WORKSPACE SIDEBAR (Gerencial)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       currentNavGroups = getWorkspaceNavGroups(workspaceId, (profile as any)?.roles || []);
     }
   }

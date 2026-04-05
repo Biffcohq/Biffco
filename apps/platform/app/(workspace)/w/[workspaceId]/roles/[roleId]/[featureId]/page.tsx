@@ -1,3 +1,5 @@
+'use client'
+
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
 import { VerticalRoleFeature } from '../../../../../../lib/verticals/registry'
