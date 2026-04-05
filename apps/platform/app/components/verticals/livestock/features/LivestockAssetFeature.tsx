@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
 import {
   IconSearch,
   IconFilter,
@@ -14,17 +15,27 @@ import {
   IconChevronDown
 } from '@tabler/icons-react'
 
+import { trpc } from '@/lib/trpc'
+import { Skeleton } from '@/app/components/ui/Skeleton'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('list')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Placeholder Data
-  const MOCK_ASSETS = [
-    { id: 'EID-908123', category: 'Novillo', weight: '340 kg', age: '14 meses', status: 'Activo', facility: 'La Josefina' },
-    { id: 'EID-908124', category: 'Vaca', weight: '450 kg', age: '36 meses', status: 'Activo', facility: 'La Josefina' },
-    { id: 'EID-908125', category: 'Ternero', weight: '120 kg', age: '5 meses', status: 'Cuarentena', facility: 'El Ombú' }
-  ]
+  const { data: realAssets, isLoading } = trpc.assets.list.useQuery()
+  
+  const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
+    const d = asset.metadata as any;
+    return {
+      id: d?.externalId || asset.id.slice(0, 10),
+      category: d?.initialState?.breed || 'Sin Especificar',
+      weight: d?.initialState?.weight ? `${d.initialState.weight} kg` : '--',
+      age: d?.initialState?.dateOfBirth ? d.initialState.dateOfBirth : '--',
+      status: asset.status,
+      facility: d?.facilityId ? d.facilityId.slice(0, 8) : 'En tránsito'
+    }
+  }) || []
 
   return (
     <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full">
@@ -65,10 +76,10 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
               <IconDownload size={18} />
            </button>
            
-           <button className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
+           <Link href={`/w/${workspace?.id}/roles/${roleId}/origination`} className="h-10 ml-2 px-5 rounded-full bg-primary hover:bg-primary-hover text-white font-medium text-sm transition-colors flex items-center gap-2 shadow-sm active:scale-95">
               <IconPlus size={18} stroke={2.5} />
               <span>Alta Individual</span>
-           </button>
+           </Link>
         </div>
       </div>
 
@@ -105,7 +116,14 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                  </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                 {MOCK_ASSETS.map(asset => (
+                 {isLoading && (
+                    <tr>
+                       <td colSpan={6} className="px-6 py-6">
+                         <Skeleton className="h-10 w-full" />
+                       </td>
+                    </tr>
+                 )}
+                 {formattedAssets.map(asset => (
                     <tr key={asset.id} className="hover:bg-bg-subtle/40 transition-colors cursor-pointer group">
                        <td className="px-6 py-4 font-mono font-medium text-primary group-hover:underline">
                           <div className="flex items-center gap-2">
@@ -119,17 +137,17 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                        <td className="px-6 py-4 text-text-secondary">{asset.facility}</td>
                        <td className="px-6 py-4">
                           <span className={`px-2.5 py-1 text-xs font-semibold rounded-full ${
-                             asset.status === 'Activo' ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-700'
+                             asset.status === 'ACTIVE' ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-700'
                           }`}>
                             {asset.status}
                           </span>
                        </td>
                     </tr>
                  ))}
-                 {MOCK_ASSETS.length === 0 && (
+                 {!isLoading && formattedAssets.length === 0 && (
                     <tr>
                        <td colSpan={6} className="px-6 py-12 text-center text-text-muted">
-                          No se encontraron animales.
+                          No se encontraron animales registrados. Registra tu primer animal en Nacimientos y Altas.
                        </td>
                     </tr>
                  )}
@@ -138,7 +156,8 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-           {MOCK_ASSETS.map(asset => (
+           {isLoading && <Skeleton className="h-[200px] rounded-xl w-full" />}
+           {formattedAssets.map(asset => (
               <div key={asset.id} className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer flex flex-col justify-between h-[200px]">
                  <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2 bg-primary/10 text-primary px-2 py-1 rounded font-mono text-xs font-bold">
@@ -146,7 +165,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                        {asset.id}
                     </div>
                     <span className={`px-2 py-0.5 text-[10px] uppercase font-bold rounded-full ${
-                       asset.status === 'Activo' ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-700'
+                       asset.status === 'ACTIVE' ? 'bg-success/10 text-success' : 'bg-amber-100 text-amber-700'
                     }`}>
                       {asset.status}
                     </span>

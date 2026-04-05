@@ -9,6 +9,7 @@ const LivestockProducerDashboard = lazy(() => import('../../components/verticals
 const LivestockAssetFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockAssetFeature'));
 const LivestockLotsFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockLotsFeature'));
 const LivestockFacilitiesFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockFacilitiesFeature'));
+const LivestockOriginationFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockOriginationFeature'));
 
 // --- Diccionarios de Dominio Vertical ---
 import { 
@@ -113,7 +114,8 @@ const registry: Record<string, any> = {
        // La key sigue el formato `roleId.featureId` o simplemente genérico si es para varios roles
        'PRODUCER.assets': LivestockAssetFeature,
        'PRODUCER.lots': LivestockLotsFeature,
-       'PRODUCER.facilities': LivestockFacilitiesFeature
+       'PRODUCER.facilities': LivestockFacilitiesFeature,
+       'PRODUCER.origination': LivestockOriginationFeature
      }
   },
   'bif-bovine-ar': { 
@@ -126,7 +128,8 @@ const registry: Record<string, any> = {
      features: {
        'PRODUCER.assets': LivestockAssetFeature,
        'PRODUCER.lots': LivestockLotsFeature,
-       'PRODUCER.facilities': LivestockFacilitiesFeature
+       'PRODUCER.facilities': LivestockFacilitiesFeature,
+       'PRODUCER.origination': LivestockOriginationFeature
      }
   }
 };
