@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
 import { publicProcedure, router } from '../trpc';
-import { assets, domainEvents, holds, anchoredEvents, anchorsLog } from '@biffco/db/schema';
+import { assets, domainEvents, holds, anchoredEvents, anchorsLog, assetGroups } from '@biffco/db/schema';
 import { eq, and } from '@biffco/db';
-import { sql } from 'drizzle-orm';
+import { sql, inArray } from 'drizzle-orm';
 import { getSignedUrl as getCloudFrontSignedUrl } from '@aws-sdk/cloudfront-signer';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl as getS3SignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -119,10 +119,6 @@ export const verifyRouter = router({
       const groupIds = Array.from(groupIdsSet);
 
       if (groupIds.length > 0) {
-        // dynamic import of assetGroups and inArray to prevent touching top-level imports in this specific replace block
-        const { assetGroups } = await import('@biffco/db/schema');
-        const { inArray } = await import('drizzle-orm');
-        
         const groups = await ctx.db.select({ id: assetGroups.id, name: assetGroups.name }).from(assetGroups).where(inArray(assetGroups.id, groupIds));
         
         groups.forEach(g => {
