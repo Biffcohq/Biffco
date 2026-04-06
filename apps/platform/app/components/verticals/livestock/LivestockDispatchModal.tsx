@@ -18,9 +18,16 @@ export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }:
   const { mutateAsync: createDraft, isPending } = trpc.transfers.createDraft.useMutation()
 
   const [selectedLotId, setSelectedLotId] = useState<string>('')
+  const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([])
+  const [dispatchMode, setDispatchMode] = useState<'lot' | 'individual'>('lot')
   const [receiverWorkspaceId, setReceiverWorkspaceId] = useState('')
   const [carrierWorkspaceId, setCarrierWorkspaceId] = useState('')
   
+  const { data: allAssets, isLoading: loadingAssets } = trpc.assets.list.useQuery(
+    { status: 'ACTIVE', limit: 1000 }, 
+    { enabled: isOpen && dispatchMode === 'individual' }
+  )
+
   const [errorObj, setErrorObj] = useState<{message: string} | null>(null)
 
   const activeLots = useMemo(() => {
@@ -29,21 +36,26 @@ export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }:
 
   const handleDispatch = async () => {
      setErrorObj(null)
-     if (!selectedLotId) {
-        setErrorObj({ message: 'Debes seleccionar una tropa origen.' })
-        return
-     }
-     if (!receiverWorkspaceId) {
-        setErrorObj({ message: 'Debes especificar el alias del Destino.' })
-        return
+     let activeAssetIds: string[] = []
+
+     if (dispatchMode === 'lot') {
+        if (!selectedLotId) {
+           setErrorObj({ message: 'Debes seleccionar una tropa origen.' })
+           return
+        }
+        const lot = activeLots.find(l => l.id === selectedLotId)
+        if (!lot) return
+        activeAssetIds = lot.assets.filter((a: any) => a.status === 'ACTIVE').map((a: any) => a.id)
+     } else {
+        if (selectedAssetIds.length === 0) {
+           setErrorObj({ message: 'Debes seleccionar al menos un animal para despachar.' })
+           return
+        }
+        activeAssetIds = selectedAssetIds
      }
 
-     const lot = activeLots.find(l => l.id === selectedLotId)
-     if (!lot) return
-
-     const activeAssetIds = lot.assets.filter((a: any) => a.status === 'ACTIVE').map((a: any) => a.id)
      if (activeAssetIds.length === 0) {
-        setErrorObj({ message: 'La tropa seleccionada no posee animales activos para despachar.' })
+        setErrorObj({ message: 'No hay animales activos válidos para despachar en la selección.' })
         return
      }
 
@@ -86,26 +98,78 @@ export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }:
              </div>
            )}
 
-           <div className="flex flex-col gap-2">
-              <label className="text-sm font-bold text-text-secondary flex items-center gap-1.5"><IconPackages size={16}/> Tropa a Enviar</label>
-              {loadingLots ? <Skeleton className="h-10 rounded-lg w-full" /> : (
-                 <select 
-                    className="w-full bg-surface border border-border rounded-lg p-2.5 text-sm focus:ring-2 outline-none font-medium text-text-primary"
-                    value={selectedLotId}
-                    onChange={e => setSelectedLotId(e.target.value)}
-                 >
-                    <option value="">Selecciona una agrupación...</option>
-                    {activeLots.map(l => (
-                       <option key={l.id} value={l.id}>{l.name} ({l.totalActive} cabezas)</option>
-                    ))}
-                 </select>
-              )}
-              {selectedLotId && (
-                 <p className="text-xs text-text-muted mt-1 leading-relaxed">
-                   Se enviarán {activeLots.find(l => l.id === selectedLotId)?.totalActive} cabezas y su estado pasará a "En Tránsito". La venta o re-asignación será prohibida matemáticamente hasta resolución.
-                 </p>
-              )}
+           <div className="flex bg-surface border border-border p-1 rounded-lg">
+              <button 
+                onClick={() => { setDispatchMode('lot'); setErrorObj(null) }}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${dispatchMode === 'lot' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+              >
+                 Por Lote / Tropa
+              </button>
+              <button 
+                onClick={() => { setDispatchMode('individual'); setErrorObj(null) }}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-colors ${dispatchMode === 'individual' ? 'bg-primary text-white shadow-sm' : 'text-text-muted hover:text-text-primary'}`}
+              >
+                 Selección Individual
+              </button>
            </div>
+
+           {dispatchMode === 'lot' ? (
+              <div className="flex flex-col gap-2">
+                 <label className="text-sm font-bold text-text-secondary flex items-center gap-1.5"><IconPackages size={16}/> Tropa a Enviar</label>
+                 {loadingLots ? <Skeleton className="h-10 rounded-lg w-full" /> : (
+                    <select 
+                       className="w-full bg-surface border border-border rounded-lg p-2.5 text-sm focus:ring-2 outline-none font-medium text-text-primary"
+                       value={selectedLotId}
+                       onChange={e => setSelectedLotId(e.target.value)}
+                    >
+                       <option value="">Selecciona una agrupación...</option>
+                       {activeLots.map(l => (
+                          <option key={l.id} value={l.id}>{l.name} ({l.totalActive} cabezas)</option>
+                       ))}
+                    </select>
+                 )}
+                 {selectedLotId && (
+                    <p className="text-xs text-text-muted mt-1 leading-relaxed">
+                      Se enviarán {activeLots.find(l => l.id === selectedLotId)?.totalActive} cabezas y su estado pasará a "En Tránsito". La venta o re-asignación será prohibida matemáticamente hasta resolución.
+                    </p>
+                 )}
+              </div>
+           ) : (
+              <div className="flex flex-col gap-2">
+                 <label className="text-sm font-bold text-text-secondary flex justify-between items-center">
+                    <span className="flex items-center gap-1.5"><IconPackages size={16}/> Animales a Enviar</span>
+                    <span className="text-xs bg-bg-subtle text-primary px-2 py-0.5 rounded">{selectedAssetIds.length} seleccionados</span>
+                 </label>
+                 {loadingAssets ? <Skeleton className="h-[200px] rounded-lg w-full" /> : (
+                    <div className="flex flex-col border border-border rounded-lg bg-surface max-h-[200px] overflow-y-auto divide-y divide-border">
+                       {allAssets?.length === 0 ? (
+                          <div className="p-4 text-center text-sm text-text-muted italic">No tienes animales activos disponibles.</div>
+                       ) : (
+                          allAssets?.map(a => {
+                             const isSelected = selectedAssetIds.includes(a.id)
+                             return (
+                               <label key={a.id} className={`flex items-center gap-3 p-3 cursor-pointer hover:bg-bg-subtle transition-colors ${(isSelected) ? 'bg-primary/5' : ''}`}>
+                                  <input 
+                                     type="checkbox" 
+                                     className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                                     checked={isSelected}
+                                     onChange={(e) => {
+                                        if (e.target.checked) setSelectedAssetIds(p => [...p, a.id])
+                                        else setSelectedAssetIds(p => p.filter(id => id !== a.id))
+                                     }}
+                                  />
+                                  <div className="flex flex-col">
+                                     <span className="text-sm font-bold text-text-primary">{(a.metadata as any)?.externalId || a.id.slice(0, 10)}</span>
+                                     <span className="text-[10px] uppercase font-mono text-text-muted">{(a.metadata as any)?.initialState?.breed || 'Sin Raza'} &bull; {(a.metadata as any)?.initialState?.category || 'Sin Cat'}</span>
+                                  </div>
+                               </label>
+                             )
+                          })
+                       )}
+                    </div>
+                 )}
+              </div>
+           )}
 
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2">
@@ -144,7 +208,7 @@ export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }:
            </button>
            <button 
              onClick={handleDispatch}
-             disabled={isPending || !selectedLotId || !receiverWorkspaceId} 
+             disabled={isPending || (dispatchMode === 'lot' ? !selectedLotId : selectedAssetIds.length === 0) || !receiverWorkspaceId} 
              className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-bold hover:bg-primary-hover transition-colors disabled:opacity-50 flex items-center gap-2"
            >
               {isPending ? 'Validando Blockchain...' : 'Firmar y Despachar'}
