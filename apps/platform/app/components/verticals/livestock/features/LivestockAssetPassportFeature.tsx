@@ -4,7 +4,7 @@ import React from 'react'
 import { trpc } from '@/lib/trpc'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown, IconCategory, IconTag } from '@tabler/icons-react'
 import { Button } from '@biffco/ui'
 
 import { QRCodeSVG } from 'qrcode.react'
@@ -24,7 +24,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 animate-pulse w-full max-w-5xl mx-auto pb-12">
+      <div className="flex flex-col gap-6 animate-pulse w-full mx-auto pb-12">
         <Skeleton className="h-10 w-1/3 rounded-lg" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mt-6">
            <Skeleton className="h-[400px] w-full rounded-lg" />
@@ -55,7 +55,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
   const registrationDate = asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : 'Desconocido'
 
   return (
-    <div className="flex flex-col animate-in fade-in zoom-in-95 duration-500 pb-12 w-full max-w-5xl mx-auto">
+    <div className="flex flex-col animate-in fade-in zoom-in-95 duration-500 pb-12 w-full mx-auto">
       
       {/* Header */}
       <div className="flex items-center gap-4 pb-4">
@@ -138,14 +138,14 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                   <div className="flex flex-col gap-1">
                      <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
-                        <IconVaccine size={14} className="text-orange-500/70" /> Raza
+                        <IconTag size={14} className="text-orange-500/70" /> Raza
                      </span>
                      <span className="text-base font-medium text-text-primary">{breed}</span>
                   </div>
                   
                   <div className="flex flex-col gap-1">
                      <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
-                        <IconBox size={14} className="text-blue-500/70" /> Categoría
+                        <IconCategory size={14} className="text-blue-500/70" /> Categoría
                      </span>
                      <span className="text-base font-medium text-text-primary">{category} ({sex})</span>
                   </div>
@@ -199,13 +199,13 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                        <div key={ev.id} className="relative group/event -ml-6 pl-10">
                           <div className={`absolute left-[-2px] top-1 size-3.5 rounded-full bg-surface border-2 outline outline-2 outline-surface ${index === 0 ? 'border-primary' : 'border-border/80'}`} />
                           
-                          <div className="flex flex-col gap-2 w-full max-w-2xl">
+                          <div className="flex flex-col gap-2 w-full max-w-2xl bg-white border border-border/50 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
                               <div className="flex items-center gap-2">
                                  <EventIcon size={16} className={`${iconColor}`} />
                                  <h5 className="text-base font-semibold text-text-primary capitalize">{ev.eventType.replace(/_/g, ' ').toLowerCase()}</h5>
                               </div>
                               
-                              <div className="text-xs text-text-secondary flex flex-wrap items-center gap-1.5 mb-2">
+                              <div className="text-xs text-text-secondary flex flex-wrap items-center gap-1.5 mb-1">
                                  <span className="font-mono">{new Date(ev.createdAt).toLocaleString()}</span>
                                  <span className="text-text-muted/50">&bull;</span>
                                  <span>Firmado por <span className="font-medium text-text-primary">{ev.signerAlias || 'Sistema Maestro'}</span></span>
@@ -216,9 +216,9 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                                     href={`https://amoy.polygonscan.com/tx/${ev.anchorTxHash}`} 
                                     target="_blank" 
                                     rel="noreferrer" 
-                                    className="text-[10px] text-text-muted hover:text-primary transition-colors flex items-center gap-1 w-max"
+                                    className="text-[10px] uppercase font-black bg-[#8247E5]/10 text-[#8247E5] border border-[#8247E5]/20 hover:bg-[#8247E5]/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 w-max transition-colors shadow-sm mt-2"
                                   >
-                                     Ver en Polygon Scanner <IconExternalLink size={10} />
+                                     Polygon Amoy <IconExternalLink size={10} />
                                   </a>
                               )}
                              

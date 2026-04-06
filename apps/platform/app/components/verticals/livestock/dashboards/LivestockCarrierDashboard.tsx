@@ -27,7 +27,7 @@ export default function LivestockCarrierDashboard({ workspace }: { workspace: an
                Ver manifiestos pendientes de origen que aguardan recolección por su flota.
             </p>
             <Link 
-               href={`/w/${workspace?.id}/roles/carrier/routes`}
+               href={`/w/${workspace?.id}/roles/transporter/routes`}
                className="text-sm font-semibold text-primary hover:underline mt-2"
             >
                Ir a Hojas de Ruta &rarr;
@@ -43,7 +43,7 @@ export default function LivestockCarrierDashboard({ workspace }: { workspace: an
                Monitorear viajes activos hasta su confirmación por el frigorífico o destino.
             </p>
             <Link 
-               href={`/w/${workspace?.id}/roles/carrier/routes`}
+               href={`/w/${workspace?.id}/roles/transporter/routes`}
                className="text-sm font-semibold text-primary hover:underline mt-2"
             >
                Ver Tránsito &rarr;
@@ -59,7 +59,7 @@ export default function LivestockCarrierDashboard({ workspace }: { workspace: an
                Consulte registros históricos de fletes concretados o rechazados.
             </p>
             <Link 
-               href={`/w/${workspace?.id}/roles/carrier/routes`}
+               href={`/w/${workspace?.id}/roles/transporter/routes`}
                className="text-sm font-semibold text-text-primary hover:underline mt-2"
             >
                Revisar Archivo &rarr;
