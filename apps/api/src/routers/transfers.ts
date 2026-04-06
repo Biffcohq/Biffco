@@ -147,6 +147,7 @@ export const transfersRouter = router({
       transferId: z.string().min(1),
       action: z.enum(['ACCEPT', 'REJECT']),
       reason: z.string().optional(),
+      rejectedAssetIds: z.array(z.string()).optional(), // Bajas en tránsito reportadas
       signature: z.string().optional()
     }))
     .mutation(async ({ ctx, input }) => {
@@ -160,7 +161,7 @@ export const transfersRouter = router({
       })
 
       if (!transfer) throw new TRPCError({ code: 'NOT_FOUND', message: 'Manifiesto de carga ajeno' })
-      if (transfer.status !== 'IN_TRANSIT') throw new TRPCError({ code: 'PRECONDITION_FAILED' })
+      if (transfer.status !== 'IN_TRANSIT') throw new TRPCError({ code: 'PRECONDITION_FAILED', message: 'El lote no está en tránsito' })
 
       return await db.transaction(async (tx) => {
         const isAccept = input.action === 'ACCEPT'
@@ -170,35 +171,93 @@ export const transfersRouter = router({
             status: isAccept ? 'COMPLETED' : 'REJECTED',
             receivedAt: isAccept ? new Date() : null,
             rejectedAt: !isAccept ? new Date() : null,
-            metadata: { ...transfer.metadata as object, rejectReason: input.reason }
+            metadata: { ...transfer.metadata as object, rejectReason: input.reason, casualtiesCount: input.rejectedAssetIds?.length || 0 }
           })
           .where(eq(assetTransfers.id, transfer.id))
 
+        const allAssetIds = transfer.assetIds as string[]
+        const rejectedAssetIdsSet = new Set(input.rejectedAssetIds || [])
+        const acceptedAssetIds = allAssetIds.filter(id => !rejectedAssetIdsSet.has(id))
+        const confirmedRejectedAssetIds = allAssetIds.filter(id => rejectedAssetIdsSet.has(id))
+
         if (isAccept) {
-           // Transferir de dueño real
-           await tx.update(assets)
-             .set({ workspaceId: workspaceId!, status: 'ACTIVE', updatedAt: new Date() })
-             .where(inArray(assets.id, transfer.assetIds as string[])) // Mueve las vacas al Frigorífico
+           // Transferir los que llegaron sanos al dueño real
+           if (acceptedAssetIds.length > 0) {
+             await tx.update(assets)
+               .set({ workspaceId: workspaceId!, status: 'ACTIVE', updatedAt: new Date() })
+               .where(inArray(assets.id, acceptedAssetIds)) // Mueve las vacas al Destino
+           }
+           
+           // Marcar las bajas (muertes/extravíos reportados por el destino)
+           if (confirmedRejectedAssetIds.length > 0) {
+             await tx.update(assets)
+               .set({ workspaceId: workspaceId!, status: 'DEAD_IN_TRANSIT', updatedAt: new Date() })
+               .where(inArray(assets.id, confirmedRejectedAssetIds))
+           }
         } else {
-           // Si rechaza, quedan varados en el camión como REJECTED_IN_TRANSIT. 
+           // Si el destino rechaza EL CAMIÓN COMPLETO, quedan varados en el camión como REJECTED_IN_TRANSIT. 
            // El Origen Original es el único con potestad para despacharlos en un nuevo viaje de retorno/redirección.
            await tx.update(assets)
              .set({ status: 'REJECTED_IN_TRANSIT', updatedAt: new Date() })
-             .where(inArray(assets.id, transfer.assetIds as string[]))
+             .where(inArray(assets.id, allAssetIds))
         }
 
-        const eventData = { transferId: transfer.id, action: input.action, reason: input.reason }
-        const eventsToInsert = (transfer.assetIds as string[]).map(assetId => ({
-          workspaceId: workspaceId,
-          streamId: assetId,
-          streamType: 'asset',
-          eventType: isAccept ? 'ASSET_RECEIVED' : 'ASSET_REJECTED',
-          hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventData, animal: assetId })).digest('hex'),
-          data: eventData,
-          signerId: memberId || 'system',
-          signature: input.signature,
-        }))
-        await tx.insert(domainEvents).values(eventsToInsert)
+        const eventsToInsert: any[] = []
+        
+        if (isAccept) {
+            // Eventos para los aceptados
+            if (acceptedAssetIds.length > 0) {
+                const eventDataAccept = { transferId: transfer.id, action: 'ACCEPT' }
+                acceptedAssetIds.forEach(assetId => {
+                   eventsToInsert.push({
+                      workspaceId: workspaceId,
+                      streamId: assetId,
+                      streamType: 'asset',
+                      eventType: 'ASSET_RECEIVED',
+                      hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventDataAccept, animal: assetId })).digest('hex'),
+                      data: eventDataAccept,
+                      signerId: memberId || 'system',
+                      signature: input.signature,
+                   })
+                })
+            }
+
+            // Eventos para las bajas
+            if (confirmedRejectedAssetIds.length > 0) {
+                const eventDataDead = { transferId: transfer.id, action: 'REJECT_CASUALTY', reason: input.reason || 'Baja en Tránsito' }
+                confirmedRejectedAssetIds.forEach(assetId => {
+                   eventsToInsert.push({
+                      workspaceId: workspaceId,
+                      streamId: assetId,
+                      streamType: 'asset',
+                      eventType: 'ASSET_REJECTED',
+                      hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventDataDead, animal: assetId })).digest('hex'),
+                      data: eventDataDead,
+                      signerId: memberId || 'system',
+                      signature: input.signature,
+                   })
+                })
+            }
+        } else {
+            // Eventos para rechazo total
+            const eventDataReject = { transferId: transfer.id, action: 'REJECT', reason: input.reason }
+            allAssetIds.forEach(assetId => {
+               eventsToInsert.push({
+                  workspaceId: workspaceId,
+                  streamId: assetId,
+                  streamType: 'asset',
+                  eventType: 'ASSET_REJECTED',
+                  hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventDataReject, animal: assetId })).digest('hex'),
+                  data: eventDataReject,
+                  signerId: memberId || 'system',
+                  signature: input.signature,
+               })
+            })
+        }
+
+        if (eventsToInsert.length > 0) {
+            await tx.insert(domainEvents).values(eventsToInsert)
+        }
 
         return { success: true, newStatus: isAccept ? 'COMPLETED' : 'REJECTED' }
       })
