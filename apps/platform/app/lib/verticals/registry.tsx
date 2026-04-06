@@ -87,18 +87,18 @@ const livestockDictionary = {
         }
       ]
     }
-    if (roleContext === 'CARRIER') {
+    if (roleContext === 'TRANSPORTER') {
       return [
         {
           label: "Dashboard",
           items: [
-            { label: "Panel Logístico", href: `/w/${workspaceId}/roles/carrier`, icon: IconDashboard }
+            { label: "Panel Logístico", href: `/w/${workspaceId}/roles/transporter`, icon: IconDashboard }
           ]
         },
         {
           label: "Cargas y Rutas",
           items: [
-            { label: "Hojas de Ruta", href: `/w/${workspaceId}/roles/carrier/routes`, icon: IconTruckDelivery }
+            { label: "Hojas de Ruta", href: `/w/${workspaceId}/roles/transporter/routes`, icon: IconTruckDelivery }
           ]
         },
         {
@@ -146,7 +146,7 @@ const registry: Record<string, any> = {
        'PRODUCER.origination': LivestockOriginationFeature,
        'PRODUCER.asset-passport': LivestockAssetPassportFeature,
        'PRODUCER.transfers': LivestockTransfersFeature,
-       'CARRIER.routes': LivestockCarrierRoutesFeature
+       'TRANSPORTER.routes': LivestockCarrierRoutesFeature
      }
   },
   'bif-bovine-ar': { 
@@ -155,7 +155,7 @@ const registry: Record<string, any> = {
      AssetProfile: LivestockAssetProfile,
      roles: {
        'PRODUCER': LivestockProducerDashboard,
-       'CARRIER': LivestockCarrierDashboard
+       'TRANSPORTER': LivestockCarrierDashboard
      },
      features: {
        'PRODUCER.assets': LivestockAssetFeature,
@@ -164,7 +164,7 @@ const registry: Record<string, any> = {
        'PRODUCER.origination': LivestockOriginationFeature,
        'PRODUCER.asset-passport': LivestockAssetPassportFeature,
        'PRODUCER.transfers': LivestockTransfersFeature,
-       'CARRIER.routes': LivestockCarrierRoutesFeature
+       'TRANSPORTER.routes': LivestockCarrierRoutesFeature
      }
   }
 };

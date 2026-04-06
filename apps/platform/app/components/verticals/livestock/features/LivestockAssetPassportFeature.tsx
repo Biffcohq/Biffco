@@ -72,9 +72,9 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-y-12 md:gap-x-16 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-y-12 md:gap-x-12 mt-6">
          {/* Identity Column (Left) */}
-         <div className="md:col-span-1 flex flex-col items-start gap-8">
+         <div className="md:col-span-1 flex flex-col items-start gap-8 bg-surface border border-border/50 rounded-[2rem] p-8 shadow-sm h-max">
             <div className="flex flex-col items-start gap-1 w-full">
                <div className="text-primary mb-2">
                   <IconBox size={32} stroke={1.5} />
@@ -130,7 +130,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
          </div>
 
          {/* Content Column (Right) */}
-         <div className="md:col-span-3 flex flex-col gap-12">
+         <div className="md:col-span-3 flex flex-col gap-12 bg-surface/50 border border-border/50 rounded-[2rem] p-8 md:p-10 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)]">
             
             {/* Stats */}
             <div>
