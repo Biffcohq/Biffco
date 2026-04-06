@@ -4,7 +4,7 @@ import React from 'react'
 import { trpc } from '@/lib/trpc'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown, IconCategory, IconTag } from '@tabler/icons-react'
+import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown, IconCategory, IconTag, IconFileCheck, IconStethoscope, IconTruckDelivery } from '@tabler/icons-react'
 import { Button } from '@biffco/ui'
 
 import { QRCodeSVG } from 'qrcode.react'
