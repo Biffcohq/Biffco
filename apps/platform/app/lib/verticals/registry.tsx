@@ -87,6 +87,28 @@ const livestockDictionary = {
         }
       ]
     }
+    if (roleContext === 'CARRIER') {
+      return [
+        {
+          label: "Dashboard",
+          items: [
+            { label: "Panel Logístico", href: `/w/${workspaceId}/roles/carrier`, icon: IconDashboard }
+          ]
+        },
+        {
+          label: "Cargas y Rutas",
+          items: [
+            { label: "Hojas de Ruta", href: `/w/${workspaceId}/roles/carrier/routes`, icon: IconTruckDelivery }
+          ]
+        },
+        {
+          label: "Organizacion",
+          items: [
+            { label: "Flota y Choferes", href: `/w/${workspaceId}/settings/members`, icon: IconUsers }
+          ]
+        }
+      ]
+    }
     return null; // Fallback to agnostic Role header
   }
 }
@@ -103,6 +125,9 @@ export function getVerticalDictionary(verticalId: string): any {
   return agnosticDictionary
 }
 
+const LivestockCarrierDashboard = lazy(() => import('../../components/verticals/livestock/dashboards/LivestockCarrierDashboard'));
+const LivestockCarrierRoutesFeature = lazy(() => import('../../components/verticals/livestock/features/LivestockCarrierRoutesFeature'));
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const registry: Record<string, any> = {
   'livestock': { 
@@ -110,7 +135,8 @@ const registry: Record<string, any> = {
      NewAssetModal: LivestockOriginationModal, 
      AssetProfile: LivestockAssetProfile,
      roles: {
-       'PRODUCER': LivestockProducerDashboard
+       'PRODUCER': LivestockProducerDashboard,
+       'CARRIER': LivestockCarrierDashboard
      },
      features: {
        // La key sigue el formato `roleId.featureId` o simplemente genérico si es para varios roles
@@ -119,7 +145,8 @@ const registry: Record<string, any> = {
        'PRODUCER.facilities': LivestockFacilitiesFeature,
        'PRODUCER.origination': LivestockOriginationFeature,
        'PRODUCER.asset-passport': LivestockAssetPassportFeature,
-       'PRODUCER.transfers': LivestockTransfersFeature
+       'PRODUCER.transfers': LivestockTransfersFeature,
+       'CARRIER.routes': LivestockCarrierRoutesFeature
      }
   },
   'bif-bovine-ar': { 
@@ -127,7 +154,8 @@ const registry: Record<string, any> = {
      NewAssetModal: LivestockOriginationModal, 
      AssetProfile: LivestockAssetProfile,
      roles: {
-       'PRODUCER': LivestockProducerDashboard
+       'PRODUCER': LivestockProducerDashboard,
+       'CARRIER': LivestockCarrierDashboard
      },
      features: {
        'PRODUCER.assets': LivestockAssetFeature,
@@ -135,7 +163,8 @@ const registry: Record<string, any> = {
        'PRODUCER.facilities': LivestockFacilitiesFeature,
        'PRODUCER.origination': LivestockOriginationFeature,
        'PRODUCER.asset-passport': LivestockAssetPassportFeature,
-       'PRODUCER.transfers': LivestockTransfersFeature
+       'PRODUCER.transfers': LivestockTransfersFeature,
+       'CARRIER.routes': LivestockCarrierRoutesFeature
      }
   }
 };
