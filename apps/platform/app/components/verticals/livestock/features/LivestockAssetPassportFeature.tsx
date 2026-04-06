@@ -4,21 +4,10 @@ import React from 'react'
 import { trpc } from '@/lib/trpc'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { IconArrowLeft, IconBox, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown, IconCategory, IconTag, IconFileCheck, IconStethoscope, IconTruckDelivery } from '@tabler/icons-react'
+import { IconArrowLeft, IconVaccine, IconMapPin, IconScale, IconExternalLink, IconTimeline, IconHash, IconPackages, IconChevronDown, IconCategory, IconTag, IconFileCheck, IconStethoscope, IconTruckDelivery, IconFingerprint, IconPlant } from '@tabler/icons-react'
 import { Button } from '@biffco/ui'
 
 import { QRCodeSVG } from 'qrcode.react'
-
-const CowFaceIcon = ({ size = 32, className = "" }: { size?: number, className?: string }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
-    <path d="M7 15l-2.5 -5c-1 -2 -1 -3 3 -3c2 -1 6 -1 8 0c4 0 4 1 3 3l-2.5 5" />
-    <path d="M6 13h12a2 2 0 0 1 2 2v1a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4v-1a2 2 0 0 1 2 -2z" />
-    <circle cx="10" cy="16" r="1" fill="currentColor" />
-    <circle cx="14" cy="16" r="1" fill="currentColor" />
-    <path d="M6 7l-2 -3c-1.5 -2.5 -0.5 -3 1 -2l4 3" />
-    <path d="M18 7l2 -3c1.5 -2.5 0.5 -3 -1 -2l-4 3" />
-  </svg>
-);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetPassportFeature({ workspace }: { workspace: any, roleId: string }) {
@@ -88,7 +77,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
          <div className="md:col-span-1 flex flex-col items-start gap-8 bg-surface border border-border/50 rounded-2xl p-8 shadow-sm h-max">
             <div className="flex flex-col items-start gap-1 w-full">
                <div className="text-primary mb-2 bg-primary/10 p-3 rounded-2xl">
-                  <CowFaceIcon size={32} />
+                  <IconFingerprint size={40} stroke={2} className="text-primary" />
                </div>
                
                <h3 className="text-2xl font-black text-text-primary tracking-tight">{metadata?.externalId || asset.id.slice(0,10)}</h3>
@@ -198,7 +187,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                      // Helper Dictionary para humanizar eventos
                      const getEventMeta = (type: string) => {
                        const meta: Record<string, any> = {
-                          'LIVESTOCK_ORIGINATED': { title: 'Nacimiento Registrado', icon: CowFaceIcon, color: 'text-blue-500' },
+                          'LIVESTOCK_ORIGINATED': { title: 'Nacimiento Registrado', icon: IconPlant, color: 'text-emerald-600' },
                           'HEALTH_CERT_ISSUED': { title: 'Certificado Sanitario Expedido', icon: IconFileCheck, color: 'text-emerald-500' },
                           'TREATMENT_ADMINISTERED': { title: 'Tratamiento Médico', icon: IconStethoscope, color: 'text-red-500' },
                           'VACCINE_ADMINISTERED': { title: 'Vacunación', icon: IconVaccine, color: 'text-orange-500' },
@@ -216,7 +205,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                        <div key={ev.id} className="relative pl-12 z-10 w-full group/event">
                           
                           <div className={`absolute left-0 top-3 size-8 rounded-full bg-white flex items-center justify-center border-2 transition-colors ${index === 0 ? 'border-primary shadow-sm' : 'border-border/80'}`}>
-                              <EventIcon size={16} className={`${index === 0 ? 'text-primary' : 'text-text-muted'} `} />
+                              <EventIcon size={16} className={`${index === 0 ? 'text-primary' : iconColor} `} />
                           </div>
                           
                           <div className="flex flex-col gap-3 w-full max-w-2xl bg-white border border-border/50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
