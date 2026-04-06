@@ -60,31 +60,31 @@ export const verifyRouter = router({
     .input(z.object({ id: z.string() }))
     .query(async ({ input, ctx }) => {
       // 1. Traverse Forwards (Descendants)
-      const descendants = await ctx.db.execute<{id: string, parent_ids: string[], type: string}>(sql`
+      const descendants = await ctx.db.execute<{id: string, parent_ids: string[], type: string, group_id: string | null}>(sql`
         WITH RECURSIVE lineage AS (
-          SELECT id, parent_ids, type FROM assets WHERE id = ${input.id}
+          SELECT id, parent_ids, type, group_id FROM assets WHERE id = ${input.id}
           UNION ALL
-          SELECT a.id, a.parent_ids, a.type FROM assets a
+          SELECT a.id, a.parent_ids, a.type, a.group_id FROM assets a
           INNER JOIN lineage l ON a.parent_ids @> jsonb_build_array(l.id)
         )
-        SELECT id, parent_ids, type FROM lineage LIMIT 500
+        SELECT id, parent_ids, type, group_id FROM lineage LIMIT 500
       `);
 
       // 2. Traverse Backwards (Ancestors)
-      const ancestors = await ctx.db.execute<{id: string, parent_ids: string[], type: string}>(sql`
+      const ancestors = await ctx.db.execute<{id: string, parent_ids: string[], type: string, group_id: string | null}>(sql`
         WITH RECURSIVE lineage AS (
-          SELECT id, parent_ids, type FROM assets WHERE id = ${input.id}
+          SELECT id, parent_ids, type, group_id FROM assets WHERE id = ${input.id}
           UNION ALL
-          SELECT a.id, a.parent_ids, a.type FROM assets a
+          SELECT a.id, a.parent_ids, a.type, a.group_id FROM assets a
           INNER JOIN lineage l ON l.parent_ids @> jsonb_build_array(a.id)
         )
-        SELECT id, parent_ids, type FROM lineage LIMIT 500
+        SELECT id, parent_ids, type, group_id FROM lineage LIMIT 500
       `);
 
       // Merge and deduplicate
-      const allAssetsMap = new Map<string, {id: string, parentIds: string[], type: string}>();
-      const addRow = (row: {id: string, parent_ids: string[], type: string}) => {
-        allAssetsMap.set(row.id, { id: row.id, parentIds: row.parent_ids || [], type: row.type });
+      const allAssetsMap = new Map<string, {id: string, parentIds: string[], type: string, groupId: string | null}>();
+      const addRow = (row: {id: string, parent_ids: string[], type: string, group_id: string | null}) => {
+        allAssetsMap.set(row.id, { id: row.id, parentIds: row.parent_ids || [], type: row.type, groupId: row.group_id });
       };
 
       descendants.forEach(addRow);
@@ -112,6 +112,38 @@ export const verifyRouter = router({
           }
         });
       });
+
+      // 3. Aggregate groups
+      const groupIdsSet = new Set<string>();
+      allAssets.forEach(a => { if (a.groupId) groupIdsSet.add(a.groupId); });
+      const groupIds = Array.from(groupIdsSet);
+
+      if (groupIds.length > 0) {
+        // dynamic import of assetGroups and inArray to prevent touching top-level imports in this specific replace block
+        const { assetGroups } = await import('@biffco/db/schema');
+        const { inArray } = await import('drizzle-orm');
+        
+        const groups = await ctx.db.select({ id: assetGroups.id, name: assetGroups.name }).from(assetGroups).where(inArray(assetGroups.id, groupIds));
+        
+        groups.forEach(g => {
+           nodes.push({
+             id: g.id,
+             position: { x: 0, y: 0 },
+             data: { id: g.id, type: 'LOT', label: `Lote: ${g.name}` }
+           });
+        });
+
+        // Add edges from assets to their groups
+        allAssets.forEach(a => {
+           if (a.groupId && groups.find(g => g.id === a.groupId)) {
+              edges.push({
+                 id: `edge-${a.id}-${a.groupId}`,
+                 source: a.id, // el animal ensambla HACIA la tropa
+                 target: a.groupId
+              });
+           }
+        });
+      }
 
       return { nodes, edges };
     }),
