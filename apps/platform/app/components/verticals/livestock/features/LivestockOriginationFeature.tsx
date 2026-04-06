@@ -10,6 +10,7 @@ import { Input, Button, toast } from '@biffco/ui'
 type FormData = {
   breed: string;
   category: string;
+  sex: string;
   rfid: string;
   dateOfBirth: string;
   facilityId: string;
@@ -99,11 +100,13 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
     const finalRfid = data.rfid.toUpperCase()
     const finalBreed = data.breed.toUpperCase()
     const finalCategory = data.category.toUpperCase()
+    const finalSex = data.sex.toUpperCase()
 
     const payload = {
       action: 'LIVESTOCK_ORIGINATED',
       breed: finalBreed,
       category: finalCategory,
+      sex: finalSex,
       rfid: finalRfid,
       dateOfBirth: data.dateOfBirth,
       weight: Number(data.weight) || 0,
@@ -192,6 +195,19 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                     ))}
                   </select>
                   {errors.category && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.category.message}</span>}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-text-primary">Sexo</label>
+                  <select 
+                    {...register('sex', { required: 'El sexo es obligatorio' })}
+                    className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
+                  >
+                    <option value="">Seleccione sexo...</option>
+                    <option value="MACHO">Macho</option>
+                    <option value="HEMBRA">Hembra</option>
+                  </select>
+                  {errors.sex && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.sex.message}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">

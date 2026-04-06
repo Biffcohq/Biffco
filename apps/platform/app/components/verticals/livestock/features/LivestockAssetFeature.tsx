@@ -65,7 +65,10 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
   const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
     const d = asset.metadata as any;
     // Prefer explicitly mapped category, fallback to breed for legacy data
-    const catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
+    let catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
+    if (d?.initialState?.sex) {
+      catText += ` (${d.initialState.sex})`;
+    }
     return {
       id: d?.externalId || asset.id.slice(0, 10),
       realId: asset.id,
