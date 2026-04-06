@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, no-undef */
 'use client'
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { trpc } from '@/lib/trpc'
 import { IconKey, IconCheck, IconBuildingEstate, IconBox } from '@tabler/icons-react'
 import { useBiffcoKMS } from '../../../../lib/crypto/useBiffcoKMS'
-import { Input, Button, toast } from '@biffco/ui'
+import { Input, Button, toast, RadioGroup, RadioGroupItem } from '@biffco/ui'
 
 type FormData = {
   breed: string;
@@ -54,7 +54,7 @@ const LIVESTOCK_BREEDS = [
 ].sort((a, b) => a.name.localeCompare(b.name));
 
 export default function LivestockOriginationFeature({ workspace }: { workspace: any }) {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const utils = trpc.useUtils()
   const { isReady: isKmsReady, signPayload, publicKey } = useBiffcoKMS()
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -199,14 +199,31 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-text-primary">Sexo</label>
-                  <select 
-                    {...register('sex', { required: 'El sexo es obligatorio' })}
-                    className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
-                  >
-                    <option value="">Selección...</option>
-                    <option value="M">M</option>
-                    <option value="F">F</option>
-                  </select>
+                  <Controller
+                    name="sex"
+                    control={control}
+                    rules={{ required: 'El sexo es obligatorio' }}
+                    render={({ field }) => (
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="flex flex-row space-x-6 mt-1"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="M" id="sex-m" className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-border" />
+                          <label htmlFor="sex-m" className="text-sm font-medium leading-none cursor-pointer text-text-secondary select-none">
+                            Macho (M)
+                          </label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="F" id="sex-f" className="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground border-border" />
+                          <label htmlFor="sex-f" className="text-sm font-medium leading-none cursor-pointer text-text-secondary select-none">
+                            Hembra (F)
+                          </label>
+                        </div>
+                      </RadioGroup>
+                    )}
+                  />
                   {errors.sex && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.sex.message}</span>}
                 </div>
 
