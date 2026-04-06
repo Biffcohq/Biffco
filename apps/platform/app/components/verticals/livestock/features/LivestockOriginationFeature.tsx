@@ -9,11 +9,16 @@ import { Input, Button, toast } from '@biffco/ui'
 
 type FormData = {
   breed: string;
+  category: string;
   rfid: string;
   dateOfBirth: string;
   facilityId: string;
   weight: number;
 }
+
+const LIVESTOCK_CATEGORIES = [
+  "TOROS", "BUEYES", "NOVILLOS", "VACAS", "VAQUILLONAS", "NOVILLITOS", "TERNEROS", "TERNERAS"
+].sort((a, b) => a.localeCompare(b));
 
 // Listado oficial de razas y especies
 const LIVESTOCK_BREEDS = [
@@ -93,10 +98,12 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
     // Ensure fields are uppercase per Biffco rules before signing the payload
     const finalRfid = data.rfid.toUpperCase()
     const finalBreed = data.breed.toUpperCase()
+    const finalCategory = data.category.toUpperCase()
 
     const payload = {
       action: 'LIVESTOCK_ORIGINATED',
       breed: finalBreed,
+      category: finalCategory,
       rfid: finalRfid,
       dateOfBirth: data.dateOfBirth,
       weight: Number(data.weight) || 0,
@@ -170,7 +177,21 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                        <option key={b.code} value={b.name}>{b.name} ({b.code})</option>
                     ))}
                   </select>
-                  {errors.breed && <span className="text-error text-xs">{errors.breed.message}</span>}
+                  {errors.breed && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.breed.message}</span>}
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-text-primary">Categoría Oficial</label>
+                  <select 
+                    {...register('category', { required: 'La categoría es obligatoria' })}
+                    className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
+                  >
+                    <option value="">Seleccione categoría...</option>
+                    {LIVESTOCK_CATEGORIES.map(c => (
+                       <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                  {errors.category && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.category.message}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">

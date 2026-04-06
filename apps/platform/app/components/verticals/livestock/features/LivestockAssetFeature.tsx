@@ -64,10 +64,12 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
   
   const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
     const d = asset.metadata as any;
+    // Prefer explicitly mapped category, fallback to breed for legacy data
+    const catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
     return {
       id: d?.externalId || asset.id.slice(0, 10),
       realId: asset.id,
-      category: d?.initialState?.breed || 'Sin Especificar',
+      category: catText,
       weight: d?.initialState?.weight ? `${d.initialState.weight} kg` : '--',
       age: d?.initialState?.dateOfBirth ? d.initialState.dateOfBirth : '--',
       status: asset.status,
