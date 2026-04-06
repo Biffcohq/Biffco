@@ -132,25 +132,36 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
          {/* Timeline & Details */}
          <div className="md:col-span-2 flex flex-col gap-6">
             
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconVaccine size={14}/> Raza</p>
-                  <p className="text-xl leading-tight font-black text-text-primary break-words max-w-full truncate w-full" title={breed}>{breed}</p>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
+                  <div className="h-8 w-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center mb-2">
+                     <IconVaccine size={18} stroke={2} />
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Raza</p>
+                  <p className="text-xl font-bold text-text-primary line-clamp-1 w-full" title={breed}>{breed}</p>
                </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2">Categoría</p>
-                  <p className="text-xl font-black text-text-primary truncate w-full">{category}</p>
+               
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
+                  <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2">
+                     <IconBox size={18} stroke={2} />
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Categoría / Sexo</p>
+                  <p className="text-xl font-bold text-text-primary truncate w-full">{category} ({sex})</p>
                </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2">Sexo</p>
-                  <p className="text-xl font-black text-text-primary">{sex}</p>
+
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
+                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-2">
+                     <IconScale size={18} stroke={2} />
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Peso Actual</p>
+                  <p className="text-xl font-bold text-text-primary">{weight} kg</p>
                </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconScale size={14}/> Peso</p>
-                  <p className="text-xl font-black text-text-primary">{weight} kg</p>
-               </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start col-span-2 lg:col-span-1">
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconMapPin size={14}/> Establecimiento</p>
+
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start col-span-2 lg:col-span-1">
+                  <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-2">
+                     <IconMapPin size={18} stroke={2} />
+                  </div>
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Establecimiento</p>
                   <p className="text-sm font-bold text-text-primary mt-1 line-clamp-2" title={workspace?.name || asset.workspaceId}>{workspace?.name || asset.workspaceId}</p>
                </div>
             </div>
