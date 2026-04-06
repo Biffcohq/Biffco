@@ -18,7 +18,7 @@ type FormData = {
 }
 
 const LIVESTOCK_CATEGORIES = [
-  "TORO", "BUEY", "NOVILLO", "VACA", "VAQUILLONA", "NOVILLITO", "TERNERO", "TERNERA"
+  "Toro", "Buey", "Novillo", "Vaca", "Vaquillona", "Novillito", "Ternero", "Ternera"
 ].sort((a, b) => a.localeCompare(b));
 
 // Listado oficial de razas y especies
@@ -184,7 +184,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                 </div>
 
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-text-primary">Categoría Oficial</label>
+                  <label className="text-sm font-medium text-text-primary">Categoría</label>
                   <select 
                     {...register('category', { required: 'La categoría es obligatoria' })}
                     className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
@@ -219,7 +219,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                         try {
                           const res = await utils.assets.checkExternalId.fetch({ externalId: value })
                           return res.exists ? 'Este identificador ya está registrado' : true
-                        } catch (_e) {
+                        } catch {
                           return true
                         }
                       }

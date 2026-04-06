@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 import React, { useState } from 'react'
 import Link from 'next/link'
@@ -22,7 +21,6 @@ import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
 import { Button, toast } from '@biffco/ui'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
   const router = useRouter()
   const utils = trpc.useUtils()
@@ -63,7 +61,6 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
   }, [lots])
   
   const formattedAssets = realAssets?.filter((a: any) => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map((asset: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const d = asset.metadata as Record<string, any>;
     // Prefer explicitly mapped category, fallback to breed for legacy data
     let catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
@@ -135,7 +132,6 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                >
                   <option value="">-- Seleccionar Tropa / Lote --</option>
                   {lots?.map((l: any) => (
-                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                      <option key={l.id} value={l.id}>{l.name} ({(l.metadata as Record<string, any>)?.purpose || 'General'})</option>
                   ))}
                </select>
