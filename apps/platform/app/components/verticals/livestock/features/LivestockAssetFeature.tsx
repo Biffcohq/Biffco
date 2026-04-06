@@ -66,7 +66,10 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const d = asset.metadata as Record<string, any>;
     // Prefer explicitly mapped category, fallback to breed for legacy data
-    const catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
+    let catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
+    if (d?.initialState?.sex) {
+      catText += ` (${d.initialState.sex})`;
+    }
     return {
       id: d?.externalId || asset.id.slice(0, 10),
       realId: asset.id,
