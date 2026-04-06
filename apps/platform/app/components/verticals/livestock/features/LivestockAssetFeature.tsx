@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -20,8 +20,7 @@ import {
 
 import { trpc } from '@/lib/trpc'
 import { Skeleton } from '@/app/components/ui/Skeleton'
-import { toast } from 'sonner'
-import { Button } from '@biffco/ui'
+import { Button, toast } from '@biffco/ui'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetFeature({ workspace, roleId }: { workspace: any, roleId: string }) {
@@ -37,18 +36,18 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
   const { data: lots } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' })
   
   const addAssetsMutation = trpc.assetGroups.addAssets.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast.success(`${data.count} cabezas asignadas al lote exitosamente.`)
       setSelectedAssets(new Set())
       utils.assets.list.invalidate()
       utils.assetGroups.getWithAssets.invalidate()
     },
-    onError: (err) => toast.error('Error al agrupar: ' + err.message)
+    onError: (err: any) => toast.error('Error al agrupar: ' + err.message)
   })
 
   const facilityLookup = React.useMemo(() => {
     const map: Record<string, string> = {}
-    realFacilities?.forEach(f => {
+    realFacilities?.forEach((f: any) => {
       map[f.id] = f.name
     })
     return map
@@ -56,14 +55,16 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
 
   const lotLookup = React.useMemo(() => {
     const map: Record<string, {name: string, purpose: string}> = {}
-    lots?.forEach(l => {
-      map[l.id] = { name: l.name, purpose: (l.metadata as any)?.purpose || 'General' }
+    lots?.forEach((l: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      map[l.id] = { name: l.name, purpose: (l.metadata as Record<string, any>)?.purpose || 'General' }
     })
     return map
   }, [lots])
   
-  const formattedAssets = realAssets?.filter(a => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map(asset => {
-    const d = asset.metadata as any;
+  const formattedAssets = realAssets?.filter((a: any) => a.type === 'AnimalAsset' || a.verticalId === 'livestock').map((asset: any) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const d = asset.metadata as Record<string, any>;
     // Prefer explicitly mapped category, fallback to breed for legacy data
     const catText = d?.initialState?.category ? `${d.initialState.breed} - ${d.initialState.category}` : (d?.initialState?.breed || 'Sin Especificar');
     return {
@@ -77,7 +78,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
       groupId: asset.groupId,
       lotName: asset.groupId ? lotLookup[asset.groupId]?.name : null
     }
-  }).filter(a => 
+  }).filter((a: any) => 
       a.id.toLowerCase().includes(searchQuery.toLowerCase()) || 
       a.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (a.lotName && a.lotName.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -130,8 +131,9 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                  disabled={lots?.length === 0}
                >
                   <option value="">-- Seleccionar Tropa / Lote --</option>
-                  {lots?.map(l => (
-                     <option key={l.id} value={l.id}>{l.name} ({(l.metadata as any)?.purpose || 'General'})</option>
+                  {lots?.map((l: any) => (
+                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                     <option key={l.id} value={l.id}>{l.name} ({(l.metadata as Record<string, any>)?.purpose || 'General'})</option>
                   ))}
                </select>
                <Button onClick={handleGroupAction} disabled={addAssetsMutation.isPending || lots?.length === 0}>
@@ -233,7 +235,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                        </td>
                     </tr>
                  )}
-                 {formattedAssets.map(asset => {
+                 {formattedAssets.map((asset: any) => {
                     const isSelected = selectedAssets.has(asset.realId)
                     return (
                     <tr 

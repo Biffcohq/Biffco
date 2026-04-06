@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, no-undef */
 'use client'
-
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { trpc } from '@/lib/trpc'
-import { IconKey, IconCheck, IconBuildingEstate, IconPlus, IconBox } from '@tabler/icons-react'
+import { IconKey, IconCheck, IconBuildingEstate, IconBox } from '@tabler/icons-react'
 import { useBiffcoKMS } from '../../../../lib/crypto/useBiffcoKMS'
 import { Input, Button, toast } from '@biffco/ui'
 
@@ -60,12 +60,12 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
   const [recentAssets, setRecentAssets] = useState<any[]>([])
 
   // Fetch real facilities
-  const { data: facilities, isLoading: isLoadingFacilities } = trpc.facilities.list.useQuery()
-
-  const mutation = trpc.assets.create.useMutation({
-    onSuccess: (data) => {
-      toast.success('Activo Ganadero minteado en la blockchain')
-      utils.assets.list.invalidate()
+  const { data: realFacilities } = trpc.facilities.list.useQuery()
+  
+  const createAsset = trpc.assets.create.useMutation({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSuccess: (data: any) => {
+      toast.success(`Activo registrado con éxito. Hash: ${data.id.slice(0, 8)}`)
       reset()
       setRecentAssets(prev => [data, ...prev].slice(0, 5))
       setIsSubmitting(false)
@@ -113,7 +113,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
     try {
       const cryptoProof = await processEventSignature(payload)
 
-      mutation.mutate({
+      createAsset.mutate({
         type: 'AnimalAsset',
         initialState: payload,
         externalId: finalRfid,
@@ -203,7 +203,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                         try {
                           const res = await utils.assets.checkExternalId.fetch({ externalId: value })
                           return res.exists ? 'Este identificador ya está registrado' : true
-                        } catch (e) {
+                        } catch (_e) {
                           return true
                         }
                       }
@@ -246,7 +246,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                      className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
                   >
                      <option value="">Seleccione un establecimiento...</option>
-                     {facilities?.map(fac => (
+                     {realFacilities?.map((fac: any) => (
                        <option key={fac.id} value={fac.id}>{fac.name} (RENSPA: {(fac.location as any)?.renspa || fac.type})</option>
                      ))}
                   </select>
