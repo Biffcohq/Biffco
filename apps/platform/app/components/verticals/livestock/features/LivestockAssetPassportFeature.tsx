@@ -25,10 +25,10 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
   if (isLoading) {
     return (
       <div className="flex flex-col gap-6 animate-pulse w-full max-w-5xl mx-auto pb-12">
-        <Skeleton className="h-20 w-1/3 rounded-xl" />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-           <Skeleton className="h-[500px] w-full rounded-xl" />
-           <Skeleton className="h-[500px] w-full rounded-xl md:col-span-2" />
+        <Skeleton className="h-10 w-1/3 rounded-lg" />
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mt-6">
+           <Skeleton className="h-[400px] w-full rounded-lg" />
+           <Skeleton className="h-[400px] w-full rounded-lg md:col-span-3" />
         </div>
       </div>
     )
@@ -55,191 +55,192 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
   const registrationDate = asset.createdAt ? new Date(asset.createdAt).toLocaleDateString() : 'Desconocido'
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in zoom-in-95 duration-500 pb-12 w-full max-w-6xl mx-auto">
-      <div className="flex items-center gap-4 pb-2 border-b border-border/50">
-        <Button variant="ghost" className="size-10 p-0 rounded-full border border-border/50 bg-surface shadow-sm hover:bg-bg-subtle" onClick={() => router.back()}>
-           <IconArrowLeft size={18} className="text-text-secondary" />
+    <div className="flex flex-col animate-in fade-in zoom-in-95 duration-500 pb-12 w-full max-w-5xl mx-auto">
+      
+      {/* Header */}
+      <div className="flex items-center gap-4 pb-4">
+        <Button variant="ghost" className="size-8 p-0 rounded-full border border-transparent hover:border-border/50 text-text-muted hover:text-text-primary" onClick={() => router.back()}>
+           <IconArrowLeft size={18} />
         </Button>
         <div>
-          <h2 className="text-3xl font-black tracking-tight text-text-primary flex items-center gap-2">
+          <h2 className="text-xl font-semibold tracking-tight text-text-primary">
             Pasaporte Digital
           </h2>
-          <p className="text-sm text-text-muted font-medium mt-0.5">
-            Registro inmutable validado en blockchain
+          <p className="text-sm text-text-muted">
+            Registro autogestionado por blockchain
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-         {/* Identity Sidebar */}
-         <div className="md:col-span-1 flex flex-col gap-4">
-            <div className="bg-surface border border-border rounded-xl p-6 flex flex-col items-center text-center shadow-sm relative overflow-hidden">
-               <div className="absolute top-0 inset-x-0 h-24 bg-gradient-to-b from-primary/10 to-transparent" />
-               
-               <div className="size-20 rounded-2xl bg-white shadow-md border border-primary/20 text-primary flex items-center justify-center mb-4 relative z-10">
-                  <IconBox size={36} stroke={1.5} />
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-y-12 md:gap-x-16 mt-6">
+         {/* Identity Column (Left) */}
+         <div className="md:col-span-1 flex flex-col items-start gap-8">
+            <div className="flex flex-col items-start gap-1 w-full">
+               <div className="text-primary mb-2">
+                  <IconBox size={32} stroke={1.5} />
                </div>
                
-               <h3 className="text-2xl font-black text-text-primary relative z-10">{metadata?.externalId || asset.id.slice(0,10)}</h3>
-               <p className="text-sm font-mono text-text-secondary mt-1 flex items-center gap-1.5 relative z-10">
-                  ID Core: <span className="font-bold text-text-primary" title={asset.id}>{asset.id.slice(0, 10)}</span>
+               <h3 className="text-xl font-bold text-text-primary tracking-tight">{metadata?.externalId || asset.id.slice(0,10)}</h3>
+               <p className="text-xs font-mono text-text-muted" title={asset.id}>
+                  Ref: {asset.id.slice(0, 10)}
                </p>
                
-               <span className={`mt-3 px-3.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-full relative z-10 border ${asset.status === 'ACTIVE' ? 'bg-success/10 text-success border-success/20' : 'bg-warning/10 text-warning border-warning/20'}`}>
-                 {asset.status === 'ACTIVE' ? 'ACTIVO (VIVO)' : asset.status}
-               </span>
-               
-               <div className="w-full h-px bg-border/60 my-6 relative z-10" />
-               
-               <div className="w-full flex flex-col gap-3 text-sm relative z-10 text-left">
-                  <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
-                     <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider">Creado</span>
-                     <span className="font-medium text-text-primary">{registrationDate}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
-                     <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider">Establecimiento</span>
-                     <span className="font-bold text-text-primary truncate max-w-[120px]">{facilityName}</span>
-                  </div>
-                  <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
-                     <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider flex items-center gap-1"><IconHash size={12}/> Hash Core</span>
-                     <span className="font-mono text-xs font-semibold text-text-primary text-right break-all ml-4" title={asset.id}>{asset.id}</span>
-                  </div>
+               <div className={`mt-2 text-xs font-semibold ${asset.status === 'ACTIVE' ? 'text-success' : 'text-text-secondary'}`}>
+                 {asset.status === 'ACTIVE' ? 'Activo (Vivo)' : asset.status}
                </div>
-               
-               <div className="w-full mt-6 flex flex-col items-center">
-                  <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-200">
-                     <QRCodeSVG 
-                        value={verificationUrl}
-                        size={140}
-                        bgColor={"#ffffff"}
-                        fgColor={"#0f172a"}
-                        level={"Q"}
-                        includeMargin={false}
-                     />
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-3 bg-bg-subtle text-primary border-primary/20 hover:bg-primary/5 text-xs font-bold"
-                    onClick={() => { typeof globalThis !== 'undefined' && globalThis.open(verificationUrl, '_blank') }}
-                  >
-                     <IconExternalLink size={14} className="mr-1.5" />
-                     Abrir Portal de Verificación
-                  </Button>
+            </div>
+
+            <div className="w-full h-px bg-border/50" />
+            
+            <div className="w-full flex flex-col gap-4 text-sm">
+               <div className="flex flex-col gap-1">
+                  <span className="text-[11px] uppercase tracking-wider text-text-muted">Desplegado</span>
+                  <span className="text-text-primary">{registrationDate}</span>
                </div>
+               <div className="flex flex-col gap-1">
+                  <span className="text-[11px] uppercase tracking-wider text-text-muted">Localidad</span>
+                  <span className="text-text-primary">{facilityName}</span>
+               </div>
+               <div className="flex flex-col gap-1">
+                  <span className="text-[11px] uppercase tracking-wider text-text-muted flex items-center gap-1"><IconHash size={12}/> Hash Raíz</span>
+                  <span className="font-mono text-[10px] text-text-secondary break-all" title={asset.id}>{asset.id}</span>
+               </div>
+            </div>
+            
+            <div className="w-full flex flex-col gap-4">
+               <div className="p-2 border border-border/50 bg-white inline-block">
+                  <QRCodeSVG 
+                     value={verificationUrl}
+                     size={120}
+                     bgColor={"#ffffff"}
+                     fgColor={"#0f172a"}
+                     level={"M"}
+                     includeMargin={false}
+                  />
+               </div>
+               <a 
+                 href={verificationUrl} 
+                 target="_blank" 
+                 rel="noreferrer"
+                 className="text-xs text-primary hover:underline flex items-center gap-1.5 font-medium"
+               >
+                  <IconExternalLink size={14} /> Portal Público
+               </a>
             </div>
          </div>
 
-         {/* Timeline & Details */}
-         <div className="md:col-span-2 flex flex-col gap-6">
+         {/* Content Column (Right) */}
+         <div className="md:col-span-3 flex flex-col gap-12">
             
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
-                  <div className="h-8 w-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center mb-2">
-                     <IconVaccine size={18} stroke={2} />
+            {/* Stats */}
+            <div>
+               <h4 className="text-[11px] uppercase text-text-muted tracking-widest font-semibold mb-4">Métricas Biológicas</h4>
+               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+                  <div className="flex flex-col gap-1">
+                     <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
+                        <IconVaccine size={14} className="text-orange-500/70" /> Raza
+                     </span>
+                     <span className="text-base font-medium text-text-primary">{breed}</span>
                   </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Raza</p>
-                  <p className="text-xl font-bold text-text-primary line-clamp-1 w-full" title={breed}>{breed}</p>
-               </div>
-               
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
-                  <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2">
-                     <IconBox size={18} stroke={2} />
+                  
+                  <div className="flex flex-col gap-1">
+                     <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
+                        <IconBox size={14} className="text-blue-500/70" /> Categoría
+                     </span>
+                     <span className="text-base font-medium text-text-primary">{category} ({sex})</span>
                   </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Categoría / Sexo</p>
-                  <p className="text-xl font-bold text-text-primary truncate w-full">{category} ({sex})</p>
-               </div>
 
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-2">
-                     <IconScale size={18} stroke={2} />
+                  <div className="flex flex-col gap-1">
+                     <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
+                        <IconScale size={14} className="text-emerald-500/70" /> Peso
+                     </span>
+                     <span className="text-base font-medium text-text-primary">{weight} kg</span>
                   </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Peso Actual</p>
-                  <p className="text-xl font-bold text-text-primary">{weight} kg</p>
-               </div>
 
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start col-span-2 lg:col-span-1">
-                  <div className="h-8 w-8 rounded-lg bg-indigo-500/10 text-indigo-600 flex items-center justify-center mb-2">
-                     <IconMapPin size={18} stroke={2} />
+                  <div className="flex flex-col gap-1 col-span-2 lg:col-span-1">
+                     <span className="text-[11px] uppercase text-text-muted tracking-widest flex items-center gap-1.5">
+                        <IconMapPin size={14} className="text-indigo-500/70" /> Dominio
+                     </span>
+                     <span className="text-sm font-medium text-text-primary line-clamp-2" title={workspace?.name || asset.workspaceId}>{workspace?.name || asset.workspaceId}</span>
                   </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Establecimiento</p>
-                  <p className="text-sm font-bold text-text-primary mt-1 line-clamp-2" title={workspace?.name || asset.workspaceId}>{workspace?.name || asset.workspaceId}</p>
                </div>
             </div>
 
-            <div className="bg-surface border border-border rounded-xl shadow-sm flex-1 flex flex-col overflow-hidden">
-               <div className="px-6 py-5 border-b border-border/50 bg-bg-subtle/30 flex items-center gap-3">
-                  <div className="p-1.5 bg-primary/10 rounded-md text-primary">
-                    <IconTimeline size={20} />
-                  </div>
-                  <h4 className="text-lg font-bold text-text-primary">Trazabilidad Web3</h4>
+            <div className="w-full h-px bg-border/50" />
+
+            {/* Timeline */}
+            <div className="flex flex-col">
+               <div className="flex items-center gap-2 mb-8 text-text-primary">
+                  <IconTimeline size={18} className="text-primary/70" />
+                  <h4 className="text-lg font-semibold">Trazabilidad Web3</h4>
                </div>
                
-               <div className="p-6">
-                  <div className="relative pl-6 border-l-2 border-border/60 ml-3 flex flex-col gap-8">
-                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                     {(asset as any).events?.length === 0 && (
-                        <p className="text-sm text-text-muted italic -ml-4">Aún no hay eventos registrados en este pasaporte.</p>
-                     )}
-                     {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                     {(asset as any).events?.map((ev: any, index: number) => {
-                        const isGroup = ev.eventType.includes('LOT') || ev.eventType.includes('GROUP');
-                        const isVaccine = ev.eventType.includes('VACCINE') || ev.eventType.includes('HEALTH');
-                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                        const isCreate = ev.eventType === 'CREATED' || ev.eventType === 'ASSET_CREATED';
-                        const EventIcon = isGroup ? IconPackages : isVaccine ? IconVaccine : IconTimeline;
+               <div className="relative pl-[11px] border-l border-border/80 ml-2 flex flex-col gap-10">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(asset as any).events?.length === 0 && (
+                     <p className="text-sm text-text-muted italic -ml-4">Sin eventos registrados.</p>
+                  )}
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                  {(asset as any).events?.map((ev: any, index: number) => {
+                     const isGroup = ev.eventType.includes('LOT') || ev.eventType.includes('GROUP');
+                     const isVaccine = ev.eventType.includes('VACCINE') || ev.eventType.includes('HEALTH');
+                     const isReceive = ev.eventType.includes('RECEIVED');
+                     const isDispatch = ev.eventType.includes('DISPATCHED');
+                     
+                     let EventIcon = IconTimeline;
+                     let iconColor = 'text-text-muted';
+                     
+                     if (isGroup) { EventIcon = IconPackages; iconColor = 'text-blue-500'; }
+                     else if (isVaccine) { EventIcon = IconVaccine; iconColor = 'text-orange-500'; }
+                     else if (isDispatch || isReceive) { EventIcon = IconMapPin; iconColor = 'text-emerald-500'; }
+                     if (index === 0) iconColor = 'text-primary';
 
-                        return (
-                          <div key={ev.id} className="relative group">
-                             <div className={`absolute -left-[35px] top-1 size-5 rounded-full ring-4 ring-surface flex items-center justify-center ${index === 0 ? 'bg-primary text-white' : 'bg-bg-subtle text-text-muted border border-border'}`}>
-                                <EventIcon size={12} stroke={index === 0 ? 3 : 2} />
-                             </div>
+                     return (
+                       <div key={ev.id} className="relative group/event -ml-6 pl-10">
+                          <div className={`absolute left-[-2px] top-1 size-3.5 rounded-full bg-surface border-2 outline outline-2 outline-surface ${index === 0 ? 'border-primary' : 'border-border/80'}`} />
+                          
+                          <div className="flex flex-col gap-2 w-full max-w-2xl">
+                              <div className="flex items-center gap-2">
+                                 <EventIcon size={16} className={`${iconColor}`} />
+                                 <h5 className="text-base font-semibold text-text-primary capitalize">{ev.eventType.replace(/_/g, ' ').toLowerCase()}</h5>
+                              </div>
+                              
+                              <div className="text-xs text-text-secondary flex flex-wrap items-center gap-1.5 mb-2">
+                                 <span className="font-mono">{new Date(ev.createdAt).toLocaleString()}</span>
+                                 <span className="text-text-muted/50">&bull;</span>
+                                 <span>Firmado por <span className="font-medium text-text-primary">{ev.signerAlias || 'Sistema Maestro'}</span></span>
+                              </div>
+                              
+                              {ev.anchorTxHash && (
+                                  <a 
+                                    href={`https://amoy.polygonscan.com/tx/${ev.anchorTxHash}`} 
+                                    target="_blank" 
+                                    rel="noreferrer" 
+                                    className="text-[10px] text-text-muted hover:text-primary transition-colors flex items-center gap-1 w-max"
+                                  >
+                                     Ver en Polygon Scanner <IconExternalLink size={10} />
+                                  </a>
+                              )}
                              
-                             <div className="flex flex-col bg-bg-subtle/30 p-4 rounded-xl border border-border/50 hover:border-border transition-colors">
-                                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-3">
-                                     <div className="flex flex-col gap-1">
-                                        <p className="text-base font-bold text-text-primary capitalize">{ev.eventType.replace(/_/g, ' ').toLowerCase()}</p>
-                                        <p className="text-xs text-text-muted flex items-center gap-1.5">
-                                           <span className="font-mono">{new Date(ev.createdAt).toLocaleString()}</span>
-                                           <span>&bull;</span>
-                                           <span>Autenticado por <span className="font-bold text-text-secondary">{ev.signerAlias || 'Sistema Maestro'}</span></span>
-                                        </p>
-                                     </div>
-                                     
-                                     {ev.anchorTxHash && (
-                                         <a 
-                                           href={`https://amoy.polygonscan.com/tx/${ev.anchorTxHash}`} 
-                                           target="_blank" 
-                                           rel="noreferrer" 
-                                           className="text-[10px] uppercase font-black bg-[#8247E5]/10 text-[#8247E5] border border-[#8247E5]/20 hover:bg-[#8247E5]/20 px-3 py-1.5 rounded-full flex items-center gap-1.5 w-max transition-colors shadow-sm"
-                                         >
-                                            <svg viewBox="0 0 40 40" className="size-3.5 fill-current"><path d="M28.8 17.6l-7-4.1a3.5 3.5 0 00-3.5 0l-7 4.1a3.5 3.5 0 00-1.8 3v8.1a3.5 3.5 0 001.8 3l7 4.1a3.5 3.5 0 003.5 0l7-4.1a3.5 3.5 0 001.8-3v-8.1a3.5 3.5 0 00-1.8-3zm-10.5 9.7l-4.5-2.6a1.2 1.2 0 01-.6-1v-5.1c0-.4.3-.8.6-1l4.5-2.6a1.2 1.2 0 011.2 0l4.5 2.6c.4.2.6.6.6 1v5.1c0 .4-.3.8-.6 1l-4.5 2.6a1.2 1.2 0 01-1.2 0z"/></svg>
-                                            Polygon Amoy
-                                         </a>
-                                     )}
-                                 </div>
-                                 <details className="group/details w-full mt-3">
-                                   <summary className="text-[11px] uppercase font-bold text-primary cursor-pointer list-none flex items-center gap-1 select-none w-max tracking-wider">
-                                     Ver Datos Técnicos Core
-                                     <IconChevronDown size={14} className="group-open/details:rotate-180 transition-transform" />
-                                   </summary>
-                                   <div className="mt-3 p-4 bg-surface rounded-lg border border-border/50 text-xs font-mono text-text-secondary flex flex-col gap-3">
-                                      <div className="flex flex-col gap-1">
-                                        <span className="block text-[9px] uppercase font-bold text-text-muted">Biffco Core Hash (SHA-256)</span>
-                                        <span className="break-all font-semibold text-text-primary bg-primary/5 px-2 py-1.5 rounded inline-block">{ev.hash || 'Evento sin sellar'}</span>
-                                      </div>
-                                      <div>
-                                        <span className="block text-[9px] uppercase font-bold text-text-muted mb-1">Payload Inmutable Registrado</span>
-                                        <div className="bg-bg-subtle p-2.5 rounded border border-border break-all max-h-40 overflow-y-auto">
-                                          {JSON.stringify(ev.data)}
-                                        </div>
-                                      </div>
+                              <details className="mt-1">
+                                <summary className="text-[11px] text-text-muted hover:text-text-primary cursor-pointer list-none flex items-center gap-1 select-none w-max transition-colors">
+                                  Datos de auditoría <IconChevronDown size={12} className="opacity-50" />
+                                </summary>
+                                <div className="mt-3 p-3 bg-bg-subtle/40 rounded border border-border/40 text-[10px] font-mono text-text-secondary flex flex-col gap-2">
+                                   <div>
+                                     <span className="uppercase text-text-muted block mb-0.5 opacity-70">Hash Raíz Evento</span>
+                                     <span className="break-all">{ev.hash || '--'}</span>
                                    </div>
-                                 </details>
-                             </div>
+                                   <div>
+                                     <span className="uppercase text-text-muted block mb-0.5 opacity-70">Payload JSON</span>
+                                     <span className="break-all whitespace-pre-wrap">{JSON.stringify(ev.data, null, 2)}</span>
+                                   </div>
+                                </div>
+                              </details>
                           </div>
-                        )
-                     })}
-                  </div>
+                       </div>
+                     )
+                  })}
                </div>
             </div>
          </div>
