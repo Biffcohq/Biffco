@@ -9,6 +9,17 @@ import { Button } from '@biffco/ui'
 
 import { QRCodeSVG } from 'qrcode.react'
 
+const CowFaceIcon = ({ size = 32, className = "" }: { size?: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M7 15l-2.5 -5c-1 -2 -1 -3 3 -3c2 -1 6 -1 8 0c4 0 4 1 3 3l-2.5 5" />
+    <path d="M6 13h12a2 2 0 0 1 2 2v1a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4v-1a2 2 0 0 1 2 -2z" />
+    <circle cx="10" cy="16" r="1" fill="currentColor" />
+    <circle cx="14" cy="16" r="1" fill="currentColor" />
+    <path d="M6 7l-2 -3c-1.5 -2.5 -0.5 -3 1 -2l4 3" />
+    <path d="M18 7l2 -3c1.5 -2.5 0.5 -3 -1 -2l-4 3" />
+  </svg>
+);
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function LivestockAssetPassportFeature({ workspace }: { workspace: any, roleId: string }) {
   const searchParams = useSearchParams()
@@ -77,7 +88,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
          <div className="md:col-span-1 flex flex-col items-start gap-8 bg-surface border border-border/50 rounded-2xl p-8 shadow-sm h-max">
             <div className="flex flex-col items-start gap-1 w-full">
                <div className="text-primary mb-2 bg-primary/10 p-3 rounded-2xl">
-                  <IconBox size={32} stroke={1.5} />
+                  <CowFaceIcon size={32} />
                </div>
                
                <h3 className="text-2xl font-black text-text-primary tracking-tight">{metadata?.externalId || asset.id.slice(0,10)}</h3>
@@ -174,10 +185,12 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                   <h4 className="text-xl font-bold tracking-tight">Trazabilidad Web3</h4>
                </div>
                
-               <div className="relative pl-[11px] border-l border-border/80 ml-2 flex flex-col gap-10">
+               <div className="relative flex flex-col gap-10">
+                  <div className="absolute left-[15px] top-6 bottom-0 w-[2px] bg-border/80" />
+                  
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {(asset as any).events?.length === 0 && (
-                     <p className="text-sm text-text-muted italic -ml-4">Sin eventos registrados.</p>
+                     <p className="text-sm text-text-muted italic">Sin eventos registrados.</p>
                   )}
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {(asset as any).events?.map((ev: any, index: number) => {
@@ -185,7 +198,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                      // Helper Dictionary para humanizar eventos
                      const getEventMeta = (type: string) => {
                        const meta: Record<string, any> = {
-                          'LIVESTOCK_ORIGINATED': { title: 'Nacimiento Registrado', icon: IconBox, color: 'text-blue-500' },
+                          'LIVESTOCK_ORIGINATED': { title: 'Nacimiento Registrado', icon: CowFaceIcon, color: 'text-blue-500' },
                           'HEALTH_CERT_ISSUED': { title: 'Certificado Sanitario Expedido', icon: IconFileCheck, color: 'text-emerald-500' },
                           'TREATMENT_ADMINISTERED': { title: 'Tratamiento Médico', icon: IconStethoscope, color: 'text-red-500' },
                           'VACCINE_ADMINISTERED': { title: 'Vacunación', icon: IconVaccine, color: 'text-orange-500' },
@@ -200,12 +213,14 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                      const { title: eventTitle, icon: EventIcon, color: iconColor } = getEventMeta(ev.eventType);
 
                      return (
-                       <div key={ev.id} className="relative group/event -ml-6 pl-10">
-                          <div className={`absolute left-[-2px] top-4 size-3.5 rounded-full bg-surface border-2 outline outline-2 outline-surface ${index === 0 ? 'border-primary' : 'border-border/80'}`} />
+                       <div key={ev.id} className="relative pl-12 z-10 w-full group/event">
+                          
+                          <div className={`absolute left-0 top-3 size-8 rounded-full bg-white flex items-center justify-center border-2 transition-colors ${index === 0 ? 'border-primary shadow-sm' : 'border-border/80'}`}>
+                              <EventIcon size={16} className={`${index === 0 ? 'text-primary' : 'text-text-muted'} `} />
+                          </div>
                           
                           <div className="flex flex-col gap-3 w-full max-w-2xl bg-white border border-border/50 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow">
                               <div className="flex items-center gap-2.5">
-                                 <EventIcon size={18} className={`${iconColor}`} />
                                  <h5 className="text-lg font-bold text-text-primary capitalize">{eventTitle}</h5>
                               </div>
                               
