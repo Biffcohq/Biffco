@@ -176,12 +176,22 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-text-primary">Caravana Electrónica (EID) / DTE</label>
                   <Input 
-                    {...register('rfid', { required: 'El identificador físico es obligatorio' })}
+                    {...register('rfid', { 
+                      required: 'El identificador físico es obligatorio',
+                      validate: async (value) => {
+                        try {
+                          const res = await utils.assets.checkExternalId.fetch({ externalId: value })
+                          return res.exists ? 'Este identificador ya está registrado' : true
+                        } catch (e) {
+                          return true
+                        }
+                      }
+                    })}
                     placeholder="Ej. 840003123456789"
-                    className="w-full font-mono text-sm bg-bg-subtle border-border focus:bg-surface"
+                    className={`w-full font-mono text-sm bg-bg-subtle border-border focus:bg-surface ${errors.rfid ? 'border-error ring-1 ring-error' : ''}`}
                     autoComplete="off"
                   />
-                  {errors.rfid && <span className="text-error text-xs">{errors.rfid.message}</span>}
+                  {errors.rfid && <span className="text-error text-xs flex items-center gap-1"><IconCheck size={14} className="hidden" /> {errors.rfid.message}</span>}
                 </div>
 
                 <div className="flex flex-col gap-2">

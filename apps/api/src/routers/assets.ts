@@ -151,6 +151,20 @@ export const assetsRouter = router({
       }
     }),
 
+  // Verificación en tiempo real para Frontends (Evitar duplicados mientras se escribe)
+  checkExternalId: protectedProcedure
+    .input(z.object({ externalId: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const existing = await ctx.db.query.assets.findFirst({
+        where: and(
+          eq(assets.workspaceId, ctx.workspaceId!),
+          sql`UPPER(metadata->>'externalId') = ${input.externalId.toUpperCase()}`
+        ),
+        columns: { id: true }
+      });
+      return { exists: !!existing, assetId: existing?.id };
+    }),
+
   // Creación de un Asset puro inicial
   create: requirePermission(Permission.ASSETS_CREATE)
     .input(z.object({
@@ -189,12 +203,12 @@ export const assetsRouter = router({
          }
       }
 
-      // Validar identificador único
+      // Validar identificador único ignorando mayúsculas/minúsculas
       if (input.externalId) {
         const existing = await db.query.assets.findFirst({
           where: and(
             eq(assets.workspaceId, workspaceId!),
-            sql`metadata->>'externalId' = ${input.externalId}`
+            sql`UPPER(metadata->>'externalId') = ${input.externalId.toUpperCase()}`
           )
         });
         if (existing) {
