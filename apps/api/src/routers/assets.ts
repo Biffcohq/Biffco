@@ -15,7 +15,8 @@ export const assetsRouter = router({
       limit: z.number().min(1).max(100).default(50),
       cursor: z.string().nullish(), // Para paginación
       status: z.string().optional(),
-      type: z.string().optional()
+      type: z.string().optional(),
+      ids: z.array(z.string()).optional()
     }).optional())
     .query(async ({ input, ctx }) => {
       // Filtrar siempre por workspaceId garantiza tenant isolation.
@@ -24,6 +25,7 @@ export const assetsRouter = router({
       
       if (input?.status) conditions.push(eq(assets.status, input.status))
       if (input?.type) conditions.push(eq(assets.type, input.type))
+      if (input?.ids && input.ids.length > 0) conditions.push(inArray(assets.id, input.ids))
 
       const items = await ctx.db.query.assets.findMany({
         where: and(...conditions),

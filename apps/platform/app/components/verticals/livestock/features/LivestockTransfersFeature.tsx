@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import LivestockTransferDetailModal from '../LivestockTransferDetailModal'
 import {
   IconSearch,
   IconTruckDelivery,
@@ -23,6 +24,7 @@ export default function LivestockTransfersFeature({ workspace, roleId }: { works
   
   // State to hold the transfer being received
   const [transferToReceive, setTransferToReceive] = useState<string | null>(null)
+  const [detailTransferId, setDetailTransferId] = useState<string | null>(null)
 
   const { data: incomingLogistics, isLoading: loadingIn } = trpc.transfers.listIncomingLogistics.useQuery()
   const { data: outgoingLogistics, isLoading: loadingOut } = trpc.transfers.listOutgoingLogistics.useQuery()
@@ -147,7 +149,12 @@ export default function LivestockTransfersFeature({ workspace, roleId }: { works
                           {activeTab === 'outgoing' ? (tx.receiverAlias || tx.receiverWorkspaceId) : (tx.senderAlias || tx.senderWorkspaceId)}
                        </td>
                        <td className="px-6 py-4 font-mono font-medium text-text-primary">
-                          {itemsCount}
+                          <button 
+                             onClick={(e) => { e.stopPropagation(); setDetailTransferId(tx.id) }}
+                             className="bg-primary/10 text-primary hover:bg-primary/20 px-2.5 py-1 rounded-md text-xs font-bold transition-colors"
+                          >
+                             {itemsCount} cabezas
+                          </button>
                        </td>
                        <td className="px-6 py-4 hidden sm:table-cell text-text-secondary">
                           <span className={`flex items-center gap-1.5 w-max px-2.5 py-1 rounded text-[10px] uppercase font-black tracking-wider border ${statusColor}`}>
@@ -190,6 +197,15 @@ export default function LivestockTransfersFeature({ workspace, roleId }: { works
             onClose={() => setTransferToReceive(null)} 
             transferId={transferToReceive} 
             workspaceId={workspace.id} 
+         />
+      )}
+
+      {!!detailTransferId && (
+         <LivestockTransferDetailModal
+            isOpen={!!detailTransferId}
+            onClose={() => setDetailTransferId(null)}
+            transferId={detailTransferId}
+            roleId={roleId}
          />
       )}
     </div>

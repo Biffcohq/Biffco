@@ -287,6 +287,32 @@ export const transfersRouter = router({
     })
     return enrichWithAliases(raw, ctx.db)
   }),
+
+  getTransferAssets: protectedProcedure
+    .input(z.object({ transferId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { db, workspaceId } = ctx
+      // Buscar la transferencia para validar participación
+      const transfer = await db.query.assetTransfers.findFirst({
+        where: eq(assetTransfers.id, input.transferId)
+      })
+      
+      if (!transfer) throw new TRPCError({ code: 'NOT_FOUND', message: 'Transferencia no encontrada' })
+      
+      // Permitir acceso solo si es Origen, Transportista o Destino
+      if (transfer.senderWorkspaceId !== workspaceId && 
+          transfer.carrierWorkspaceId !== workspaceId && 
+          transfer.receiverWorkspaceId !== workspaceId) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'Sin acceso a esta logística' })
+      }
+
+      // Traer la data cruda de los assets ignorando boundaries (ya que el UUID es único en PostgreSQL)
+      const rawAssets = await db.query.assets.findMany({
+        where: inArray(assets.id, transfer.assetIds as string[])
+      })
+
+      return rawAssets
+    }),
 })
 
 async function enrichWithAliases(transfersData: any[], db: any) {
