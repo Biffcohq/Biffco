@@ -46,7 +46,9 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
   const metadata = asset.metadata as any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const facilityName = facilities?.find((f: any) => f.id === metadata?.facilityId)?.name || metadata?.facilityId?.slice(0, 8) || 'Multi-tránsito'
-  const breed = metadata?.initialState?.breed || 'Bovino'
+  const breed = metadata?.initialState?.breed || 'Sin Especificar'
+  const category = metadata?.initialState?.category || '--'
+  const sex = metadata?.initialState?.sex || '--'
   const weight = metadata?.initialState?.weight || '--'
 
   const verificationUrl = `https://verify.biffco.co/${asset.id}`
@@ -78,9 +80,9 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                   <IconBox size={36} stroke={1.5} />
                </div>
                
-               <h3 className="text-2xl font-black text-text-primary relative z-10">{breed}</h3>
+               <h3 className="text-2xl font-black text-text-primary relative z-10">{metadata?.externalId || asset.id.slice(0,10)}</h3>
                <p className="text-sm font-mono text-text-secondary mt-1 flex items-center gap-1.5 relative z-10">
-                  EID: <span className="font-bold text-text-primary">{metadata?.externalId || asset.id.slice(0,10)}</span>
+                  ID Core: <span className="font-bold text-text-primary" title={asset.id}>{asset.id.slice(0, 10)}</span>
                </p>
                
                <span className={`mt-3 px-3.5 py-1 text-[10px] font-black uppercase tracking-widest rounded-full relative z-10 border ${asset.status === 'ACTIVE' ? 'bg-success/10 text-success border-success/20' : 'bg-warning/10 text-warning border-warning/20'}`}>
@@ -95,7 +97,7 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
                      <span className="font-medium text-text-primary">{registrationDate}</span>
                   </div>
                   <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
-                     <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider">Locación</span>
+                     <span className="text-[11px] uppercase font-bold text-text-muted tracking-wider">Establecimiento</span>
                      <span className="font-bold text-text-primary truncate max-w-[120px]">{facilityName}</span>
                   </div>
                   <div className="flex justify-between items-center bg-bg-subtle/50 px-3 py-2 rounded-lg border border-border/40">
@@ -130,26 +132,25 @@ export default function LivestockAssetPassportFeature({ workspace }: { workspace
          {/* Timeline & Details */}
          <div className="md:col-span-2 flex flex-col gap-6">
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center mb-2">
-                     <IconScale size={18} stroke={2} />
-                  </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Peso Actual</p>
-                  <p className="text-2xl font-black text-text-primary">{weight} kg</p>
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconVaccine size={14}/> Raza</p>
+                  <p className="text-xl leading-tight font-black text-text-primary break-words max-w-full truncate w-full" title={breed}>{breed}</p>
                </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start">
-                  <div className="h-8 w-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center mb-2">
-                     <IconVaccine size={18} stroke={2} />
-                  </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Fenotipo</p>
-                  <p className="text-2xl font-black text-text-primary">{breed}</p>
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2">Categoría</p>
+                  <p className="text-xl font-black text-text-primary truncate w-full">{category}</p>
                </div>
-               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col gap-1 items-start col-span-2 sm:col-span-1">
-                  <div className="h-8 w-8 rounded-lg bg-blue-500/10 text-blue-600 flex items-center justify-center mb-2">
-                     <IconMapPin size={18} stroke={2} />
-                  </div>
-                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest">Dominio Raíz</p>
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2">Sexo</p>
+                  <p className="text-xl font-black text-text-primary">{sex}</p>
+               </div>
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start">
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconScale size={14}/> Peso</p>
+                  <p className="text-xl font-black text-text-primary">{weight} kg</p>
+               </div>
+               <div className="bg-surface border border-border rounded-xl p-5 shadow-sm hover:shadow-md hover:border-primary/30 transition-all flex flex-col justify-between items-start col-span-2 lg:col-span-1">
+                  <p className="text-[10px] uppercase font-bold text-text-muted tracking-widest mb-1 shadow-sm w-full border-b border-border/30 pb-2 flex items-center gap-2"><IconMapPin size={14}/> Establecimiento</p>
                   <p className="text-sm font-bold text-text-primary mt-1 line-clamp-2" title={workspace?.name || asset.workspaceId}>{workspace?.name || asset.workspaceId}</p>
                </div>
             </div>

@@ -1,14 +1,10 @@
 /* eslint-env node, browser */
 /* global process, fetch, URL */
 import { SignatureBadge } from '@biffco/ui';
-import dynamic from 'next/dynamic';
 import type { ReactElement } from 'react';
 import { PrintButton } from './PrintButton';
 
-const DAGVisualizer = dynamic(
-  () => import('@biffco/ui').then((mod) => mod.DAGVisualizer),
-  { ssr: false, loading: () => <div className="h-[400px] flex items-center justify-center font-mono text-gray-500">Renderizando Trazabilidad...</div> }
-);
+// Trazabilidad física DAG temporarily hidden
 
 interface VerifyPageProps {
   params: {
@@ -54,22 +50,7 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
 
   const { result: { data: assetData } } = await res.json();
 
-  // Fetch the lineage DAG graph for this asset (también compatible en Edge)
-  let graphData = { nodes: [], edges: [] };
-  try {
-    const graphUrl = new URL(`${baseUrl}/verify.getLineageGraph`);
-    graphUrl.searchParams.set('input', JSON.stringify({ id: assetId }));
-    
-    const [graphRes] = await Promise.all([
-      fetch(graphUrl.toString(), { cache: 'no-store' })
-    ]);
-    if (graphRes.ok) {
-       const raw = await graphRes.json();
-       graphData = raw.result?.data || graphData;
-    }
-  } catch (err) {
-    console.error("Graph Fetch Error", err);
-  }
+  // Trazabilidad DAG temporarily removed
 
   return (
     <div className="flex min-h-screen flex-col items-center bg-gray-50 p-4 pt-8 dark:bg-[#0a0a0a] selection:bg-blue-500/30">
@@ -216,24 +197,7 @@ export default async function VerifyPage({ params }: VerifyPageProps): Promise<R
              </div>
           </div>
 
-          <div className="bg-white dark:bg-[#111111] border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-             <div className="p-6 border-b border-gray-100 dark:border-gray-800">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                   Trazabilidad Física Inyectable
-                </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Historial del ensamble de los componentes de este lote, auditables uno a uno.</p>
-             </div>
-             
-             {graphData.nodes.length > 0 ? (
-               <div className="w-full h-[400px] bg-[#fafafa] dark:bg-black/50">
-                   <DAGVisualizer nodes={graphData.nodes} edges={graphData.edges} />
-               </div>
-             ) : (
-               <div className="p-8 text-center bg-gray-50 dark:bg-[#0a0a0a]">
-                 <p className="text-sm font-mono text-gray-400">Sin dependencias logísticas (Lote Original)</p>
-               </div>
-             )}
-          </div>
+
 
           {/* PRINT BUTTON */}
           <div className="pt-8 pb-12 flex justify-center">
