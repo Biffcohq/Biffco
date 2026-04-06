@@ -15,6 +15,38 @@ type FormData = {
   weight: number;
 }
 
+// Listado oficial de razas y especies
+const LIVESTOCK_BREEDS = [
+  { code: 'AA', name: 'ABERDEEN ANGUS' },
+  { code: 'BO', name: 'BOSMARA' },
+  { code: 'BF', name: 'BRAFORD' },
+  { code: 'B', name: 'BRAHMAN' },
+  { code: 'BG', name: 'BRANGUS' },
+  { code: 'CH', name: 'CHAROLAIS' },
+  { code: 'CR', name: 'CRIOLLA' },
+  { code: 'G', name: 'GALLOWAY' },
+  { code: 'GC', name: 'GANADO CRUZA' },
+  { code: 'H', name: 'HEREFORD' },
+  { code: 'HA', name: 'HOLANDO ARGENTINO' },
+  { code: 'J', name: 'JERSEY' },
+  { code: 'K', name: 'KIWI' },
+  { code: 'LA', name: 'LIMANGUS' },
+  { code: 'L', name: 'LIMOUSINE' },
+  { code: 'MG', name: 'MURRAY GREY' },
+  { code: 'PH', name: 'POLLED HEREFORD' },
+  { code: 'SI', name: 'SAN IGNACIO' },
+  { code: 'SG', name: 'SANTA GERTRUDIS' },
+  { code: 'SA', name: 'SENANGUS' },
+  { code: 'SF', name: 'SENEFORD' },
+  { code: 'SP', name: 'SENEPOL' },
+  { code: 'SH', name: 'SHORTHORN' },
+  { code: 'FS', name: 'SIMMENTAL' },
+  { code: 'SRB', name: 'SUECA ROJA Y BLANCA' },
+  { code: 'TL', name: 'TULI' },
+  { code: 'W', name: 'WAGYU' },
+  { code: 'OR', name: 'OTRA RAZA' }
+].sort((a, b) => a.name.localeCompare(b.name));
+
 export default function LivestockOriginationFeature({ workspace }: { workspace: any }) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>()
   const utils = trpc.useUtils()
@@ -125,12 +157,15 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-2">
                   <label className="text-sm font-medium text-text-primary">Especie / Raza</label>
-                  <Input 
+                  <select 
                     {...register('breed', { required: 'La raza es obligatoria' })}
-                    placeholder="Ej. Aberdeen Angus, Hereford..."
-                    className="w-full bg-bg-subtle border-border focus:bg-surface"
-                    autoComplete="off"
-                  />
+                    className="w-full h-10 px-3 rounded-md border border-border bg-bg-subtle text-text-primary text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all focus:bg-surface"
+                  >
+                    <option value="">Seleccione una raza...</option>
+                    {LIVESTOCK_BREEDS.map(b => (
+                       <option key={b.code} value={b.name}>{b.name} ({b.code})</option>
+                    ))}
+                  </select>
                   {errors.breed && <span className="text-error text-xs">{errors.breed.message}</span>}
                 </div>
 
