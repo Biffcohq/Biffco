@@ -277,5 +277,57 @@ export const assetsRouter = router({
         validDte,
         gfwClear
       }
+    }),
+
+  // Modúlo Faena: Liquida activos vivos, cambiando su estado a inactivo
+  slaughterAssets: requirePermission(Permission.ASSETS_UPDATE)
+    .input(z.object({
+      assetIds: z.array(z.string()).min(1),
+      signature: z.string().optional()
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { db, workspaceId, memberId } = ctx
+      
+      const targetAssets = await db.query.assets.findMany({
+        where: and(
+          inArray(assets.id, input.assetIds),
+          eq(assets.workspaceId, workspaceId!)
+        )
+      })
+
+      if (targetAssets.length !== input.assetIds.length) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "No posees algunos de los activos solicitados." })
+      }
+
+      const invalidAssets = targetAssets.filter(a => a.status !== 'ACTIVE')
+      if (invalidAssets.length > 0) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED', message: "Solo se puede faenar animales en estado ACTIVO (en stock)." })
+      }
+
+      return await db.transaction(async (tx) => {
+        const { default: crypto } = await import('crypto')
+
+        // Marcar inactivos
+        await tx.update(assets)
+          .set({ status: 'SLAUGHTERED', updatedAt: new Date() })
+          .where(inArray(assets.id, input.assetIds))
+
+        const eventData = { action: 'SLAUGHTERED' }
+
+        const eventsToInsert = input.assetIds.map(assetId => ({
+          workspaceId: workspaceId!,
+          streamId: assetId,
+          streamType: 'asset',
+          eventType: 'SLAUGHTER_COMPLETED',
+          hash: crypto.createHash('sha256').update(JSON.stringify({ ...eventData, animal: assetId })).digest('hex'),
+          data: eventData,
+          signerId: memberId || 'system',
+          signature: input.signature,
+        }))
+
+        await tx.insert(domainEvents).values(eventsToInsert)
+
+        return { success: true, count: input.assetIds.length }
+      })
     })
 })

@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react'
+import LivestockDispatchModal from '../LivestockDispatchModal'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import {
@@ -28,6 +29,7 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedAssets, setSelectedAssets] = useState<Set<string>>(new Set())
   const [selectedLotId, setSelectedLotId] = useState<string>('')
+  const [isDispatchOpen, setIsDispatchOpen] = useState(false)
 
   const { data: realAssets, isLoading } = trpc.assets.list.useQuery()
   const { data: realFacilities } = trpc.facilities.list.useQuery()
@@ -135,11 +137,28 @@ export default function LivestockAssetFeature({ workspace, roleId }: { workspace
                      <option key={l.id} value={l.id}>{l.name} ({(l.metadata as Record<string, any>)?.purpose || 'General'})</option>
                   ))}
                </select>
-               <Button onClick={handleGroupAction} disabled={addAssetsMutation.isPending || lots?.length === 0}>
+               <Button onClick={handleGroupAction} disabled={addAssetsMutation.isPending || lots?.length === 0 || !selectedLotId}>
                   {addAssetsMutation.isPending ? 'Agrupando...' : 'Asignar Lote'}
+               </Button>
+               <div className="w-px h-6 bg-border mx-1" />
+               <Button onClick={() => setIsDispatchOpen(true)}>
+                  Despachar
                </Button>
             </div>
          </div>
+      )}
+
+      {/* Dispatch Modal Mount */}
+      {isDispatchOpen && (
+         <LivestockDispatchModal 
+            isOpen={isDispatchOpen} 
+            onClose={() => {
+              setIsDispatchOpen(false);
+              setSelectedAssets(new Set());
+            }} 
+            workspaceId={workspace.id}
+            initialSelectedAssetIds={Array.from(selectedAssets)}
+         />
       )}
 
       {/* Header & Actions */}

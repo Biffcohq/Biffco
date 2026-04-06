@@ -10,21 +10,22 @@ type Props = {
   isOpen: boolean
   onClose: () => void
   workspaceId: string
+  initialSelectedAssetIds?: string[]
 }
 
-export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }: Props) {
+export default function LivestockDispatchModal({ isOpen, onClose, workspaceId, initialSelectedAssetIds }: Props) {
   const trpcCtx = trpc.useUtils()
   const { data: lots, isLoading: loadingLots } = trpc.assetGroups.getWithAssets.useQuery({ verticalId: 'livestock' }, { enabled: isOpen })
   const { mutateAsync: createDraft, isPending } = trpc.transfers.createDraft.useMutation()
 
   const [selectedLotId, setSelectedLotId] = useState<string>('')
-  const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>([])
-  const [dispatchMode, setDispatchMode] = useState<'lot' | 'individual'>('lot')
+  const [selectedAssetIds, setSelectedAssetIds] = useState<string[]>(initialSelectedAssetIds || [])
+  const [dispatchMode, setDispatchMode] = useState<'lot' | 'individual'>(initialSelectedAssetIds?.length ? 'individual' : 'lot')
   const [receiverWorkspaceId, setReceiverWorkspaceId] = useState('')
   const [carrierWorkspaceId, setCarrierWorkspaceId] = useState('')
   
   const { data: allAssets, isLoading: loadingAssets } = trpc.assets.list.useQuery(
-    { status: 'ACTIVE', limit: 1000 }, 
+    { status: 'ACTIVE', limit: 100 }, 
     { enabled: isOpen && dispatchMode === 'individual' }
   )
 
@@ -68,6 +69,7 @@ export default function LivestockDispatchModal({ isOpen, onClose, workspaceId }:
        
        await trpcCtx.transfers.listOutgoingLogistics.invalidate()
        await trpcCtx.assetGroups.getWithAssets.invalidate()
+       await trpcCtx.assets.list.invalidate()
        onClose()
      } catch (err: any) {
        setErrorObj({ message: err.message || 'Error al despachar el lote.' })
