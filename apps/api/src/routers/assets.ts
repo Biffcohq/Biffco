@@ -189,6 +189,19 @@ export const assetsRouter = router({
          }
       }
 
+      // Validar identificador único
+      if (input.externalId) {
+        const existing = await db.query.assets.findFirst({
+          where: and(
+            eq(assets.workspaceId, workspaceId!),
+            sql`metadata->>'externalId' = ${input.externalId}`
+          )
+        });
+        if (existing) {
+          throw new TRPCError({ code: "CONFLICT", message: `El identificador físico "${input.externalId}" ya se encuentra asignado al activo Core Hash: ${existing.id.slice(0, 10)}.` })
+        }
+      }
+
       // Transacción ACID para asegurar Minteo puro
       const [newAsset] = await db.transaction(async (tx) => {
         // C-01: Configurar variable de RLS para el contexto de esta transacción (conexión asegurada)

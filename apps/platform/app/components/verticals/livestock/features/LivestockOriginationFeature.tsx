@@ -90,10 +90,14 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
   const onSubmit = async (data: FormData) => {
     setIsSubmitting(true)
 
+    // Ensure fields are uppercase per Biffco rules before signing the payload
+    const finalRfid = data.rfid.toUpperCase()
+    const finalBreed = data.breed.toUpperCase()
+
     const payload = {
       action: 'LIVESTOCK_ORIGINATED',
-      breed: data.breed,
-      rfid: data.rfid,
+      breed: finalBreed,
+      rfid: finalRfid,
       dateOfBirth: data.dateOfBirth,
       weight: Number(data.weight) || 0,
       origin: 'platform-onboarding'
@@ -105,7 +109,7 @@ export default function LivestockOriginationFeature({ workspace }: { workspace: 
       mutation.mutate({
         type: 'AnimalAsset',
         initialState: payload,
-        externalId: data.rfid,
+        externalId: finalRfid,
         facilityId: data.facilityId,
         genesisEvent: {
           eventType: 'LIVESTOCK_ORIGINATED',
